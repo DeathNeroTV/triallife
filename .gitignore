@@ -31,6 +31,7 @@ typedoc.json
 package-lock.json
 
 # Plugin stuff
+src/core/plugins/core-discord/server/config/index.ts
 scripts/buildresource/*.json
 src-webviews/src/plugins/imports.ts
 src-webviews/src/plugins/vue-plugin-imports.ts
