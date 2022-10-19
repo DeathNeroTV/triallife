@@ -23,8 +23,7 @@ Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnu
 ## Wichtige Links
 
 -   [Issues](https://github.com/deathnerotv/altv-triallife-issues)
--   [Support](https://patreon.com/stuyk/)
--   [Discord](https://ares.stuyk.com/v1/get/discord)
+-   [Discord](https://discord.gg/Sk9qtG28VX)
 -   [alt:V Client](https://altv.mp)
 
 ## Schnellstart
