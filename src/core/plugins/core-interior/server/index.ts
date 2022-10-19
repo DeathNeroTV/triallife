@@ -8,5 +8,5 @@ const PLUGIN_NAME = ' GEBÄUDE';
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     await InteriorSystem.init();
     await createDefaultInteriors();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

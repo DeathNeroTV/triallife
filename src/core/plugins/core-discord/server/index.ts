@@ -26,5 +26,5 @@ PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
         DiscordCommands.init();
     }
     alt.on('resourceStop', () => DiscordController.dispose);
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

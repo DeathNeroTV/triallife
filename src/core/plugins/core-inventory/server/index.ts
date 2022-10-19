@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' CORE-INVENTORY';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     InventoryView.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

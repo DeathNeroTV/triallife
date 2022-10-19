@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' ATM';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     AtmFunctions.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

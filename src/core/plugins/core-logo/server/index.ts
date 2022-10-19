@@ -25,6 +25,6 @@ function showTriallifeLogo(player: alt.Player) {
 }
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
     AgendaSystem.set(0, showTriallifeLogo);
 });

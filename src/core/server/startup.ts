@@ -63,7 +63,7 @@ class Startup {
         }
         // @ts-ignore
         await import(`./boot.js`);
-        alt.log(`==> Total Bootup Time -- ${Date.now() - startTime}ms`);
+        alt.log(`~lb~3L:RP ==>~lg~ Total Bootup Time -- ~y~${Date.now() - startTime}ms`);
     }
 
     static async toggleEntry() {

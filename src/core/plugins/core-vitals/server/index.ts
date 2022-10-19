@@ -10,5 +10,5 @@ const PLUGIN_NAME = ' VITALITÄT';
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     VitalsSystem.init();
     VitalsEffects.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

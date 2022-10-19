@@ -8,5 +8,5 @@ const PLUGIN_NAME = ' AUTOHÄNDLER';
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     DealershipView.init();
     DefaultDealerships.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' HANDSCHELLEN';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     await CuffSystem.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

@@ -10,5 +10,5 @@ const PLUGIN_NAME = ' ROLEPLAY-BEFEHLE';
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     ConsoleCommander.init(alt);
     ConsoleCommands.init();
-    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
 });

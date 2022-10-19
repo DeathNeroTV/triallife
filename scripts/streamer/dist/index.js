@@ -60,13 +60,13 @@ class StreamerServer {
      * @memberof StreamerServer
      */ static ping(id) {
         StreamData = {};
-        conn.write(
+        /*conn.write(
             JSON.stringify({
                 id,
                 route: 'pong',
                 data: '[Streamer] Cleaned & Ready for Events!',
             }),
-        );
+        );*/
     }
     /**
      * Retrieve a ping request, send a pong.
