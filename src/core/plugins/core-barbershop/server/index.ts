@@ -9,5 +9,5 @@ PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     BarbershopView.init();
     BarbershopCommands.init();
 
-    alt.log(`~lg~3L:RP ==> ${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
 });

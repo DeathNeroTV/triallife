@@ -78,7 +78,7 @@ const CharacterSystemRef = {
             const nextCharacterID = await Global.getKey<number>('nextCharacterId');
             await triallife.state.set(player, 'character_id', nextCharacterID);
         }
-        alt.log(`~lg~3L:RP ==> Charakterauswahl | ${player.data.name} Charakter ID: ${player.data.character_id} | Benutzerkonto: ${player.data.account_id}`);
+        alt.log(`~lb~3L:RP ==> ~lg~Charakterauswahl | ${player.data.name} Charakter ID: ${player.data.character_id} | Benutzerkonto: ${player.data.account_id}`);
 
         const beforeInjections = Injections.get<PlayerCallback>(PlayerInjectionNames.BEFORE_CHARACTER_SELECT);
         for (const callback of beforeInjections) {

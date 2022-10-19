@@ -19,7 +19,8 @@
         "vue-dev": "node ./scripts/plugins/webview && node ./scripts/plugins/files && npx vite ./src-webviews --clearScreen=false",
         "[-] Utility": "",
         "prepare": "husky install && husky-init",
-        "lint": "prettier --end-of-line auto --config package.json --write ./src/**/*.ts"
+        "lint": "prettier --end-of-line auto --config package.json --write ./src/**/*.ts",
+        "test": ""
     },
     "devDependencies": {
         "@babel/types": "^7.19.3",

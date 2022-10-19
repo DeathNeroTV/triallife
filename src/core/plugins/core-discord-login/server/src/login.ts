@@ -188,7 +188,7 @@ export class LoginController {
             data['vehicles'] = await Database.fetchAllData<VehicleInfo>(Collections.Vehicles);
             triallife.player.emit.meta(target, 'admin', data);
         }
-        alt.log(`~lg~3L:RP ==> ~lb~${player.data?.name.replace('_', ' ')} ~lg~hat sich ausgeloggt.`);
+        alt.log(`~lb~3L:RP ==> ~lg~~lb~${player.data?.name.replace('_', ' ')} ~lg~hat sich ausgeloggt.`);
     }
 
     static bindPlayerToID(player: alt.Player): void {

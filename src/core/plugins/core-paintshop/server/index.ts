@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' LACKIEREREI';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     PaintShopView.init();
-    alt.log(`~lg~3L:RP ==> ${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
 });

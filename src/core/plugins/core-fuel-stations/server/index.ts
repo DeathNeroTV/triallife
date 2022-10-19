@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' TANKSTELLEN';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     FuelStationSystem.init();
-    alt.log(`~lg~3L:RP ==> ${PLUGIN_NAME} wurde geladen`);
+    alt.log(`~lb~3L:RP ==> ~lg~${PLUGIN_NAME} wurde geladen`);
 });
