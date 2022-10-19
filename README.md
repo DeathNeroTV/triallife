@@ -2,9 +2,9 @@
 	Trial Life Framework for alt:V      
 </h2>
 
-<h4 align="center">
+<h3 align="center">
     <sup>A Roleplay Framework for Developers for GTA:V</sup>
-</h4>
+</h3>
 
 <p align="center">
     <a href="https://typescriptlang.org" target="__blank"><img src="https://img.shields.io/badge/Typescript-Typescript-007acc?label=" alt="Language TypeScript"></a>
