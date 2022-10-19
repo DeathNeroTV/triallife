@@ -18,7 +18,7 @@
 
 ## Build with the Best
 
-Ever wanted to start your own GTA:V Roleplay Server? No idea where to start? Well this repository includes all of the basic tools necessary to begin developing your very own roleplay server for GTA:V.
+Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnung, wo ich anfangen soll? Nun, dieses Repository enthält alle grundlegenden Tools, die Sie benötigen, um mit der Entwicklung Ihres eigenen Rollenspielservers für GTA:V zu beginnen.
 
 ## Important Links
 
@@ -60,10 +60,10 @@ npm run windows
 
 ## Contributors
 
-Special thank you to all these wonderful people who have helped move the triallife Framework forward.
+Besonderer Dank gilt all diesen wunderbaren Menschen, die dazu beigetragen haben, das Triallife-Framework voranzubringen.
 
-<a href = "https://github.com/stuyk/altv-triallife/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=stuyk/altv-triallife"/>
+<a href = "https://github.com/deathnerotv/triallife/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=deathnerotv/triallife"/>
 </a>
 
 Made with [contributors-img](https://contrib.rocks).
