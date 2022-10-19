@@ -3,15 +3,12 @@
 </h2>
 
 <p align="center">
+    <br />
     <sup>A Roleplay Framework for Developers for GTA:V</sup>
     <br />
-    <sup>
-        <a href="https://patreon.com/deathnerotv/">Support on Patreon</a>
-    </sup>
 </p>
 
 <p align="center">
-    <a href="https://patreon.com/stuyk" target="__blank"><img src="https://img.shields.io/badge/Support-Patreon-orange.svg?label=" alt="Patreon"></a>
     <a href="https://typescriptlang.org" target="__blank"><img src="https://img.shields.io/badge/Typescript-Typescript-007acc?label=" alt="Language TypeScript"></a>
     <a href="https://vuejs.org" target="__blank"><img src="https://img.shields.io/badge/Framework-Vue%203-green.svg?label=" alt="Framework Vue 3"></a>
     <a href="https://nodejs.org" target="__blank"><img src="https://img.shields.io/badge/Using-NodeJS-darkgreen.svg?label=" alt="NodeJS"></a>
