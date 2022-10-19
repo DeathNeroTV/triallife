@@ -16,27 +16,27 @@
 
 <br />
 
-## Build with the Best
+## Bauen Sie mit den Besten
 
 Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnung, wo ich anfangen soll? Nun, dieses Repository enthält alle grundlegenden Tools, die Sie benötigen, um mit der Entwicklung Ihres eigenen Rollenspielservers für GTA:V zu beginnen.
 
-## Important Links
+## Wichtige Links
 
 -   [Issues](https://github.com/deathnerotv/altv-triallife-issues)
 -   [Support](https://patreon.com/stuyk/)
 -   [Discord](https://ares.stuyk.com/v1/get/discord)
 -   [alt:V Client](https://altv.mp)
 
-## Quick Start
+## Schnellstart
 
-### Software to Install
+### Zu installierende Software
 
 -   [Install MongoDB Server](https://www.mongodb.com/try/download/community)
 -   [Install Git](https://git-scm.com/downloads)
 -   [NodeJS 17+](https://nodejs.org/en/download/)
 -   [alt:V Client](https://altv.mp/)
 
-### Run Commands in Terminal or Powershell
+### Führen Sie die Befehle im Terminal oder in Powershell aus
 
 ```
 git clone https://github.com/DeathNeroTV/triallife
@@ -58,7 +58,7 @@ npm run update
 npm run windows
 ```
 
-## Contributors
+## Mitwirkende
 
 Besonderer Dank gilt all diesen wunderbaren Menschen, die dazu beigetragen haben, das Triallife-Framework voranzubringen.
 
