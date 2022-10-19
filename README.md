@@ -1,16 +1,16 @@
 <p align="center">
-    <img src="https://i.imgur.com/o0B5JzN.png" width="200">
+    <img src="https://imgur.com/i92SSov" width="200">
 </p>
 
 <h2 align="center">
-	triallife Framework for alt:V      
+	Trial Life Framework for alt:V      
 </h2>
 
 <p align="center">
     <sup>A Roleplay Framework for Developers for GTA:V</sup>
     <br />
     <sup>
-        <a href="https://patreon.com/stuyk/">Support on Patreon</a>
+        <a href="https://patreon.com/deathnerotv/">Support on Patreon</a>
     </sup>
 </p>
 
@@ -48,7 +48,7 @@ Ever wanted to start your own GTA:V Roleplay Server? No idea where to start? Wel
 ### Run Commands in Terminal or Powershell
 
 ```
-git clone https://github.com/Stuyk/altv-triallife
+git clone https://github.com/DeathNeroTV/triallife
 ```
 
 ```
