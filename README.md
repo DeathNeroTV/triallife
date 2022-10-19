@@ -62,8 +62,8 @@ npm run windows
 
 Besonderer Dank gilt all diesen wunderbaren Menschen, die dazu beigetragen haben, das Triallife-Framework voranzubringen.
 
-<a href = "https://github.com/deathnerotv/triallife/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=deathnerotv/triallife"/>
+<a href="https://github.com/deathnerotv/triallife/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=deathnerotv/triallife" />
 </a>
 
-Made with [contributors-img](https://contrib.rocks).
+Made with [contrib.rocks](https://contrib.rocks).
