@@ -1,0 +1,61 @@
+.button {
+    display: block;
+    position: relative;
+    background: rgba(26, 26, 26, 1);
+    color: white;
+    border: 2px solid rgba(48, 48, 48, 1);
+    height: auto;
+    transition: all 0.1s;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.no-border {
+    border: 0px !important;
+}
+
+.no-bg {
+    background: none !important;
+}
+
+.disable {
+    color: rgba(255, 255, 255, 0.2) !important;
+    cursor: unset !important;
+    pointer-events: none;
+}
+
+.disable:active {
+    transform: unset !important;
+}
+
+/** Flatten Style Type **/
+.flatten {
+    background: rgba(26, 26, 26, 1);
+    transition: all 0.1s;
+}
+
+.flatten:hover {
+    background: rgba(48, 48, 48, 1);
+}
+
+.flatten:active {
+    transform: scale(0.95);
+}
+
+/** Raise Style Type **/
+.raise {
+    box-shadow: inset 0px -4px rgba(12, 12, 12, 1);
+}
+
+.raise:hover {
+    box-shadow: inset 0px -5px rgba(12, 12, 12, 1);
+}
+
+.raise:active {
+    box-shadow: inset 0px -3px rgba(12, 12, 12, 1);
+    background: rgba(18, 18, 18, 1);
+}
+
+.fab {
+    border-radius: 50% !important;
+}

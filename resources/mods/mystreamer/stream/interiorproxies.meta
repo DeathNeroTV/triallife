@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SInteriorOrderData>
+    <startFrom value="2000" />
+	<filePathHash value="0" />
+    <proxies>
+		<Item>lr_cs4_14_interior_v_hicksbar_milo_</Item>
+		<Item>int_hickbartop_milo_</Item>
+		<Item>ajaxon_barton_lsc_milo_</Item>
+		<Item>hei_ap1_04_interior_v_carmod_milo_</Item>
+		<Item>unicorn_milo_</Item>
+		<Item>nutt_mosleys_milo_</Item>
+		<Item>gabz_mp_house_10_1_milo_</Item>
+		<Item>gabz_mp_house_10_2_milo_</Item>
+		<Item>gabz_mp_house_10_3_milo_</Item>
+		<Item>gabz_mp_house_8_1_milo_</Item>
+		<Item>gabz_mp_house_8_2_milo_</Item>
+		<Item>gabz_mp_house_8_3_milo_</Item>
+		<Item>gabz_mrpd_milo_</Item>
+		<Item>hei_dt1_19_interior_0_heist_police_dlc_milo_</Item>
+		<Item>gabz_pillbox_dlc_milo_</Item>
+		<Item>gabz_pillbox_milo_</Item>
+		<Item>int_genstore_milo_</Item>
+		<Item>int_motel_milo_</Item>
+		<Item>int_motel_milo2_</Item>
+		<Item>int_motel_milo3_</Item>
+		<Item>int_motel_milo4_</Item>
+		<Item>int_motel_milo5_</Item>
+		<Item>int_motel_milo6_</Item>
+		<Item>int_motel_milo7_</Item>
+		<Item>int_motel_milo8_</Item>
+		<Item>int_motel_milo9_</Item>
+		<Item>int_motel_milo10_</Item>
+		<Item>int_motel_milo11_</Item>		
+		<Item>int_vesp_01_1_milo_</Item>
+		<Item>int_vesp_01_2_milo_</Item>
+		<Item>int_vesp_1_1_milo_</Item>
+		<Item>int_vesp_1_2_milo_</Item>
+		<Item>int_vesp_02_1_milo_</Item>
+		<Item>int_vesp_02_2_milo_</Item>
+		<Item>int_vesp_03_1_milo_</Item>
+		<Item>int_vesp_3_1_milo_</Item>
+		<Item>int_vesp_3_2_milo_</Item>
+		<Item>int_vesp_4_2_milo_</Item>
+		<Item>int_vesp_5_2_milo_</Item>
+		<Item>int_vesp_big_lift_milo_</Item>
+		<Item>int_vesp_big_stair_milo_</Item>
+		<Item>int_vesp_slift_milo_</Item>
+		<Item>qnx_fib2_milo_</Item>
+		<Item>qnx_fib_milo_</Item>
+		<Item>ajaxon_burton_lsc_milo_</Item>
+		<Item>apa_bt1_02_interior_v_carmod_milo_</Item>
+		<Item>ajaxon_hei_ap1_04_interior_v_carmod_milo_</Item>
+		<Item>int_italy2_milo_</Item>
+    </proxies>
+</SInteriorOrderData>

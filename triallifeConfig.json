@@ -1,0 +1,7 @@
+{
+    "[?] A URI with authentication to connect to a MongoDB Database": "TYPE IS STRING",
+    "[?] ex: mongodb://username:password@127.0.0.1:27017": "TYPE IS STRING",
+    "MONGO_URL": "mongodb://127.0.0.1:27017",
+    "[?] Use altv built-in reconnect?": "TYPE IS BOOLEAN",
+    "USE_ALTV_RECONNECT": true
+}

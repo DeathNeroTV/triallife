@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "typeRoots": ["./node_modules/@types", "./node_modules/@altv"],
+        "removeComments": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "jsx": "preserve"
+    },
+    "exclude": [
+        "resources",
+        "scripts",
+        "altv-triallife-cache",
+        "triallife-cache",
+        "node_modules",
+        "cache",
+        "crashdumps",
+        "data",
+        "doc",
+        "modules",
+        "screenshots"
+    ]
+}

@@ -1,0 +1,18 @@
+export const LOCALE_GENERAL = {
+    LABEL_FOOD: 'Essen',
+    LABEL_WATER: 'Getränke',
+    LABEL_GENERAL: 'Sonstiges',
+    LABEL_BUY: 'Kaufen',
+    LABEL_EXIT: 'Verlassen',
+    LABEL_NAME: 'Name',
+    LABEL_DESC: 'Beschreibung',
+    LABEL_INSTRUCTION_HEADER: 'Gegenstand kaufen',
+    LABEL_INSTRUCTION: 'Gib dem Gegenstand einen Namen und eine Beschreibung',
+    LABEL_CANCEL: 'Abbrechen',
+    LABEL_PURCHASE: 'Kaufen',
+    LABEL_HELPER_DESC: 'Was genau macht der Gegenstand?',
+    LABEL_HELPER_NAME: 'Wie soll der Gegenstand heißen?',
+    LABEL_ALL_PRICE: 'Alles',
+    LABEL_ITEM: 'Item',
+    LABEL_PURCHASE_ALL: 'Alles kaufen',
+};

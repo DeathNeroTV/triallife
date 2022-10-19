@@ -1,0 +1,19 @@
+<CodeWalkerProject>
+  <Name>yji</Name>
+  <Version value="1" />
+  <YmapFilenames>
+    <Item>yji.ymap</Item>
+    <Item>lr_cs4_14_strm_1.ymap</Item>
+    <Item>lr_cs4_14_critical_5.ymap</Item>
+    <Item>lr_cs4_14.ymap</Item>
+    <Item>lr_cs4_14_long_0.ymap</Item>
+    <Item>lr_cs6_roads_strm_1.ymap</Item>
+    <Item>lr_cs6_roads_long_0.ymap</Item>
+    <Item>lr_cs6_roads_critical_0.ymap</Item>
+  </YmapFilenames>
+  <YtypFilenames />
+  <YndFilenames />
+  <YnvFilenames />
+  <TrainsFilenames />
+  <ScenarioFilenames />
+</CodeWalkerProject>
