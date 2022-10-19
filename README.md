@@ -1,7 +1,3 @@
-<p align="center">
-    <img src="https://imgur.com/gallery/LQ0vkRs" width="200">
-</p>
-
 <h2 align="center">
 	Trial Life Framework for alt:V      
 </h2>
