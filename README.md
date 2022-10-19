@@ -43,7 +43,7 @@ git clone https://github.com/DeathNeroTV/triallife
 ```
 
 ```
-cd altv-triallife
+cd triallife
 ```
 
 ```
