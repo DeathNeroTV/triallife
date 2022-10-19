@@ -1,11 +1,9 @@
-<h2 align="center">
+<h3 align="center">
 	Trial Life Framework for alt:V      
-</h2>
+</h3>
 
 <p align="center">
-    <br />
     <sup>A Roleplay Framework for Developers for GTA:V</sup>
-    <br />
 </p>
 
 <p align="center">
