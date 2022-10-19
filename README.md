@@ -1,9 +1,9 @@
 <h2 align="center">
-	Trial Life Framework for alt:V      
+	Trial Life Framework für alt:V      
 </h2>
 
 <h3 align="center">
-    <sup>A Roleplay Framework for Developers for GTA:V</sup>
+    <sup>Ein Rollenspiel-Framework für GTA:V-Entwickler</sup>
 </h3>
 
 <p align="center">
