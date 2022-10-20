@@ -32,7 +32,7 @@ Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnu
 
 ## Schnellstart
 
--   [Änderungen](https://github.com/DeathNeroTV/triallife#changelog)
+-   [Änderungen](https://github.com/DeathNeroTV/triallife/blob/master/CHANGELOG.md)
 
 ### Zu installierende Software
 
