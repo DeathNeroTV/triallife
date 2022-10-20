@@ -144,7 +144,7 @@ export class VehicleSystem {
             count += 1;
         }
 
-        alt.log(`Fahrzeuge wurden erstellt: ${count}`);
+        alt.log(`~lb~3L:RP ==> ~lg~Fahrzeuge wurden erstellt: ~y~${count}`);
     }
 
     /**
