@@ -39,7 +39,7 @@ Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnu
 -   [MongoDB](https://www.mongodb.com/try/download/community)
 -   [Git](https://git-scm.com/downloads)
 -   [NodeJS 17+](https://nodejs.org/de/download/)
--   [alt:V Client](https://altv.mp/)
+-   [alt:V Client](https://altv.mp/#/downloads)
 
 ### Führen Sie die Befehle im Terminal oder in Powershell aus
 
