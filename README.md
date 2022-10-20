@@ -32,6 +32,8 @@ Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnu
 
 ## Schnellstart
 
+-   [Änderungen](https://github.com/DeathNeroTV/triallife#changelog)
+
 ### Zu installierende Software
 
 -   [MongoDB](https://www.mongodb.com/try/download/community)
