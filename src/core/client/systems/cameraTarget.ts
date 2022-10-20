@@ -62,7 +62,7 @@ class InternalFunctions {
             return;
         }
 
-        if (isAnyMenuOpen(true)) {
+        if (isAnyMenuOpen()) {
             return;
         }
 
