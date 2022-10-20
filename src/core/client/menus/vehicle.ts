@@ -149,6 +149,6 @@ export class VehicleWheelMenu {
             return;
         }
 
-        WheelMenu.open('Vehicle Options', options);
+        WheelMenu.open('Fahrzeug', options);
     }
 }

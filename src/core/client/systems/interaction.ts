@@ -106,7 +106,6 @@ export class InteractionController {
             interaction = null;
             return;
         }
-
         interaction = _interaction;
     }
 
@@ -243,7 +242,7 @@ export class InteractionController {
         if (closestItems.length >= 1) {
             for (const item of closestItems) {
                 wheelOptions.push({
-                    name: `Pickup ${item.item.item.name} (x${item.item.item.quantity})`,
+                    name: `Auheben ${item.item.item.name} (x${item.item.item.quantity})`,
                     icon: 'icon-move_to_inbox',
                     callback: () => {
                         alt.emitServer(View_Events_Inventory.Pickup, item.uid);
@@ -280,7 +279,7 @@ export class InteractionController {
             return;
         }
 
-        WheelMenu.open('Options', wheelOptions, true);
+        WheelMenu.open('Optionen', wheelOptions, true);
     }
 
     static appendText(originalText: string, key: number, description: string): string {
