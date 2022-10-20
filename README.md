@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://imgur.com/i92SSov.png" alt=""/>  
+</p>
+
 <h2 align="center">
 	Trial Life Framework für alt:V      
 </h2>
@@ -22,17 +26,17 @@ Wolltest du schon immer deinen eigenen GTA:V Roleplay Server starten? Keine Ahnu
 
 ## Wichtige Links
 
--   [Issues](https://github.com/deathnerotv/altv-triallife-issues)
+-   [Probleme](https://github.com/deathnerotv/triallife/issues)
 -   [Discord](https://discord.gg/Sk9qtG28VX)
--   [alt:V Client](https://altv.mp)
+-   [alt:V](https://altv.mp)
 
 ## Schnellstart
 
 ### Zu installierende Software
 
--   [Install MongoDB Server](https://www.mongodb.com/try/download/community)
--   [Install Git](https://git-scm.com/downloads)
--   [NodeJS 17+](https://nodejs.org/en/download/)
+-   [MongoDB](https://www.mongodb.com/try/download/community)
+-   [Git](https://git-scm.com/downloads)
+-   [NodeJS 17+](https://nodejs.org/de/download/)
 -   [alt:V Client](https://altv.mp/)
 
 ### Führen Sie die Befehle im Terminal oder in Powershell aus
