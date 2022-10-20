@@ -1,4 +1,4 @@
-<template>      
+<template>
     <Modal v-if="showBan">
         <Frame minWidth="30vw" maxWidth="30vw">
             <template v-slot:toolbar>
@@ -9,21 +9,21 @@
             <template v-slot:content>
                 <div class="overline mb-2 mt-2 center">Wollen sie diesen Charakter bannen?</div>
                 <div class="overline mb-2 mt-2 center orange--text">
-                    {{ characters.find(x => x.character_id === bannedID).name.replace('_', ' ') }}
+                    {{ characters.find((x) => x.character_id === bannedID).name.replace('_', ' ') }}
                 </div>
-                <Input 
-                    label="Begründung" 
-                    :stack="true" 
-                    :onInput="text => inputChange('bannedReason', text)"
+                <Input
+                    label="Begründung"
+                    :stack="true"
+                    :onInput="(text) => inputChange('bannedReason', text)"
                     :value="''"
                     :validateCallback="(valid) => setValidityProp('bannedReason', valid)"
                     :rules="[
-                        (text) => new RegExp(/^[a-zA-Z0-9_äÄöÖüÜß]+$/gm).test(text) ? null : 'Die Begründung erlaubt keine Sonderzeichen',
-                        (text) => text.length >= 3 ? null : 'Der Grund muss mindestens 3 Satzzeichen enthalten',
+                        (text) => (new RegExp(/^[a-zA-Z0-9_äÄöÖüÜß]+$/gm).test(text) ? null : 'Die Begründung erlaubt keine Sonderzeichen'),
+                        (text) => (text.length >= 3 ? null : 'Der Grund muss mindestens 3 Satzzeichen enthalten'),
                     ]"
                     :swapIconSide="true"
                     :icon="valid?.bannedReason ? 'icon-checkmark' : 'icon-question'"
-                    class="mt-2 fill-full-width" 
+                    class="mt-2 fill-full-width"
                 ></Input>
                 <div class="split center mt-5">
                     <Button color="green" @click="toggleBan(bannedID, true, bannedReason, true)">
@@ -36,7 +36,7 @@
                 </div>
             </template>
         </Frame>
-    </Modal>  
+    </Modal>
     <Modal v-if="showDialog">
         <Frame minWidth="30vw" maxWidth="50vw" maxHeight="50vh" :scrollable="true">
             <template v-slot:toolbar>
@@ -44,51 +44,152 @@
                     <span class="green--text text--darken-2">{{ getTitle }}</span>
                 </Toolbar>
             </template>
-            <template v-slot:content>       
-                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich bearbeiten?</div>         
+            <template v-slot:content>
+                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich bearbeiten?</div>
                 <div class="split-full mt-5">
                     <div class="split split-center mt-5" v-for="(key, index) in Object.keys(selectedData)">
                         <Module class="split split-full" :name="key.toUpperCase()" v-if="Array.isArray(selectedData[key])">
-                            <template v-for="i in selectedData[key].length">                               
-                                <Input class="fill-full-width mb-2" :label="(i-1).toFixed(0)" :placeholder="JSON.stringify(selectedData[key][i-1])" :stack="true" :number-only="false" :onInput="(text) => changeDataByKey(key, text)">
+                            <div class="split split-center fill-full-width">
+                                <span>Eintrag erstellen</span>
+                                <Button class="mr-2" color="green" :glow="true" :raise="true" @click="">
+                                    <Icon icon="icon-add" :size="24"></Icon>
+                                </Button>
+                            </div>
+                            <template v-for="i in selectedData[key].length">
+                                <Input
+                                    class="fill-full-width mb-2"
+                                    :label="(i - 1).toFixed(0)"
+                                    :placeholder="JSON.stringify(selectedData[key][i - 1])"
+                                    :stack="true"
+                                    :number-only="false"
+                                    :onInput="(text) => changeDataByKey([key, i - 1], text)"
+                                >
                                 </Input>
-                            </template>  
+                            </template>
+                        </Module>
+                        <Module class="split split-full" :name="key.toUpperCase()" v-else-if="typeof selectedData[key] === 'object' && !isVector(key)">
+                            <div class="split split-center fill-full-width">
+                                <span>Eintrag erstellen</span>
+                                <Button class="mr-2" color="green" :glow="true" :raise="true" @click="">
+                                    <Icon icon="icon-add" :size="24"></Icon>
+                                </Button>
+                            </div>
+                            <template v-for="(key2, index) in Object.keys(selectedData[key])">
+                                <Choice
+                                    class="fill-full-width mb-2"
+                                    :label="key2.toUpperCase()"
+                                    :stack="true"
+                                    :options="[
+                                        { text: 'Nein', value: false },
+                                        { text: 'Ja', value: true },
+                                    ]"
+                                    :onInput="(text) => changeDataByKey([key, key2], text)"
+                                    :placeholder="selectedData[key][key2].toString()"
+                                    v-if="typeof selectedData[key][key2] === 'boolean'"
+                                >
+                                </Choice>
+                                <Module class="fill-full-width mb-2" :name="key2.toUpperCase()" v-else-if="Array.isArray(selectedData[key][key2])">
+                                    <template v-for="i in selectedData[key][key2].length">
+                                        <Input
+                                            class="fill-full-width mb-2"
+                                            :label="(i - 1).toFixed(0)"
+                                            :placeholder="JSON.stringify(selectedData[key][key2][i - 1])"
+                                            :stack="true"
+                                            :number-only="false"
+                                            :onInput="(text) => changeDataByKey([key, key2], text)"
+                                        >
+                                        </Input>
+                                    </template>
+                                </Module>
+                                <Module class="fill-full-width mb-2" :name="key2.toUpperCase()" v-else-if="typeof selectedData[key][key2] === 'object' && !isVector(key2)">
+                                    <template v-for="(key3, index) in Object.keys(selectedData[key][key2])">
+                                        <Input
+                                            class="fill-full-width mb-2"
+                                            :label="key3.toUpperCase()"
+                                            :placeholder="JSON.stringify(selectedData[key][key2][key3])"
+                                            :stack="true"
+                                            :number-only="false"
+                                            :onInput="(text) => changeDataByKey([key, key2, key3], text)"
+                                        >
+                                        </Input>
+                                    </template>
+                                </Module>
+                                <div class="split split-center fill-full-width" v-else-if="isVector(key2)">
+                                    <Input
+                                        class="fill-full-width mr-2"
+                                        :readonly="true"
+                                        :label="key2.toUpperCase()"
+                                        :placeholder="JSON.stringify(selectedData[key][key2])"
+                                        :stack="true"
+                                        :number-only="false"
+                                        :onInput="(text) => changeDataByKey([key, key2], text)"
+                                    >
+                                    </Input>
+                                    <Button @click="selectPosAndRot([key, key2])">
+                                        <Icon icon="icon-map-marker" :size="24"></Icon>
+                                    </Button>
+                                </div>
+                                <Input
+                                    class="fill-full-width mb-2"
+                                    :label="key2.toUpperCase()"
+                                    :placeholder="JSON.stringify(selectedData[key][key2])"
+                                    :stack="true"
+                                    :number-only="false"
+                                    :onInput="(text) => changeDataByKey([key, key2], text)"
+                                    v-else-if="typeof selectedData[key][key2] === 'object'"
+                                >
+                                </Input>
+                                <Input
+                                    class="fill-full-width mb-2"
+                                    :label="key2.toUpperCase()"
+                                    :placeholder="selectedData[key][key2].toString()"
+                                    :stack="true"
+                                    :number-only="false"
+                                    :onInput="(text) => changeDataByKey([key, key2], text)"
+                                    v-else
+                                >
+                                </Input>
+                            </template>
                         </Module>
                         <template v-else-if="isVector(key)">
                             <div class="split split-center fill-full-width">
-                                <Input class="fill-full-width mr-2" :readonly="true" :label="key.toUpperCase()" :placeholder="JSON.stringify(selectedData[key])" :stack="true" :number-only="false" :onInput="(text) => changeDataByKey(key, text)">
+                                <Input
+                                    class="fill-full-width mr-2"
+                                    :readonly="true"
+                                    :label="key.toUpperCase()"
+                                    :placeholder="JSON.stringify(selectedData[key])"
+                                    :stack="true"
+                                    :number-only="false"
+                                    :onInput="(text) => changeDataByKey(key, text)"
+                                >
                                 </Input>
                                 <Button @click="selectPosAndRot(key)">
                                     <Icon icon="icon-map-marker" :size="24"></Icon>
                                 </Button>
                             </div>
                         </template>
-                        <Module class="split split-full" :name="key.toUpperCase()" v-else-if="typeof selectedData[key] === 'object' && !isVector(key)">
-                           <template v-for="(key2, index) in Object.keys(selectedData[key])">                                
-                                <Choice class="fill-full-width mb-2" :label="key2.toUpperCase()" :stack="true" :options="[{ text: 'Nein', value: false }, { text: 'Ja', value: true }]" :onInput="(text) => changeDataBySubKey(key, key2, text)" :placeholder="selectedData[key][key2].toString()" v-if="typeof selectedData[key][key2] === 'boolean'">
-                                </Choice>
-                                <Module class="fill-full-width mb-2" :name="key2.toUpperCase()" v-else-if="Array.isArray(selectedData[key][key2])">   
-                                    <template v-for="i in selectedData[key][key2].length">                               
-                                        <Input class="fill-full-width mb-2" :label="(i-1).toFixed(0)" :placeholder="JSON.stringify(selectedData[key][key2][i-1])" :stack="true" :number-only="false" :onInput="(text) => changeDataBySubKey(key, key2, text)">
-                                        </Input>
-                                    </template>  
-                                </Module>
-                                <div class="split split-center fill-full-width" v-else-if="isVector(key2)">
-                                    <Input class="fill-full-width mr-2" :readonly="true" :label="key2.toUpperCase()" :placeholder="JSON.stringify(selectedData[key][key2])" :stack="true" :number-only="false" :onInput="(text) => changeDataBySubKey(key, key2, text)">
-                                    </Input>
-                                    <Button @click="selectPosAndRot([key, key2])">
-                                        <Icon icon="icon-map-marker" :size="24"></Icon>
-                                    </Button>
-                                </div>
-                                <Input class="fill-full-width mb-2" :label="key2.toUpperCase()" :placeholder="JSON.stringify(selectedData[key][key2])" :stack="true" :number-only="false" :onInput="(text) => changeDataBySubKey(key, key2, text)" v-else-if="typeof selectedData[key][key2] === 'object'">
-                                </Input>
-                                <Input class="fill-full-width mb-2" :label="key2.toUpperCase()" :placeholder="selectedData[key][key2].toString()" :stack="true" :number-only="false" :onInput="(text) => changeDataBySubKey(key, key2, text)" v-else>
-                                </Input>
-                           </template>
-                        </Module>
-                        <Choice class="fill-full-width" :label="key.toUpperCase()" :stack="true" :options="[{ text: 'Nein', value: false }, { text: 'Ja', value: true }]" :onInput="(text) => changeDataByKey(key, text)" :placeholder="selectedData[key].toString()" v-else-if="typeof selectedData[key] === 'boolean'">
+                        <Choice
+                            class="fill-full-width"
+                            :label="key.toUpperCase()"
+                            :stack="true"
+                            :options="[
+                                { text: 'Nein', value: false },
+                                { text: 'Ja', value: true },
+                            ]"
+                            :onInput="(text) => changeDataByKey(key, text)"
+                            :placeholder="selectedData[key].toString()"
+                            v-else-if="typeof selectedData[key] === 'boolean'"
+                        >
                         </Choice>
-                        <Input class="fill-full-width" :label="key.toUpperCase()" :placeholder="selectedData[key].toString()" :stack="true" :number-only="false" :onInput="(text) => changeDataByKey(key, text)" v-else>
+                        <Input
+                            class="fill-full-width"
+                            :label="key.toUpperCase()"
+                            :placeholder="selectedData[key].toString()"
+                            :stack="true"
+                            :number-only="false"
+                            :onInput="(text) => changeDataByKey(key, text)"
+                            v-else
+                        >
                         </Input>
                     </div>
                 </div>
@@ -112,7 +213,7 @@
                 </Toolbar>
             </template>
             <template v-slot:content>
-                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich löschen?</div>                
+                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich löschen?</div>
                 <div class="split center mt-5">
                     <Button color="green" @click="acceptDelete">
                         <Icon icon="icon-check-square-o" :size="36"></Icon>
@@ -132,12 +233,20 @@
         <template v-slot:content>
             <div class="split split-full">
                 <div class="sidebar">
-                    <div class="split split-center sidebar-item outlined" v-for="(name, index) in names" @click="selectOption(index)" :key="index">   
-                        <Icon :class="(selected === index ? 'green--text' : 'grey--text')" :icon="getIcon(index)" :size="24" style="min-width: 3vw !important;"></Icon>   
+                    <div class="split split-center sidebar-item outlined" v-for="(name, index) in names" @click="selectOption(index)" :key="index">
+                        <Icon :class="selected === index ? 'green--text' : 'grey--text'" :icon="getIcon(index)" :size="24" style="min-width: 3vw !important"></Icon>
                         <span :class="'fill-full-width ' + (selected === index ? 'green--text' : 'grey--text')">{{ getText(index) }}</span>
                     </div>
                 </div>
-                <component class="split-full ml-2 mr-2 mb-2 container-panel" v-bind:is="getComponent" v-bind:list="getList" v-bind:title="getTitle" @toggle-ban="toggleBan" @modify-data="modifyData" @delete-data="deleteData" />
+                <component
+                    class="split-full ml-2 mr-2 mb-2 container-panel"
+                    v-bind:is="getComponent"
+                    v-bind:list="getList"
+                    v-bind:title="getTitle"
+                    @toggle-ban="toggleBan"
+                    @modify-data="modifyData"
+                    @delete-data="deleteData"
+                />
             </div>
         </template>
     </Frame>
@@ -294,15 +403,35 @@ export default defineComponent({
             this.showDialog = false;
             this.selectedTable = '';
         },
-        changeDataByKey(key: string, value: string | boolean | number) {
+        changeDataByKey(keys: any | any[], value: string) {
             const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside', 'rot', 'rotation'];
-            if (vectorList.findIndex((x) => x === key) !== -1) this.selectedData[key] = JSON.parse(value as string);
-            else this.selectedData[key] = value;
-        },
-        changeDataBySubKey(key: string, subKey: string, value: string | boolean | number) {
-            const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside', 'rot', 'rotation'];
-            if (vectorList.findIndex((x) => x === key) !== -1) this.selectedData[key][subKey] = JSON.parse(value as string);
-            else this.selectedData[key][subKey] = value;
+            if (Array.isArray(keys)) {
+                if (keys.length === 2) {
+                    if (vectorList.findIndex((x) => x === keys[1]) !== -1) this.selectedData[keys[0]][keys[1]] = JSON.parse(value);
+                    else if (!Number.isNaN(value)) this.selectedData[keys[0]][keys[1]] = Number(value);
+                    else if (typeof value === 'boolean') this.selectedData[keys[0]][keys[1]] = value as boolean;
+                    else if (typeof value === 'object') this.selectedData[keys[0]][keys[1]] = Object(value);
+                    else this.selectedData[keys[0]][keys[1]] = value;
+                } else if (keys.length === 3) {
+                    if (vectorList.findIndex((x) => x === keys[2]) !== -1) this.selectedData[keys[0]][keys[1]][keys[2]] = JSON.parse(value);
+                    else if (!Number.isNaN(value)) this.selectedData[keys[0]][keys[1]][keys[2]] = Number(value);
+                    else if (typeof value === 'boolean') this.selectedData[keys[0]][keys[1]][keys[2]] = value as boolean;
+                    else if (typeof value === 'object') this.selectedData[keys[0]][keys[1]][keys[2]] = Object(value);
+                    else this.selectedData[keys[0]][keys[1]][keys[2]] = value;
+                } else if (keys.length === 4) {
+                    if (vectorList.findIndex((x) => x === keys[2]) !== -1) this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = JSON.parse(value);
+                    else if (!Number.isNaN(value)) this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = Number(value);
+                    else if (typeof value === 'boolean') this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = value as boolean;
+                    else if (typeof value === 'object') this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = Object(value);
+                    else this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = value;
+                }
+            } else {
+                if (vectorList.findIndex((x) => x === keys) !== -1) this.selectedData[keys] = JSON.parse(value);
+                else if (!Number.isNaN(value)) this.selectedData[keys] = Number(value);
+                else if (typeof value === 'boolean') this.selectedData[keys] = value as boolean;
+                else if (typeof value === 'object') this.selectedData[keys] = Object(value);
+                else this.selectedData[keys] = value;
+            }
         },
         selectPosAndRot(keys: string | string[]) {
             if (!('alt' in window)) return;
@@ -310,7 +439,7 @@ export default defineComponent({
         },
         deleteData(database: string, data: Object) {
             this.selectedTable = database;
-            this.selectedData = Object.assign(this.selectedData, data);
+            this.selectedData = Object.assign({}, data);
             this.showDelete = true;
         },
         acceptDelete() {

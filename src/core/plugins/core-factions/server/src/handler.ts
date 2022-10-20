@@ -104,14 +104,11 @@ export class FactionHandler {
      * @memberof FactionCore
      */
     static async update(_id: Object, partialObject: Partial<Faction>): Promise<IGenericResponse<string>> {
-        const index = factions.findIndex((x) => x._id === _id);
         delete partialObject._id;
+        const index = factions.findIndex((x) => x._id.toString() === _id.toString());
         if (index === -1) return { status: false, response: `Firma mit der ID ${JSON.stringify(_id)} wurde nicht gefunden` };
         Object.keys(factions[index]).forEach((key) => {
-            if (!partialObject[key]) {
-                alt.logWarning('Kein Schlüssel in dem Objekt bei der Firma: ', key);
-                return;
-            }
+            if (!partialObject[key]) return;
             factions[index][key] = partialObject[key];
         });
         const status = await Database.updatePartialData(_id.toString(), factions[index], Collections.Factions);
@@ -131,7 +128,7 @@ export class FactionHandler {
      */
     static async remove(_id: Object): Promise<IGenericResponse<string>> {
         // Find the faction...
-        const index = factions.findIndex((x) => x._id === _id);
+        const index = factions.findIndex((x) => x._id.toString() === _id.toString());
         if (index === -1) return { status: false, response: `Firma nicht mit der ID ${JSON.stringify(_id)} gefunden` };
         // Remove the faction outright...
         const factionClone = deepCloneObject<Faction>(factions[index]);
