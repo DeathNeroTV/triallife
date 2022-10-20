@@ -75,7 +75,7 @@ export class ObjectWheelMenu {
             return;
         }
 
-        WheelMenu.open('Object', options);
+        WheelMenu.open('Gegenstand', options);
     }
 
     /**

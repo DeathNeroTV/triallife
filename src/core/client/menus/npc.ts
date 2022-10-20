@@ -69,6 +69,6 @@ export class NpcWheelMenu {
             return;
         }
 
-        WheelMenu.open('NPC', options);
+        WheelMenu.open('Arbeiter', options);
     }
 }

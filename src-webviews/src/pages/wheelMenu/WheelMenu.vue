@@ -3,7 +3,7 @@
         <div class="wheel-wrapper">
             <div class="wheel-menu-page overline">
                 <div class="wheel-menu-page-box">
-                    {{ optionIndex / maxOptions + 1 }} / {{ Math.floor(options.length / maxOptions) + 1 }} Pages
+                    {{ optionIndex / maxOptions + 1 }} / {{ Math.floor(options.length / maxOptions) + 1 }} Seiten
                 </div>
             </div>
             <div class="wheel-menu-label overline">

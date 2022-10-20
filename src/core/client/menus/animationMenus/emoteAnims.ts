@@ -3,12 +3,12 @@ import { ANIMATION_FLAGS } from '../../../shared/flags/animationFlags';
 export default (callback: (...args: any[]) => void) => {
     return [
         {
-            name: 'No',
+            name: 'Nein',
             callback,
             data: ['anim@heists@ornate_bank@chat_manager', 'fail', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'No Way',
+            name: 'Keines Wegs',
             callback,
             data: ['gestures@m@standing@casual', 'gesture_no_way', ANIMATION_FLAGS.NORMAL],
         },
@@ -18,37 +18,37 @@ export default (callback: (...args: any[]) => void) => {
             data: ['anim@mp_player_intselfiedock', 'idle_a', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Out of Breath',
+            name: 'Außer Puste',
             callback,
             data: ['re@construction', 'out_of_breath', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Salute',
+            name: 'Salutieren',
             callback,
             data: ['anim@mp_player_intincarsalutestd@ds@', 'idle_a', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Salute 2',
+            name: 'Salutieren 2',
             callback,
             data: ['anim@mp_player_intincarsalutestd@ps@', 'idle_a', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Scared 1',
+            name: 'Verängstigt 1',
             callback,
             data: ['random@domestic', 'f_distressed_loop', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Scared 2',
+            name: 'Verängstigt 2',
             callback,
             data: ['random@homelandsecurity', 'knees_loop_girl', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Clap',
+            name: 'Klatschen',
             callback,
             data: ['amb@world_human_cheering@male_a', 'base', ANIMATION_FLAGS.NORMAL],
         },
         {
-            name: 'Eat',
+            name: 'Essen',
             callback,
             data: ['mp_player_inteat@burger', 'mp_player_int_eat_burger', ANIMATION_FLAGS.NORMAL],
         },

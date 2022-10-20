@@ -82,7 +82,7 @@ export class VehicleWheelMenu {
             return;
         }
 
-        WheelMenu.open('Vehicle Options', options);
+        WheelMenu.open('Fahrzeug', options);
     }
 
     static openMenu(vehicle: alt.Vehicle) {
@@ -105,7 +105,7 @@ export class VehicleWheelMenu {
         const isLocked = native.getVehicleDoorLockStatus(vehicle.scriptID) === 2;
 
         options.push({
-            name: isLocked ? 'Unlock' : 'Lock',
+            name: isLocked ? 'Aufschließen' : 'Abschließen',
             color: isLocked ? 'green' : 'red',
             icon: isLocked ? 'icon-lock-open' : 'icon-lock',
             emitServer: VEHICLE_EVENTS.SET_LOCK,
@@ -117,21 +117,21 @@ export class VehicleWheelMenu {
         if (!PushVehicle.isPushing() && !isLocked && !isDestroyed) {
             if (!BLACKLISTED_VEHICLE_TYPES.includes(type)) {
                 options.push({
-                    name: 'Push',
+                    name: 'Fahrzeug~n~schieben',
                     callback: PushVehicle.start,
                     data: [vehicle],
                 });
             }
 
             options.push({
-                name: 'Open Storage',
+                name: 'Kofferraum öffnen',
                 callback: () => {
                     alt.emitServer(VEHICLE_EVENTS.OPEN_STORAGE, vehicle);
                 },
             });
         } else if (PushVehicle.isPushing()) {
             options.push({
-                name: 'Stop Push',
+                name: 'Aufhören mit~n~schieben',
                 callback: PushVehicle.clear,
             });
         }

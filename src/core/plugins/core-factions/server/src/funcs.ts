@@ -326,30 +326,18 @@ export class FactionFuncs {
     static async addMember(faction: Faction, characterID: string): Promise<boolean> {
         const lowestRank = FactionFuncs.getRankWithLowestWeight(faction);
         const character = await Database.fetchData<Character>('_id', characterID, Collections.Characters);
-        if (!character) {
-            return false;
-        }
-
+        if (!character) return false;
         const onlinePlayer = alt.Player.all.find((x) => x && x.valid && x.data && x.data._id.toString() === characterID);
-
-        if (onlinePlayer) {
-            triallife.state.set(onlinePlayer, 'faction', faction._id.toString());
-        }
-
+        if (onlinePlayer) triallife.state.set(onlinePlayer, 'faction', faction._id.toString());
         faction.members[characterID] = {
             id: characterID,
             name: character.name,
             rank: lowestRank.uid,
             hasOwnership: false,
         };
-
         await Database.updatePartialData(character._id.toString(), { faction: faction._id.toString() }, triallife.database.collections.Characters);
-
         const didUpdate = await FactionHandler.update(faction._id as string, { members: faction.members });
-        if (didUpdate.status) {
-            FactionFuncs.updateMembers(faction);
-        }
-
+        if (didUpdate.status) FactionFuncs.updateMembers(faction);
         return didUpdate.status;
     }
 

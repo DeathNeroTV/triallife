@@ -14,7 +14,6 @@ import funAnims from './animationMenus/funAnims';
 import idleAnims from './animationMenus/idleAnims';
 import leanAnims from './animationMenus/leanAnims';
 import waitAnims from './animationMenus/waitAnims';
-import { PlayerWheelMenu } from './player';
 
 function callback(dict: string, name: string, flags: number) {
     console.log(dict, name, flags);
@@ -36,10 +35,10 @@ function handleAnimationMenu() {
     }
 
     WheelMenu.open(
-        'Animations',
+        'Animationen',
         [
             {
-                name: 'Clear',
+                name: 'Unterbrechen',
                 callback: () => {
                     if (alt.Player.local.vehicle) {
                         return;
@@ -50,7 +49,7 @@ function handleAnimationMenu() {
                 icon: 'icon-clear',
             },
             {
-                name: 'Dance',
+                name: 'Tänze',
                 callback: () => {
                     WheelMenu.update('Dance', danceAnims(callback), true);
                 },
@@ -58,7 +57,7 @@ function handleAnimationMenu() {
                 icon: 'icon-directions_run',
             },
             {
-                name: 'Idle',
+                name: 'Rumstehen',
                 callback: () => {
                     WheelMenu.update('Idle', idleAnims(callback));
                 },
@@ -66,7 +65,7 @@ function handleAnimationMenu() {
                 icon: 'icon-timer',
             },
             {
-                name: 'Fun',
+                name: 'Spaßiges',
                 callback: () => {
                     WheelMenu.update('Fun', funAnims(callback));
                 },
@@ -74,7 +73,7 @@ function handleAnimationMenu() {
                 icon: 'icon-celebration',
             },
             {
-                name: 'Wait',
+                name: 'Auf etwas warten',
                 callback: () => {
                     WheelMenu.update('Wait', waitAnims(callback));
                 },
@@ -82,7 +81,7 @@ function handleAnimationMenu() {
                 icon: 'icon-stopwatch',
             },
             {
-                name: 'Lean',
+                name: 'Anlehnen',
                 callback: () => {
                     WheelMenu.update('Lean', leanAnims(callback));
                 },
@@ -90,7 +89,7 @@ function handleAnimationMenu() {
                 icon: 'icon-airline-seat_recline_extra',
             },
             {
-                name: 'Emote',
+                name: 'Emotionen',
                 callback: () => {
                     WheelMenu.update('Emote', emoteAnims(callback));
                 },
@@ -98,7 +97,7 @@ function handleAnimationMenu() {
                 icon: 'icon-emoji_people',
             },
             {
-                name: 'Common',
+                name: 'Herkömmliches',
                 callback: () => {
                     WheelMenu.update('Common', commonAnims(callback));
                 },
