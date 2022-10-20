@@ -62,7 +62,7 @@ export class VehicleWheelMenu {
             const engineOn = native.getIsVehicleEngineRunning(alt.Player.local.vehicle.scriptID);
 
             options.push({
-                name: engineOn ? 'einschalten' : 'abschalten',
+                name: engineOn ? 'Einschalten' : 'Abschalten',
                 icon: 'icon-engine-fill',
                 color: engineOn ? 'red' : 'green',
                 emitServer: VEHICLE_EVENTS.SET_ENGINE,
@@ -117,7 +117,7 @@ export class VehicleWheelMenu {
         if (!PushVehicle.isPushing() && !isLocked && !isDestroyed) {
             if (!BLACKLISTED_VEHICLE_TYPES.includes(type)) {
                 options.push({
-                    name: 'Fahrzeug~n~schieben',
+                    name: 'Schieben',
                     callback: PushVehicle.start,
                     data: [vehicle],
                 });
@@ -131,7 +131,7 @@ export class VehicleWheelMenu {
             });
         } else if (PushVehicle.isPushing()) {
             options.push({
-                name: 'Aufhören mit~n~schieben',
+                name: 'Aufhören',
                 callback: PushVehicle.clear,
             });
         }
