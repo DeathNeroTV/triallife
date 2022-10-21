@@ -5,7 +5,7 @@ export const DEFAULT_CONFIG = {
     // Character Selection View
     CHARACTER_SELECT_POS: { x: -145.9370574951172, y: -575.7879638671875, z: 32.424442291259766 },
     CHARACTER_SELECT_ROT: 249.58352661132812,
-    PLAYER_MAX_CHARACTER_SLOTS: 5,
+    PLAYER_MAX_CHARACTER_SLOTS: 3,
     // Character Creation View
     CHARACTER_CREATOR_POS: { x: -145.9370574951172, y: -575.7879638671875, z: 32.424442291259766 },
     CHARACTER_CREATOR_ROT: 249.58352661132812,
@@ -17,7 +17,7 @@ export const DEFAULT_CONFIG = {
     // World Time
     BOOTUP_HOUR: 9,
     BOOTUP_MINUTE: 0,
-    MINUTES_PER_MINUTE: 5,
+    MINUTES_PER_MINUTE: 1,
     USE_SERVER_TIME: true, // Overwrites the server time to use the current time of the computer it is running on.
     // Food Properties
     TIME_BETWEEN_FOOD_UPDATES: 10000,

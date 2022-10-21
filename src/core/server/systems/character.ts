@@ -7,9 +7,6 @@ import { PLAYER_SYNCED_META } from '../../shared/enums/playerSynced';
 import { SYSTEM_EVENTS } from '../../shared/enums/system';
 import { Character, CharacterDefaults } from '../../shared/interfaces/character';
 import { deepCloneObject } from '../../shared/utility/deepCopy';
-import { World } from './world';
-import { LocaleController } from '../../shared/locale/locale';
-import { LOCALE_KEYS } from '../../shared/locale/languages/keys';
 import { Global } from './global';
 import { CharacterCreateCallback, PlayerCallback, PlayerInjectionNames } from './injections/player';
 import { Injections } from './injections';
@@ -78,8 +75,6 @@ const CharacterSystemRef = {
             const nextCharacterID = await Global.getKey<number>('nextCharacterId');
             await triallife.state.set(player, 'character_id', nextCharacterID);
         }
-        alt.log(`~lb~3L:RP ==>~lg~Charakterauswahl | ${player.data.name} Charakter ID: ${player.data.character_id} | Benutzerkonto: ${player.data.account_id}`);
-
         const beforeInjections = Injections.get<PlayerCallback>(PlayerInjectionNames.BEFORE_CHARACTER_SELECT);
         for (const callback of beforeInjections) {
             await callback(player);

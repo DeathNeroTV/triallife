@@ -1,7 +1,6 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
 
-import { DiscordController } from '../plugins/core-discord/server/src/discordController';
 import { SYSTEM_EVENTS } from '../shared/enums/system';
 import { IConfig } from './interface/iConfig';
 import ConfigUtil from './utility/config';
@@ -30,7 +29,7 @@ class Startup {
      */
     static database() {
         if (typeof config === 'undefined') {
-            alt.logWarning(`Failed to load Configuration File. Is 'triallifeConfig.json' file malformed? Try setting to default values again.`);
+            alt.logWarning(`Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`);
             process.exit(1);
         }
 
@@ -43,7 +42,7 @@ class Startup {
             })
             .then((res) => {
                 if (res) {
-                    alt.log(`MongoDB connection was established.`);
+                    alt.log(`MongoDB Verbindung wurde hergestellt.`);
                     return;
                 }
 
@@ -58,28 +57,27 @@ class Startup {
      */
     static async ares() {
         if (typeof config === 'undefined') {
-            alt.logWarning(`Failed to load Configuration File. Is 'triallifeConfig.json' file malformed? Try setting to default values again.`);
+            alt.logWarning(`Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`);
             process.exit(1);
         }
         // @ts-ignore
         await import(`./boot.js`);
-        alt.log(`~lb~3L:RP ==>~lg~ Total Bootup Time ~w~-- ~y~${Date.now() - startTime}ms`);
+        const bootTime = (Date.now() - startTime) / 1000;
+        alt.log(`~lb~3L:RP ==> ~lg~Gesamte Startzeit~w~: ~y~${bootTime.toFixed(2)}s`);
     }
 
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
-        alt.log(`~b~Server Warmup Complete. Now accepting connections.`);
+        alt.log(`~lb~Serveraufwärmung abgeschlossen. Verbindungen werden akzeptiert`);
         ReconnectHelper.invoke();
     }
 
     static handleEarlyConnect(player: alt.Player) {
-        if (!(player instanceof alt.Player) || !player || !player.valid) {
-            return;
-        }
+        if (!(player instanceof alt.Player) || !player || !player.valid) return;
         try {
-            player.kick('[triallife] Connected too early. Server still warming up.');
+            player.kick('[Trial Life] Zu früh verbunden. Server wird noch aufgewärmt.');
         } catch (err) {
-            alt.log(`[triallife] A reconnection event happened too early. Try again.`);
+            alt.log(`[Trial Life] Ein Wiederverbindungsereignis ist zu früh aufgetreten. Versuchen Sie es nochmal.`);
         }
     }
 }

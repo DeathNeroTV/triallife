@@ -11,7 +11,7 @@ export interface IStorage {
      * @type {unknown}
      * @memberof Interior
      */
-    _id?: unknown;
+    _id?: any;
 
     /**
      * The amount of cash that is in this storage box.

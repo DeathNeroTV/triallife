@@ -64,8 +64,6 @@ export class VoiceSystem {
         if (index === -1) return null;
         const virtualChannel = Channels[index];
         if (virtualChannel.channel.isPlayerInChannel(player)) return;
-        alt.log(`[CORE-VOICE] ~lb~${player.data.name} ~w~wurde dem globalen Sprachchat hinzugefügt ~lg~${channelName}`);
-        triallife.player.emit.meta(player, 'voice', true);
         virtualChannel.channel.addPlayer(player);
         for (let i = 0; i < virtualChannel.joinEmits.length; i++) {
             alt.emitClient(player, virtualChannel.joinEmits[i], virtualChannel.name);
@@ -77,6 +75,7 @@ export class VoiceSystem {
         VoiceSystem.addPlayer(player, 'mid');
         VoiceSystem.addPlayer(player, 'long');
         VoiceSystem.addPlayer(player, 'ultra');
+        triallife.player.emit.meta(player, 'voice', false);
     }
 
     static disconnectPlayer(player: alt.Player) {

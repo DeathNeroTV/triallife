@@ -1,4 +1,3 @@
-import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
 import { Collections } from '../../../../server/interface/iDatabaseCollections';
 import { sha256Random } from '../../../../server/utility/encryption';
@@ -10,6 +9,7 @@ import { IGenericResponse } from '../../../../shared/interfaces/iResponse';
 import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 import { triallife } from '../../../../server/api/triallife';
 import { BankInfo } from '../../../../shared/interfaces/bank';
+import Database from '@stuyk/ezmongodb';
 
 const factions: { [key: string]: Faction } = {};
 
@@ -99,7 +99,7 @@ export class FactionHandler {
         character.faction = document._id.toString();
         await Database.updatePartialData(character._id, { faction: character.faction }, Collections.Characters);
         const target = alt.Player.all.find((x) => x && x.data && x.data._id.toString() === character._id.toString());
-        if (target) target.data.faction = character.faction;
+        if (target) triallife.state.set(target, 'faction', character.faction, true);
         InternalFunctions.create(document);
         return { status: true, response: document._id.toString() };
     }
@@ -121,8 +121,8 @@ export class FactionHandler {
             if (!partialObject[key]) return;
             faction[key] = partialObject[key];
         });
-        await Database.updatePartialData(faction._id, partialObject, Collections.Factions);
-        return { status: true, response: `Firmendaten wurden aktualisiert` };
+        const status = await Database.updatePartialData(faction._id, partialObject, Collections.Factions);
+        return { status, response: status? `Firmendaten wurden aktualisiert` : `Firmendaten wurden nicht aktualisiert` };
     }
 
     /**
@@ -155,7 +155,7 @@ export class FactionHandler {
         });
 
         // Clear all members...
-        const members = await Database.fetchAllByField<Character>('faction', factionClone.name, Collections.Characters);
+        const members = await Database.fetchAllByField<Character>('faction', factionClone._id, Collections.Characters);
         const banking = await Database.fetchData<BankInfo>('owner', factionClone.name, Collections.Banks);
         let onlinePlayers: Array<alt.Player> = [];
         for (let i = 0; i < members.length; i++) {
@@ -163,13 +163,12 @@ export class FactionHandler {
             member.faction = null;
             const player = alt.Player.all.find((p) => p.data && p.data._id === members[i]._id);
             if (player && player.valid) {
-                triallife.state.set(player, 'faction', null);
                 // Add bank balance to owner character
                 if (player.data._id === ownerIdentifier) {
                     const banks = (await triallife.player.currency.getAllBankAccountsPlayer(player)).filter((x) => x.type === 'private' || x.type === 'credit');
                     const prive = banks.find((x) => x.type === 'private');
                     const credit = banks.find((x) => x.type === 'credit');
-                    var money = banking.amount;
+                    var money = faction.bank + banking.amount;
                     if (credit && credit.amount - money <= -1) {
                         money = money - credit.amount;
                         await triallife.player.currency.setBank(player, 0, credit.iban);
@@ -181,53 +180,50 @@ export class FactionHandler {
                         player.data.cash = player.data.cash + money;
                         money = 0;
                     }
-                    await Database.deleteById(banking._id, Collections.Banks);
                     triallife.state.set(player, 'cash', player.data.cash, true);
                     triallife.player.sync.currencyData(player);
                     triallife.player.emit.notification(player, `+ ${factionClone.bank} $`);
-                    if (banking) await Database.deleteById(banking._id, Collections.Banks);
                 }
                 onlinePlayers.push(player);
             }
-
             // For non-logged in character owner add bank balance
             if (!player && member._id === ownerIdentifier) {
                 var amount = factionClone.bank;
-                await Database.updatePartialData(member._id.toString(), { faction: null }, Collections.Characters);
                 var facAcc = await Database.fetchData<BankInfo>('owner', factionClone.name, Collections.Banks);
-                var privAcc = (await Database.fetchAllData<BankInfo>(Collections.Banks)).find((x) => x.type === 'private' && x.owner === member.name);
-                if (facAcc) amount += facAcc.amount;
-                if (privAcc) {
-                    privAcc.amount += amount;
-                    await Database.updatePartialData(privAcc._id, { amount: privAcc.amount }, Collections.Banks);
-                    await Database.deleteById(facAcc._id, Collections.Banks);
+                const banks = (await Database.fetchAllByField<BankInfo>('owner', member.name, Collections.Banks));
+                const prive = banks.find((x) => x.type === 'private');
+                const credit = banks.find((x) => x.type === 'credit');
+                var money = amount + facAcc.amount;
+                if (credit && credit.amount - money <= -1) {
+                    money = money - credit.amount;
+                    await Database.updatePartialData(credit._id, { amount: 0 }, Collections.Banks);
+                }
+                if (prive) {                    
+                    await Database.updatePartialData(prive._id, { amount: prive.amount + money }, Collections.Banks);
+                    money = 0;
+                } else {                 
+                    await Database.updatePartialData(member._id, { cash: member.cash + money }, Collections.Characters);
+                    money = 0;
                 }
                 continue;
             }
-
             // Remove faction from character
-            await Database.updatePartialData(member._id.toString(), { faction: null }, Collections.Characters);
+            await Database.updatePartialData(member._id, { faction: null }, Collections.Characters);
         }
-
+        if (banking) await Database.deleteById(banking._id, Collections.Banks);
         // Clear all vehicles...
         for (let i = 0; i < factionClone.vehicles.length; i++) {
             const vehicleId = factionClone.vehicles[i];
             const vehicle = alt.Vehicle.all.find((v) => v && v.valid && v.data && v.data._id === vehicleId);
-
-            if (vehicle) {
-                vehicle.destroy();
-            }
-
+            if (vehicle) vehicle.destroy();
             await Database.deleteById(vehicleId, Collections.Vehicles);
         }
 
         // Force close storage...
         for (let i = 0; i < onlinePlayers.length; i++) {
-            if (!onlinePlayers[i] || !onlinePlayers[i].valid) {
-                continue;
-            }
-
+            if (!onlinePlayers[i] || !onlinePlayers[i].valid) continue;
             StorageView.close(onlinePlayers[i]);
+            triallife.state.set(onlinePlayers[i], 'faction', null);
         }
 
         // Delete storage...
@@ -237,8 +233,8 @@ export class FactionHandler {
                 await Database.deleteById(storageId, Collections.Storage);
             }
         }
-        await Database.deleteById(factionClone._id, Collections.Factions);
-        return { status: true, response: `Firma wurde erfolgreich gelöscht` };
+        const status = await Database.deleteById(factionClone._id, Collections.Factions);
+        return { status, response: status ? `Firma wurde erfolgreich gelöscht` : `Firma wurde nicht gelöscht` };
     }
 
     /**

@@ -8,6 +8,7 @@ import { SYSTEM_EVENTS } from '../../../shared/enums/system';
 import { PERMISSIONS } from '../../../shared/flags/permissionFlags';
 import { Vector3 } from '../../../shared/interfaces/vector';
 import { isFlagEnabled } from '../../../shared/utility/flags';
+import { Faction } from '../../core-factions/shared/interfaces';
 import { ADMIN_INTERACTIONS } from '../shared/events';
 
 const PAGE_NAME = 'Admin';
@@ -52,8 +53,8 @@ class AdminView implements ViewModel {
         alt.emitServer(ADMIN_INTERACTIONS.LOAD);
     }
 
-    static modify(collections: string, data: Object) {
-        alt.emitServer(ADMIN_INTERACTIONS.MODIFY, collections, JSON.stringify(data));
+    static modify(collections: string, _id: string, data: Object) {
+        alt.emitServer(ADMIN_INTERACTIONS.MODIFY, collections, _id, data);
     }
 
     static remove(collections: string, id: string) {

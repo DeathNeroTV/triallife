@@ -4,19 +4,19 @@
             <Frame minWidth="30vw" maxWidth="30vw" maxHeight="50vh" :scrollable="true">
                 <template v-slot:toolbar>
                     <Toolbar :hideExit="true">
-                        <span class="green--text text--darken-2">Firma erstellen oder modifizieren</span>
+                        <span class="green--text text--darken-2">Firmendaten</span>
                     </Toolbar>
                 </template>
                 <template v-slot:content>
-                    <div class="split-center fill-full-width">
+                    <div class="split-center fill-full-width mb-2">
                         <Input v-if="selected._id" class="mb-2" label="ID" :stack="true" :readonly="true" :value="selected._id"></Input>
-                        <Input v-if="selected.name" class="mb-2" label="Name" :stack="true" :placeholder="selected.name" :onInput="(text) => changeInput('name', text)"></Input>
+                        <Input v-if="selected.name" class="mb-2" label="Name" :stack="true" :value="selected.name" :onInput="(text) => changeInput('name', text)"></Input>
                         <Input
                             v-if="selected.bank"
                             class="mb-2"
                             label="Tresor"
                             :stack="true"
-                            :placeholder="selected.bank"
+                            :value="selected.bank"
                             :onInput="(text) => changeInput('bank', parseFloat(text))"
                         ></Input>
                         <Choice
@@ -29,12 +29,11 @@
                             ]"
                             :stack="true"
                             :value="selected.canDisband"
-                            placeholder="Ist die firma löschbar?"
                             :onInput="(text) => changeInput('canDisband', text as boolean)"
                         ></Choice>
-                        <Input v-if="selected.type" class="mb-2" label="Typ" :stack="true" :placeholder="selected.type" :onInput="(text) => changeInput('type', text)"></Input>
+                        <Input v-if="selected.type" class="mb-2" label="Typ" :stack="true" :value="selected.type" :onInput="(text) => changeInput('type', text)"></Input>
                         <Module v-if="selected.settings" name="Einstellungen" class="split-center mb-2">
-                            <div v-if="selected.settings.position" class="split fill-full-width">
+                            <div class="split fill-full-width mb-2">
                                 <Input
                                     class="fill-full-width mr-2"
                                     label="Position"
@@ -47,20 +46,23 @@
                                     <Icon icon="icon-map-marker" :size="24"></Icon>
                                 </Button>
                             </div>
-                            <Module v-if="selected.settings.parkingSpots" name="Parkplätze" class="split-center mb-2">
-                                <Module :name="'Parkplatz ' + index + 1" v-for="(parking, index) in selected.settings.parkingSpots">
-                                    <div class="split split-center fill-full-width">
+                            <Module name="Parkplätze" class="split-center mb-2">
+                                <Module :name="'Parkplatz ' + index + 1" v-for="(parking, index) in selected.settings.parkingSpots" class="mb-2">
+                                    <div class="split split-center fill-full-width mb-2">
                                         <Input class="fill-full-width mr-2" label="Position" :stack="true" :readonly="true" :value="JSON.stringify(parking.pos)"></Input>
-                                        <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index, 'pos'])">
+                                        <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index - 1, 'pos'])">
                                             <Icon icon="icon-map-marker" :size="24"></Icon>
                                         </Button>
                                     </div>
                                     <div class="split split-center fill-full-width">
                                         <Input class="fill-full-width mr-2" label="Rotation" :stack="true" :readonly="true" :value="JSON.stringify(parking.rot)"></Input>
-                                        <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index, 'rot'])">
+                                        <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index - 1, 'rot'])">
                                             <Icon icon="icon-map-marker" :size="24"></Icon>
                                         </Button>
                                     </div>
+                                    <Button :glow="true" :raise="true" @click="removeInput(['settings', 'parkingSpots'], index)">
+                                        <Icon icon="icon-minus" :size="24"></Icon>
+                                    </Button>
                                 </Module>
                                 <div class="split split-center fill-full-width">
                                     <div class="fill-full-width mr-2">Parkplatz hinzufügen</div>
@@ -70,7 +72,7 @@
                                 </div>
                             </Module>
                             <Module v-if="selected.settings.vehicles" name="Fahrzeuge" class="split-center mb-2">
-                                <Module :name="'Fahrzeug ' + index + 1" v-for="(vehicle, index) in selected.settings.vehicles">
+                                <Module :name="'Fahrzeug ' + index + 1" v-for="(vehicle, index) in selected.settings.vehicles" class="mb-2">
                                     <div class="split split-center fill-full-width">
                                         <Input
                                             class="fill-full-width mr-2"
@@ -88,52 +90,53 @@
                                             :value="vehicle.price"
                                             :onInput="(text) => changeInput(['settings', 'vehicles', 'price'], parseFloat(text))"
                                         ></Input>
+                                        <Button :glow="true" :raise="true" @click="removeInput(['settings', 'vehicles'], index)">
+                                            <Icon icon="icon-minus" :size="24"></Icon>
+                                        </Button>
                                     </div>
                                 </Module>
                                 <div class="split split-center fill-full-width">
-                                    <div class="fill-full-width mr-2">Fahrzeug hinzufügen</div>
+                                    <div class="fill-full-width mr-2 mb-2">Fahrzeug hinzufügen</div>
                                     <Button :glow="true" :raise="true" @click="addInput(['settings', 'vehicles'], { model: 'unknown', price: 0.0 })">
                                         <Icon icon="icon-add" :size="24"></Icon>
                                     </Button>
                                 </div>
                             </Module>
                             <Input
-                                v-if="selected.settings.maxVehicles"
                                 class="mb-2"
-                                label="Typ"
+                                label="Maximale Fahrzeuganzahl"
                                 :stack="true"
-                                :placeholder="selected.settings.maxVehicles"
+                                :value="selected.settings.maxVehicles"
                                 :onInput="(text) => changeInput(['settings', 'maxVehicles'], parseInt(text))"
                             ></Input>
-                            <Module name="Logo der Firma" v-if="selected.settings.blip">
+                            <Module name="Logo der Firma" class="mb-2">
                                 <Input
-                                    v-if="selected.settings.blip"
                                     class="mb-2"
                                     label="Bild"
                                     :stack="true"
-                                    :placeholder="selected.settings.blip"
+                                    :value="selected.settings.blip"
                                     :onInput="(text) => changeInput(['settings', 'blip'], parseInt(text))"
                                 ></Input>
                                 <Input
-                                    v-if="selected.settings.blipColor"
                                     class="mb-2"
                                     label="Farbe"
                                     :stack="true"
-                                    :placeholder="selected.settings.blipColor"
+                                    :value="selected.settings.blipColor"
                                     :onInput="(text) => changeInput(['settings', 'blipColor'], parseInt(text))"
                                 ></Input>
-                                <Input
-                                    v-if="selected.settings.motd"
-                                    class="mb-2"
-                                    label="Nachricht des Tages"
-                                    :stack="true"
-                                    :placeholder="selected.settings.motd"
-                                    :onInput="(text) => changeInput(['settings', 'motd'], text)"
-                                ></Input>
                             </Module>
+                            <Input
+                                class="mb-2"
+                                label="Nachricht des Tages"
+                                :stack="true"
+                                :value="selected.settings.motd"
+                                :onInput="(text) => changeInput(['settings', 'motd'], text)"
+                            ></Input>
                         </Module>
+                        <Module v-if="selected.ranks" name="Ränge" class="split-center mb-2"> </Module>
+                        <Module v-if="selected.members" name="Mitglieder" class="split-center mb-2"> </Module>
                     </div>
-                    <div class="split split-full mt-5">
+                    <div class="split split-full">
                         <Button class="fill-full-width mr-2" color="green" @click="acceptModify">
                             <Icon icon="icon-check-square-o" :size="36"></Icon>
                         </Button>
@@ -148,12 +151,11 @@
             <Frame minWidth="30vw" maxWidth="30vw" maxHeight="50vh" :scrollable="true">
                 <template v-slot:toolbar>
                     <Toolbar :hideExit="true">
-                        <span class="green--text text--darken-2">Datensatz löschen</span>
+                        <span class="green--text text--darken-2">{{ selected.name.toUpperCase() }}</span>
                     </Toolbar>
                 </template>
                 <template v-slot:content>
-                    <div class="overline mb-2 mt-2 center">Wollen sie die Firma wirklich löschen?</div>
-                    <div class="overline mb-2 mt-2 center text--green">{{ selected.name.toUpperCase() }}</div>
+                    <div class="overline mb-2 mt-2 center red--text">Wollen sie die Firma wirklich löschen?</div>
                     <div class="split split-full mt-5">
                         <Button color="green" @click="acceptDelete">
                             <Icon icon="icon-check-square-o" :size="24"></Icon>
@@ -255,8 +257,7 @@ export default defineComponent({
                 var parts = value.toFixed(2).split('.');
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 return parts.join(',');
-            } else if (key === '_id') return value.toString();
-            else if (typeof value === 'object' || Array.isArray(value)) return JSON.stringify(value);
+            } else if (typeof value === 'object' || Array.isArray(value)) return JSON.stringify(value);
             else return value;
         },
         toggleDialog(key: string, data: Object) {
@@ -265,7 +266,7 @@ export default defineComponent({
         },
         acceptModify() {
             if (!('alt' in window)) console.log(`factions-modify: ${JSON.stringify(this.selected)}`);
-            else alt.emit(`${PageName}:Modify`, 'factions', this.selected);
+            else alt.emit(`${PageName}:Modify`, 'factions', this.selected._id, this.selected);
             this.hideModify();
         },
         hideModify() {
@@ -290,10 +291,37 @@ export default defineComponent({
         },
         addInput(keys: any | any[], value: any) {
             if (Array.isArray(keys)) {
-                if (keys.length === 2) this.selected[keys[0]][keys[1]] = value;
-                else if (keys.length === 3) this.selected[keys[0]][keys[1]][keys[2]] = value;
-                else if (keys.length === 4) this.selected[keys[0]][keys[1]][keys[2]][keys[3]] = value;
-            } else this.selected[keys] = value;
+                if (keys.length === 2) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]])) this.selected[keys[0]][keys[1]].push(value);
+                    else this.selected[keys[0]][keys[1]] = value;
+                } else if (keys.length === 3) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]])) this.selected[keys[0]][keys[1]][keys[2]].push(value);
+                    else this.selected[keys[0]][keys[1]][keys[2]] = value;
+                } else if (keys.length === 4) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]][keys[3]])) this.selected[keys[0]][keys[1]][keys[2]][keys[3]].push(value);
+                    else this.selected[keys[0]][keys[1]][keys[2]][keys[3]] = value;
+                }
+            } else {
+                if (Array.isArray(this.selected[keys])) this.selected[keys].push(value);
+                else this.selected[keys] = value;
+            }
+        },
+        removeInput(keys: any | any[], value: any) {
+            if (Array.isArray(keys)) {
+                if (keys.length === 2) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]])) this.selected[keys[0]][keys[1]].splice(value, 1);
+                    else delete this.selected[keys[0]][keys[1]];
+                } else if (keys.length === 3) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]])) this.selected[keys[0]][keys[1]][keys[2]].splice(value, 1);
+                    else delete this.selected[keys[0]][keys[1]][keys[2]];
+                } else if (keys.length === 4) {
+                    if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]][keys[3]])) this.selected[keys[0]][keys[1]][keys[2]][keys[3]].splice(value, 1);
+                    else delete this.selected[keys[0]][keys[1]][keys[2]][keys[3]];
+                }
+            } else {
+                if (Array.isArray(this.selected[keys])) this.selected[keys].splice(value, 1);
+                else delete this.selected[keys];
+            }
         },
         selectPosAndRot(keys: any | any[]) {
             if (!('alt' in window)) return;
@@ -315,6 +343,19 @@ export default defineComponent({
                 if (this.isPosition(keys)) this.selected[keys] = pos;
                 else if (this.isRotation(keys)) this.selected[keys] = rot;
             }
+        },
+        isPosition(key: string) {
+            const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside'];
+            return vectorList.findIndex((x) => x === key) !== -1;
+        },
+        isRotation(key: string) {
+            const vectorList: Array<string> = ['rot', 'rotation'];
+            return vectorList.findIndex((x) => x === key) !== -1;
+        },
+        getCashFixed(amount: number) {
+            var parts = amount.toFixed(2).split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
         },
     },
     mounted() {

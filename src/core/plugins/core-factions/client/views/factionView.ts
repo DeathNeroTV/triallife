@@ -6,7 +6,7 @@ import { KEY_BINDS } from '../../../../shared/enums/keyBinds';
 import { PLAYER_SYNCED_META } from '../../../../shared/enums/playerSynced';
 import { VEHICLE_SYNCED_META } from '../../../../shared/enums/vehicleSyncedMeta';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { Faction } from '../../shared/interfaces';
+import { Faction, FactionVehicle } from '../../shared/interfaces';
 
 const onOpen: Array<(view: alt.WebView, faction: Faction) => void> = [];
 const onClose: Array<(view: alt.WebView, faction: Faction) => void> = [];
@@ -18,54 +18,38 @@ let isOpen = false;
 class InternalFunctions {
     static async open(_faction: Faction) {
         faction = _faction;
-
         // Just updates faction data dynamically for users.
         if (isOpen) {
             InternalFunctions.ready();
-
             for (const element of onRefresh) {
                 element(faction);
             }
-
             return;
         }
-
-        if (isAnyMenuOpen()) {
-            return;
-        }
-
+        if (isAnyMenuOpen()) return;
         isOpen = true;
-
         // Must always be called first if you want to hide HUD.
         await WebViewController.setOverlaysVisible(false);
-
         const view = await WebViewController.get();
         view.on(FACTION_EVENTS.WEBVIEW.READY, InternalFunctions.ready);
         view.on(FACTION_EVENTS.WEBVIEW.CLOSE, InternalFunctions.close);
         view.on(FACTION_EVENTS.WEBVIEW.ACTION, InternalFunctions.action);
-
         for (const element of onOpen) {
             element(view, faction);
         }
-
         WebViewController.openPages([FACTION_EVENTS.WEBVIEW.NAME]);
         WebViewController.focus();
         WebViewController.showCursor(true);
-
         alt.toggleGameControls(false);
         alt.Player.local.isMenuOpen = true;
     }
 
     static refresh(_faction: Faction) {
-        if (!isOpen) {
-            return;
-        }
-
+        if (!isOpen) return;
         if (!_faction) {
             InternalFunctions.close();
             return;
         }
-
         faction = _faction;
         InternalFunctions.ready();
     }
@@ -73,15 +57,12 @@ class InternalFunctions {
     static async close() {
         isOpen = false;
         faction = null;
-
         alt.toggleGameControls(true);
         WebViewController.setOverlaysVisible(true);
-
         const view = await WebViewController.get();
         view.off(FACTION_EVENTS.WEBVIEW.READY, InternalFunctions.ready);
         view.off(FACTION_EVENTS.WEBVIEW.CLOSE, InternalFunctions.close);
         view.off(FACTION_EVENTS.WEBVIEW.ACTION, InternalFunctions.action);
-
         for (const element of onClose) {
             element(view, faction);
         }
@@ -96,7 +77,6 @@ class InternalFunctions {
     static async ready() {
         const view = await WebViewController.get();
         const vehicleList = InternalFunctions.getFactionVehicles(faction);
-
         view.emit(
             FACTION_EVENTS.WEBVIEW.UPDATE_DATA,
             faction,
@@ -118,21 +98,13 @@ class InternalFunctions {
      */
     private static getFactionVehicles(factionRef: Faction) {
         const spawnedVehicles = [];
-
         const currentVehicles = [...alt.Vehicle.all];
         for (const element of currentVehicles) {
-            if (!element.hasSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID)) {
-                continue;
-            }
-
+            if (!element.hasSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID)) continue;
             const id = element.getSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID);
-            if (factionRef.vehicles.findIndex((veh) => veh.id === id) <= -1) {
-                continue;
-            }
-
+            if (factionRef.vehicles.findIndex((veh) => veh.id === id) === -1) continue;
             spawnedVehicles.push(id);
         }
-
         return spawnedVehicles;
     }
 

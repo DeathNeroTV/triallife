@@ -35,25 +35,25 @@ class InternalFunctions {
 
     static async disconnect(player: alt.Player, reason: string) {}
 
-    static async modify(player: alt.Player, collections: string, data: string) {
+    static async modify(player: alt.Player, collections: string, _id: string, data: Object) {
+        if (data._id) delete data._id;
         if (collections === 'factions') {
-            var concernData = JSON.parse(data);
-            var concern = FactionHandler.find(concernData.name);
+            var concern = FactionHandler.get(_id);
             if (concern) {
-                const result = await FactionHandler.update(concern._id.toString(), concernData);
+                const result = await FactionHandler.update(_id, data);
                 if (!result.status) {
                     triallife.player.emit.notification(player, result.response);
                     return;
                 }
-                concern = FactionHandler.get(concern._id.toString());
+                concern = FactionHandler.get(_id);
                 FactionHandler.updateSettings(concern);
                 triallife.player.emit.notification(player, result.response);
             } else {
                 const result = await FactionHandler.add(player.data._id.toString(), {
                     bank: 0,
                     canDisband: true,
-                    name: concernData.name,
-                    type: concernData.type,
+                    name: data.name,
+                    type: data.type,
                 });
                 if (!result.status) {
                     triallife.player.emit.notification(player, result.response);

@@ -1,7 +1,7 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
 
-import { triallife_EVENTS_VEHICLE } from '../../shared/enums/triallife-events';
+import { TRIALLIFE_EVENTS_VEHICLE } from '../../shared/enums/triallife-events';
 import { SYSTEM_EVENTS } from '../../shared/enums/system';
 import { Vehicle_Behavior, VEHICLE_DOOR_STATE, VEHICLE_EVENTS, VEHICLE_LOCK_STATE, VEHICLE_STATE } from '../../shared/enums/vehicle';
 import { ANIMATION_FLAGS } from '../../shared/flags/animationFlags';
@@ -99,15 +99,9 @@ export class VehicleSystem {
         alt.on('playerLeftVehicle', VehicleSystem.leave);
         alt.on('vehicleDestroy', VehicleSystem.destroyed);
 
-        if (!DEFAULT_CONFIG.SPAWN_ALL_VEHICLES_ON_START) {
-            return;
-        }
-
+        if (!DEFAULT_CONFIG.SPAWN_ALL_VEHICLES_ON_START) return;
         const vehicles = await Database.fetchAllData<IVehicle>(Collections.Vehicles);
-        if (vehicles.length <= 0) {
-            return;
-        }
-
+        if (vehicles.length <= 0) return;
         this.spawnAllVehicles(vehicles);
     }
 
@@ -115,36 +109,23 @@ export class VehicleSystem {
         let count = 0;
         for (let i = 0; i < vehicles.length; i++) {
             const vehicle = vehicles[i];
-
             // Skip vehicles without a garage index or without a position.
             const isInGarage = vehicle.garageIndex !== undefined && vehicle.garageIndex !== null;
-            if (isInGarage || !vehicle.position) {
-                continue;
-            }
-
+            if (isInGarage || !vehicle.position) continue;
             // Skip Unused Vehicles
             if (vehicle.lastUsed) {
                 const lastUseDate = vehicle.lastUsed + DEFAULT_CONFIG.VEHICLE_SPAWN_TIMEOUT * 60000 * 60 * 24;
-                if (Date.now() > lastUseDate) {
-                    continue;
-                }
+                if (Date.now() > lastUseDate) continue;
             }
-
             if (!vehicle.model) {
                 alt.logWarning(`Vehicle with ID: ${vehicle._id.toString()} is missing multiple properties. Skipped during initialization.`);
                 continue;
             }
-
             // Skip New Vehicles
-            if (vehicle.position.x === 0 && vehicle.position.y === 0 && vehicle.position.z === 0) {
-                continue;
-            }
-
+            if (vehicle.position.x === 0 && vehicle.position.y === 0 && vehicle.position.z === 0) continue;
             VehicleFuncs.spawn(vehicle);
             count += 1;
         }
-
-        alt.log(`~lb~3L:RP ==> ~lg~Fahrzeuge wurden erstellt: ~y~${count}`);
     }
 
     /**
@@ -192,7 +173,6 @@ export class VehicleSystem {
             alt.logError(`${ruleType} does not exist for Vehicle Rules`);
             return;
         }
-
         rules[ruleType].push(callback);
     }
 
@@ -329,7 +309,7 @@ export class VehicleSystem {
 
         // Custom Engine Event
         alt.nextTick(() => {
-            VehicleEvents.trigger(triallife_EVENTS_VEHICLE.ENGINE_STATE_CHANGE, player.vehicle);
+            VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.ENGINE_STATE_CHANGE, player.vehicle);
         });
     }
 
@@ -462,7 +442,7 @@ export class VehicleSystem {
 
         // Custom Lock Event
         alt.nextTick(() => {
-            VehicleEvents.trigger(triallife_EVENTS_VEHICLE.LOCK_STATE_CHANGE, vehicle);
+            VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.LOCK_STATE_CHANGE, vehicle);
         });
     }
 
@@ -645,7 +625,7 @@ export class VehicleSystem {
      */
     static async destroyed(vehicle: alt.Vehicle) {
         if (DEFAULT_CONFIG.VEHICLE_DESPAWN_TIMEOUT <= -1) {
-            VehicleEvents.trigger(triallife_EVENTS_VEHICLE.DESTROYED, vehicle);
+            VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.DESTROYED, vehicle);
             return;
         } else {
             await new Promise((resolve: Function) => {
@@ -659,7 +639,7 @@ export class VehicleSystem {
             return;
         }
 
-        VehicleEvents.trigger(triallife_EVENTS_VEHICLE.DESTROYED, vehicle);
+        VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.DESTROYED, vehicle);
 
         alt.nextTick(() => {
             if (vehicle && vehicle.valid && vehicle.data) {

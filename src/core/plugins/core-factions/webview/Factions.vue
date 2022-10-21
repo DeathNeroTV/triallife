@@ -1,7 +1,7 @@
 <template>
     <div class="factions-wrapper stack">
         <div class="toolbar split space-between">
-            <span class="pl-2">{{ faction && faction.name ? faction.name : 'Faction Name Missing' }}</span>
+            <span class="pl-2">{{ faction && faction.name ? faction.name : 'Unbekannte Firma' }}</span>
             <Icon class="red--text red--hover hover pr-2" :size="24" icon="icon-times-circle" @click="close" />
         </div>
         <div class="split" style="width: 100%">
@@ -82,14 +82,7 @@ export default defineComponent({
         setPage(pageIndex: number) {
             this.pageIndex = pageIndex;
         },
-        updateFaction(
-            faction: Faction,
-            character: string,
-            money: number,
-            pos: Vector3,
-            rot: Vector3,
-            spawnedVehicles: Array<string>,
-        ) {
+        updateFaction(faction: Faction, character: string, money: number, pos: Vector3, rot: Vector3, spawnedVehicles: Array<string>) {
             this.faction = faction;
             this.character = character;
             this.money = money;

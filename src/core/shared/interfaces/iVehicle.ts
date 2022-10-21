@@ -12,7 +12,7 @@ export interface IVehicle {
      * @type {*}
      * @memberof IVehicle
      */
-    _id?: unknown;
+    _id?: any;
 
     /**
      * The vehicle id for lookups.

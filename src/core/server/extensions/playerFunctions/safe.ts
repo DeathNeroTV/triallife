@@ -113,7 +113,6 @@ const Safe = {
     setDimension(player: alt.Player, value: number) {
         player.dimension = value;
         player.setSyncedMeta(PLAYER_SYNCED_META.DIMENSION, value);
-        alt.log(`Player Dimension is now: ${player.dimension}`);
     },
 };
 

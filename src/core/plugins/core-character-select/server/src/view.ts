@@ -64,13 +64,13 @@ class InternalFunctions {
         if (!id) return;
         const index = CharacterList[player.id].findIndex((x) => `${x._id}` === `${id}`);
         if (index <= -1) {
-            alt.logWarning(`[triallife] Charakter nicht gefunden. Spieler ${player.id} zur Charakterauswahl zurück gesendet.`);
+            alt.logWarning(`[Trial Life] Charakter nicht gefunden. Spieler ${player.id} zur Charakterauswahl zurück gesendet.`);
             InternalFunctions.show(player);
             return;
         }
         if (CharacterList[player.id][index].banned.state) {
             triallife.player.emit.notification(player, 'Dieser Charakter wurde gebannt.~n~Grund: ' + CharacterList[player.id][index].banned.reason);
-            alt.logWarning(`[triallife] Charakter ist gebannt. Spieler ${player.id} zur Charakterauswahl zurück gesendet.`);
+            alt.logWarning(`[Trial Life] Charakter ist gebannt. Spieler ${player.id} zur Charakterauswahl zurück gesendet.`);
             return;
         }
         alt.emitClient(player, CHARACTER_SELECT_EVENTS.DONE);

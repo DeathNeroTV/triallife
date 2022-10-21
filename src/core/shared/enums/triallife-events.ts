@@ -3,7 +3,7 @@
  * @export
  * @enum {number}
  */
-export enum triallife_EVENTS_VEHICLE {
+export enum TRIALLIFE_EVENTS_VEHICLE {
     DESPAWNED = 'triallife:VehicleDespawned',
     ENGINE_STATE_CHANGE = 'triallife:VehicleEngineState',
     LOCK_STATE_CHANGE = 'triallife:VehicleLockState',

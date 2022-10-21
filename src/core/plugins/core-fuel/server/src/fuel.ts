@@ -1,7 +1,7 @@
 import * as alt from 'alt-server';
 import { triallife } from '../../../../server/api/triallife';
 import { VehicleEvents } from '../../../../server/events/vehicleEvents';
-import { triallife_EVENTS_VEHICLE } from '../../../../shared/enums/triallife-events';
+import { TRIALLIFE_EVENTS_VEHICLE } from '../../../../shared/enums/triallife-events';
 import { Vehicle_Behavior, VEHICLE_STATE } from '../../../../shared/enums/vehicle';
 import { VEHICLE_RULES } from '../../../../shared/enums/vehicleRules';
 import { VEHICLE_CLASS } from '../../../../shared/enums/vehicleTypeFlags';
@@ -139,7 +139,7 @@ export class FuelSystem {
             // const feetPerSecond = potentialSpeed * 1.4666666667;
             // const distanceTraveled = (potentialSpeed / 3600) * timeBetweenUpdates;
 
-            VehicleEvents.trigger(triallife_EVENTS_VEHICLE.DISTANCE_TRAVELED, vehicle, dist);
+            VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.DISTANCE_TRAVELED, vehicle, dist);
             vehicle.lastPosition = vehicle.pos;
         }
 

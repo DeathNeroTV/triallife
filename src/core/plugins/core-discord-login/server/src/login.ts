@@ -110,10 +110,10 @@ export class LoginController {
             if (!didPass) return;
         }
         if (player.discord && player.discord.username) {
-            alt.log(`[triallife] (${player.id}) ${player.discord.username} has authenticated.`);
+            alt.log(`[Trial Life] (${player.id}) ${player.discord.username} has authenticated.`);
         }
         if (account && account.discord) {
-            alt.log(`[triallife] (${player.id}) Discord ${account.discord} has logged in with a JWT Token `);
+            alt.log(`[Trial Life] (${player.id}) Discord ${account.discord} has logged in with a JWT Token `);
         }
         const currentPlayers = [...alt.Player.all];
         const index = currentPlayers.findIndex((p) => p.discord && p.discord.id === player.discord.id && p.id !== player.id);
@@ -188,7 +188,7 @@ export class LoginController {
             data['vehicles'] = await Database.fetchAllData<VehicleInfo>(Collections.Vehicles);
             triallife.player.emit.meta(target, 'admin', data);
         }
-        alt.log(`~lb~3L:RP ==>~lg~${player.data?.name.replace('_', ' ')} ~w~hat sich ausgeloggt.`);
+        alt.log(`~lb~3L:RP ==> ~lg~${player.data?.name.replace('_', ' ')} ~w~hat sich ausgeloggt.`);
     }
 
     static bindPlayerToID(player: alt.Player): void {

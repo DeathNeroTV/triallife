@@ -5,7 +5,7 @@ import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
 import { sha256Random } from '../../../../server/utility/encryption';
 import { RGBA } from 'alt-shared';
 import { VehicleEvents } from '../../../../server/events/vehicleEvents';
-import { triallife_EVENTS_VEHICLE } from '../../../../shared/enums/triallife-events';
+import { TRIALLIFE_EVENTS_VEHICLE } from '../../../../shared/enums/triallife-events';
 import { Paintshop_View_Events } from '../../shared/events';
 import { IPaintShop, iPaintshopSync } from '../../shared/interfaces';
 import { VEHICLE_COLOR_PAINTS } from '../../shared/paints';
@@ -78,7 +78,7 @@ export class PaintShopView {
         alt.onClient(Paintshop_View_Events.OPEN, PaintShopView.open);
         alt.onClient(Paintshop_View_Events.PURCHASE, PaintShopView.purchase);
         alt.onClient(Paintshop_View_Events.CLOSE, PaintShopView.close);
-        VehicleEvents.on(triallife_EVENTS_VEHICLE.SPAWNED, InternalFunctions.updatePaint);
+        VehicleEvents.on(TRIALLIFE_EVENTS_VEHICLE.SPAWNED, InternalFunctions.updatePaint);
     }
 
     /**

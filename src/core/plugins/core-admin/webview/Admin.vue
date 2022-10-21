@@ -49,15 +49,7 @@
                         <span :class="'fill-full-width ' + (selected === index ? 'green--text' : 'grey--text')">{{ getText(index) }}</span>
                     </div>
                 </div>
-                <component
-                    class="split-full ml-2 mr-2 mb-2 container-panel"
-                    v-bind:is="getComponent"
-                    v-bind:list="getList"
-                    v-bind:title="getTitle"
-                    @toggle-ban="toggleBan"
-                    @modify-data="modifyData"
-                    @delete-data="deleteData"
-                />
+                <component class="split-full ml-2 mr-2 mb-2 container-panel" v-bind:is="getComponent" v-bind:list="getList" v-bind:title="getTitle" @toggle-ban="toggleBan" />
             </div>
         </template>
     </Frame>
@@ -179,18 +171,6 @@ export default defineComponent({
             this.showBan = state;
             this.bannedReason = state ? reason : '';
             this.bannedID = state ? id : 0;
-        },
-        isVector(key: string) {
-            const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside', 'rot', 'rotation'];
-            return vectorList.findIndex((x) => x === key) !== -1;
-        },
-        isPosition(key: string) {
-            const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside'];
-            return vectorList.findIndex((x) => x === key) !== -1;
-        },
-        isRotation(key: string) {
-            const vectorList: Array<string> = ['rot', 'rotation'];
-            return vectorList.findIndex((x) => x === key) !== -1;
         },
     },
     computed: {

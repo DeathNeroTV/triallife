@@ -42,16 +42,15 @@ export class FactionCommands {
     @command('fopen', '/fopen - Open faction panel if in faction.', PERMISSIONS.NONE)
     private static async handleOpenFactionPanel(player: alt.Player) {
         if (!player.data.faction) {
-            triallife.player.emit.notification(player, 'You are not in a faction.');
+            triallife.player.emit.notification(player, 'Sie sind in keiner Firma.');
             return;
         }
 
         const faction = FactionHandler.get(player.data.faction);
         if (!faction) {
-            triallife.player.emit.notification(player, 'You are not in a faction.');
+            triallife.player.emit.notification(player, 'Sie sind in keiner Firma.');
             return;
         }
-
         alt.emitClient(player, FACTION_EVENTS.PROTOCOL.OPEN, faction);
     }
 

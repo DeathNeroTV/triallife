@@ -1,6 +1,6 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { triallife_EVENTS_VEHICLE } from '../../shared/enums/triallife-events';
+import { TRIALLIFE_EVENTS_VEHICLE } from '../../shared/enums/triallife-events';
 import { ITEM_TYPE } from '../../shared/enums/itemTypes';
 import { Vehicle_Behavior, VEHICLE_LOCK_STATE, VEHICLE_STATE } from '../../shared/enums/vehicle';
 import { VEHICLE_SYNCED_META } from '../../shared/enums/vehicleSyncedMeta';
@@ -176,26 +176,17 @@ export default class VehicleFuncs {
      * @memberof VehicleFuncs
      */
     static spawn(document: IVehicle, pos: Vector3 = null, rot: Vector3 = null): alt.Vehicle | null {
-        if (SpawnedVehicles[document._id.toString()]) {
-            return null;
-        }
-
+        if (SpawnedVehicles[document._id.toString()]) return null;
         if (pos && rot) {
             document.position = pos;
             document.rotation = rot;
         }
-
         const beforeSpawnInjections = Injections.get<VehicleSpawnCallback>(VehicleInjectionNames[0]);
         for (const callback of beforeSpawnInjections) {
             const result = callback(document);
-
-            if (result) {
-                document = result;
-            }
+            if (result) document = result;
         }
-
         document = VehicleFuncs.convertOldTuningData(document);
-
         // Create the new vehicle.
         const vehicle = new alt.Vehicle(
             document.model,
@@ -206,23 +197,16 @@ export default class VehicleFuncs {
             document.rotation.y,
             document.rotation.z,
         );
-
         vehicle.setSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID, document._id.toString());
         vehicle.modelName = document.model;
         SpawnedVehicles[document.id] = vehicle;
-
         // Setup Default Values
         vehicle.setStreamSyncedMeta(VEHICLE_STATE.LOCKSYMBOL, DEFAULT_CONFIG.VEHICLE_DISPLAY_LOCK_STATUS);
         vehicle.setStreamSyncedMeta(VEHICLE_STATE.LOCK_INTERACTION_INFO, DEFAULT_CONFIG.VEHICLE_DISPLAY_LOCK_INTERACTION_INFO);
-
         // Setup Default Document Values
-        if (document.fuel === null || document.fuel === undefined) {
-            document.fuel = 100;
-        }
-
+        if (document.fuel === null || document.fuel === undefined) document.fuel = 100;
         vehicle.data = document;
         vehicle.behavior = vehicle.data.behavior;
-
         // Check if the vehicle is of the bike type
         // Force it to use unlimited fuel.
         const vehicleInfo = VehicleData.find((x) => x.name === vehicle.data.model);
@@ -232,48 +216,25 @@ export default class VehicleFuncs {
                 vehicle.behavior = Vehicle_Behavior.UNLIMITED_FUEL;
             }
         }
-
-        if (vehicle.data.bodyHealth) {
-            vehicle.bodyHealth = vehicle.data.bodyHealth;
-        }
-
-        if (vehicle.data.engineHealth) {
-            vehicle.engineHealth = vehicle.data.engineHealth;
-        }
-
-        if (vehicle.data.damage) {
-            this.setDamage(vehicle);
-        }
-
-        if (vehicle.data.dirtLevel) {
-            vehicle.dirtLevel = vehicle.data.dirtLevel;
-        }
-
+        if (vehicle.data.bodyHealth) vehicle.bodyHealth = vehicle.data.bodyHealth;
+        if (vehicle.data.engineHealth) vehicle.engineHealth = vehicle.data.engineHealth;
+        if (vehicle.data.damage) this.setDamage(vehicle);
+        if (vehicle.data.dirtLevel) vehicle.dirtLevel = vehicle.data.dirtLevel;
         vehicle.numberPlateText = document.plate;
         vehicle.manualEngineControl = true;
         vehicle.lockState = VEHICLE_LOCK_STATE.LOCKED;
-
         VehicleFuncs.applyVehicleTuning(vehicle);
-
         // Synchronization
-        if (pos && rot) {
-            VehicleFuncs.save(vehicle, { garageIndex: null, position: pos, rotation: rot });
-        } else {
-            VehicleFuncs.save(vehicle, { garageIndex: null });
-        }
-
+        if (pos && rot) VehicleFuncs.save(vehicle, { garageIndex: null, position: pos, rotation: rot });
+        else VehicleFuncs.save(vehicle, { garageIndex: null });
         const afterSpawnInjections = Injections.get<VehicleSpawnCallback>(VehicleInjectionNames[1]);
         for (const callback of afterSpawnInjections) {
             const result = callback(document);
-
-            if (result) {
-                document = result;
-            }
+            if (result) document = result;
         }
-
         // Synchronize Ownership
         //vehicle.setStreamSyncedMeta(VEHICLE_STATE.OWNER, vehicle.player_id);
-        VehicleEvents.trigger(triallife_EVENTS_VEHICLE.SPAWNED, vehicle);
+        VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.SPAWNED, vehicle);
         return vehicle;
     }
 
@@ -299,7 +260,7 @@ export default class VehicleFuncs {
             callback(SpawnedVehicles[id]);
         }
 
-        VehicleEvents.trigger(triallife_EVENTS_VEHICLE.DESPAWNED, SpawnedVehicles[id]);
+        VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.DESPAWNED, SpawnedVehicles[id]);
 
         try {
             SpawnedVehicles[id].destroy();
@@ -418,7 +379,7 @@ export default class VehicleFuncs {
      */
     static repair(vehicle: alt.Vehicle) {
         vehicle.repair();
-        VehicleEvents.trigger(triallife_EVENTS_VEHICLE.REPAIRED, vehicle);
+        VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.REPAIRED, vehicle);
         VehicleFuncs.update(vehicle);
     }
 
