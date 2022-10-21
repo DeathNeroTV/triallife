@@ -110,10 +110,10 @@ export class LoginController {
             if (!didPass) return;
         }
         if (player.discord && player.discord.username) {
-            alt.log(`[Trial Life] (${player.id}) ${player.discord.username} has authenticated.`);
+            alt.log(`~lb~3LRP ==> ~w~(${player.id}) ${player.discord.username} has authenticated.`);
         }
         if (account && account.discord) {
-            alt.log(`[Trial Life] (${player.id}) Discord ${account.discord} has logged in with a JWT Token `);
+            alt.log(`~lb~3LRP ==> ~w~(${player.id}) Discord ${account.discord} has logged in with a JWT Token `);
         }
         const currentPlayers = [...alt.Player.all];
         const index = currentPlayers.findIndex((p) => p.discord && p.discord.id === player.discord.id && p.id !== player.id);

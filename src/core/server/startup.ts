@@ -68,7 +68,7 @@ class Startup {
 
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
-        alt.log(`~lb~Serveraufwärmung abgeschlossen. Verbindungen werden akzeptiert`);
+        alt.log(`~lb~3LRP ==> ~lg~Server gestartet`);
         ReconnectHelper.invoke();
     }
 
@@ -77,7 +77,7 @@ class Startup {
         try {
             player.kick('[Trial Life] Zu früh verbunden. Server wird noch aufgewärmt.');
         } catch (err) {
-            alt.log(`[Trial Life] Ein Wiederverbindungsereignis ist zu früh aufgetreten. Versuchen Sie es nochmal.`);
+            alt.log(`~lb~3LRP ==> ~w~Ein Wiederverbindungsereignis ist zu früh aufgetreten. Versuchen Sie es nochmal.`);
         }
     }
 }

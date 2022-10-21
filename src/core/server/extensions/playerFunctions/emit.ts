@@ -21,7 +21,7 @@ import utility from './utility';
 const Emit = {
     startAlarm(player: alt.Player, name: string): void {
         if (player.data.isDead) {
-            alt.logWarning(`[Trial Life] Cannot play alarm ${name} while player is dead.`);
+            alt.log(`~lb~3LRP ==> ~w~Cannot play alarm ${name} while player is dead.`);
             return;
         }
 
@@ -46,7 +46,7 @@ const Emit = {
 
     animation(player: alt.Player, dictionary: string, name: string, flags: ANIMATION_FLAGS, duration: number = -1): void {
         if (player.data.isDead) {
-            alt.logWarning(`[Trial Life] Cannot play ${dictionary}@${name} while player is dead.`);
+            alt.log(`~lb~3LRP ==> ~w~Cannot play ${dictionary}@${name} while player is dead.`);
             return;
         }
 
