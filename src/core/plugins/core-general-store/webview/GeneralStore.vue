@@ -39,6 +39,7 @@ import { DEFAULT_GENERAL_STORE } from './utility/defaultData';
 import { LOCALE_GENERAL } from '../shared/locales';
 import { deepCloneObject } from '../../../shared/utility/deepCopy';
 import { Item } from '../../../shared/interfaces/item';
+import ResolvePath from '../../../../../src-webviews/src/utility/pathResolver';
 
 const ComponentName = 'GeneralStore';
 export default defineComponent({
@@ -289,7 +290,7 @@ export default defineComponent({
 }
 
 .footer {
-    background: url('../../../../../assets/images/bg.png');
+    background: url('../../../../../src-webviews/public/assets/images/bg.png');
 }
 
 .smooth-button {

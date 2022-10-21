@@ -41,6 +41,6 @@ export default defineComponent({
 
 <style>
 .navigation {
-    background: url('../../../../../assets/images/bg.png');
+    background: url('../../../../../../src-webviews/public/assets/images/bg.png');
 }
 </style>
