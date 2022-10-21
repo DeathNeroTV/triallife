@@ -2,23 +2,13 @@
     <div class="wrapper ranks-wrapper pa-4">
         <!-- Modals -->
         <EditRank v-if="editRank" :rank="editRank" @close="() => startRankEdit(null)" @update="finishRankEdit" />
-        <DeleteRank
-            v-if="rankToDelete"
-            :rank="rankToDelete"
-            @close="() => startRankDelete(null)"
-            @update="finishRankDelete"
-        />
+        <DeleteRank v-if="rankToDelete" :rank="rankToDelete" @close="() => startRankDelete(null)" @update="finishRankDelete" />
         <AddRank v-bind:faction="faction" v-if="addRank" @close="() => (addRank = false)" @update="finishAddRank" />
-        <ManageRank
-            :rank="rankPermissionsToManage"
-            v-if="rankPermissionsToManage"
-            @close="() => (rankPermissionsToManage = null)"
-            @update="finishManageRankPermissions"
-        />
+        <ManageRank :rank="rankPermissionsToManage" v-if="rankPermissionsToManage" @close="() => (rankPermissionsToManage = null)" @update="finishManageRankPermissions" />
         <!-- END MODALS -->
         <div class="rank-panel mb-4" v-if="manageRanks">
             <div class="split space-between">
-                <div class="overline">Add New Rank?</div>
+                <div class="overline">Neuen Rang hinzufügen?</div>
                 <Button class="rank-button" color="green" @click="addRank = true">
                     <Icon :size="14" icon="icon-plus" />
                 </Button>
@@ -57,12 +47,7 @@
 
                     <!-- Change Rank Permissions -->
                     <template v-if="rank.weight <= 98 && manageRankPermissions">
-                        <Button
-                            class="rank-button"
-                            color="green"
-                            help="Permissions"
-                            @click="startManageRankPermissions(rank)"
-                        >
+                        <Button class="rank-button" color="green" help="Permissions" @click="startManageRankPermissions(rank)">
                             <Icon :size="14" icon="icon-cog2" />
                         </Button>
                     </template>
@@ -73,17 +58,8 @@
                     </template>
 
                     <!-- Ranking Inserts -->
-                    <template
-                        v-for="(componentName, index) in getRankingsComponents()"
-                        :name="componentName"
-                        :key="index"
-                    >
-                        <component
-                            :is="componentName"
-                            class="fade-in"
-                            v-bind:faction="faction"
-                            v-bind:character="character"
-                        />
+                    <template v-for="(componentName, index) in getRankingsComponents()" :name="componentName" :key="index">
+                        <component :is="componentName" class="fade-in" v-bind:faction="faction" v-bind:character="character" />
                     </template>
 
                     <!-- Delete Rank -->
@@ -277,8 +253,7 @@ export default defineComponent({
             const rank = FactionParser.getRank(this.faction, member);
 
             this.manageRanks = member.hasOwnership || rank.rankPermissions.manageRanks ? true : false;
-            this.manageRankPermissions =
-                member.hasOwnership || rank.rankPermissions.manageRankPermissions ? true : false;
+            this.manageRankPermissions = member.hasOwnership || rank.rankPermissions.manageRankPermissions ? true : false;
         },
     },
     mounted() {

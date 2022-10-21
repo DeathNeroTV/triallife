@@ -37,136 +37,6 @@
             </template>
         </Frame>
     </Modal>
-    <Modal v-if="showDialog">
-        <Frame minWidth="30vw" maxWidth="50vw" maxHeight="50vh" :scrollable="true">
-            <template v-slot:toolbar>
-                <Toolbar :hideExit="true">
-                    <span class="green--text text--darken-2">{{ getTitle }}</span>
-                </Toolbar>
-            </template>
-            <template v-slot:content>
-                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich bearbeiten?</div>
-                <div class="split-full mt-5">
-                    <div class="split split-center mt-5" v-for="(key, index) in Object.keys(selectedData)">
-                        <template v-if="!Array.isArray(selectedData[key])">
-                            <Module :name="key.toUpperCase()" v-if="typeof selectedData[key] === 'object'">
-                                <div class="split split-center mt-5" v-for="(key2, index) in Object.keys(selectedData[key])">
-                                    <div class="split split-center fill-full-width" v-if="isVector(key2)">
-                                        <Input
-                                            class="fill-full-width mr-2"
-                                            :readonly="true"
-                                            :label="key2.toUpperCase()"
-                                            :value="JSON.stringify(selectedData[key][key2])"
-                                            :stack="true"
-                                            :number-only="false"
-                                            :onInput="(text) => changeDataByKey([key, key2], text)"
-                                        >
-                                        </Input>
-                                        <Button @click="selectPosAndRot([key, key2])">
-                                            <Icon icon="icon-map-marker" :size="24"></Icon>
-                                        </Button>
-                                    </div>
-                                    <Choice
-                                        class="fill-full-width"
-                                        :label="key2.toUpperCase()"
-                                        :stack="true"
-                                        :options="[
-                                            { text: 'Nein', value: false },
-                                            { text: 'Ja', value: true },
-                                        ]"
-                                        :onInput="(text) => changeDataByKey([key, key2], text)"
-                                        :placeholder="selectedData[key][key2].toString()"
-                                        v-else-if="typeof selectedData[key][key2] === 'boolean'"
-                                    >
-                                    </Choice>
-                                    <Input
-                                        class="fill-full-width"
-                                        :label="key2.toUpperCase()"
-                                        :placeholder="selectedData[key][key2].toString()"
-                                        :stack="true"
-                                        :number-only="false"
-                                        :readonly="key2 === '_id'"
-                                        :onInput="(text) => changeDataByKey([key, key2], text)"
-                                        v-else
-                                    >
-                                    </Input>
-                                </div>
-                            </Module>
-                            <div class="split split-center fill-full-width" v-else-if="isVector(key)">
-                                <Input
-                                    class="fill-full-width mr-2"
-                                    :readonly="true"
-                                    :label="key.toUpperCase()"
-                                    :value="JSON.stringify(selectedData[key])"
-                                    :stack="true"
-                                    :number-only="false"
-                                    :onInput="(text) => changeDataByKey(key, text)"
-                                >
-                                </Input>
-                                <Button @click="selectPosAndRot(key)">
-                                    <Icon icon="icon-map-marker" :size="24"></Icon>
-                                </Button>
-                            </div>
-                            <Choice
-                                class="fill-full-width"
-                                :label="key.toUpperCase()"
-                                :stack="true"
-                                :options="[
-                                    { text: 'Nein', value: false },
-                                    { text: 'Ja', value: true },
-                                ]"
-                                :onInput="(text) => changeDataByKey(key, text)"
-                                :placeholder="selectedData[key].toString()"
-                                v-else-if="typeof selectedData[key] === 'boolean'"
-                            >
-                            </Choice>
-                            <Input
-                                class="fill-full-width"
-                                :label="key.toUpperCase()"
-                                :placeholder="selectedData[key].toString()"
-                                :stack="true"
-                                :number-only="false"
-                                :readonly="key === '_id'"
-                                :onInput="(text) => changeDataByKey(key, text)"
-                                v-else
-                            >
-                            </Input>
-                        </template>
-                    </div>
-                </div>
-                <div class="split center mt-5">
-                    <Button color="green" @click="acceptModify">
-                        <Icon icon="icon-check-square-o" :size="36"></Icon>
-                    </Button>
-                    <div class="ml-5 mr-5"></div>
-                    <Button color="red" @click="hideModify">
-                        <Icon icon="icon-times-rectangle-o" :size="36"></Icon>
-                    </Button>
-                </div>
-            </template>
-        </Frame>
-    </Modal>
-    <Modal v-if="showDelete">
-        <Frame minWidth="30vw" maxWidth="30vw">
-            <template v-slot:toolbar>
-                <Toolbar :hideExit="true">
-                    <span class="green--text text--darken-2">Datensatz löschen</span>
-                </Toolbar>
-            </template>
-            <template v-slot:content>
-                <div class="overline mb-2 mt-2 center">Wollen sie diesen Datensatz wirklich löschen?</div>
-                <div class="split center mt-5">
-                    <Button color="green" @click="acceptDelete">
-                        <Icon icon="icon-check-square-o" :size="36"></Icon>
-                    </Button>
-                    <div class="ml-5 mr-5"></div>
-                    <Button color="red" @click="hideDelete">
-                        <Icon icon="icon-times-rectangle-o" :size="36"></Icon>
-                    </Button>
-                </div>
-            </template>
-        </Frame>
-    </Modal>
     <Frame minWidth="90vw" maxWidth="90vw" minHeight="80vh" maxHeight="80vh" :noPadding="true">
         <template v-slot:toolbar>
             <Toolbar @close-page="relayClosePage" pageName="Admin">Stadtverwaltung</Toolbar>
@@ -271,10 +141,6 @@ export default defineComponent({
             names: ['Dashboard', 'Accounts', 'Banks', 'Characters', 'Interiors', 'Options', 'Stores', 'Vehicles', 'Storage', 'Garages', 'Factions', 'Items'],
             selected: 0,
             showBan: false,
-            showDelete: false,
-            showDialog: false,
-            selectedTable: '',
-            selectedData: {},
             bannedID: 0,
             valid: {
                 bannedReason: false,
@@ -284,20 +150,6 @@ export default defineComponent({
     methods: {
         updateData({ ...data }) {
             Object.keys(data).forEach((key) => (this[key] = data[key]));
-        },
-        updatePosRot(keys: string | string[], pos: Object, rot: Object) {
-            if (Array.isArray(keys)) {
-                if (keys.length === 2) {
-                    if (this.isPosition(keys[1])) this.selectedData[keys[0]][keys[1]] = pos;
-                    else if (this.isRotation(keys[1])) this.selectedData[keys[0]][keys[1]] = rot;
-                } else if (keys.length === 3) {
-                    if (this.isPosition(keys[2])) this.selectedData[keys[0]][keys[1]][keys[2]] = pos;
-                    else if (this.isRotation(keys[2])) this.selectedData[keys[0]][keys[1]][keys[2]] = rot;
-                }
-            } else {
-                if (this.isPosition(keys)) this.selectedData[keys] = pos;
-                else if (this.isRotation(keys)) this.selectedData[keys] = rot;
-            }
         },
         handlePress(e) {
             if (e.keyCode !== 27) return;
@@ -327,57 +179,6 @@ export default defineComponent({
             this.showBan = state;
             this.bannedReason = state ? reason : '';
             this.bannedID = state ? id : 0;
-        },
-        modifyData(database: string, data: Object) {
-            this.selectedTable = database;
-            this.selectedData = Object.assign({}, data);
-            this.showDialog = true;
-        },
-        acceptModify() {
-            if (!('alt' in window)) alert(`${this.selectedTable}: ${JSON.stringify(this.selectedData)}`);
-            else alt.emit(`${ComponentName}:Modify`, this.selectedTable, this.selectedData);
-            this.hideModify();
-        },
-        hideModify() {
-            this.selectedData = Object.assign({}, {});
-            this.showDialog = false;
-            this.selectedTable = '';
-        },
-        deleteData(database: string, data: Object) {
-            this.selectedTable = database;
-            this.selectedData = Object.assign({}, data);
-            this.showDelete = true;
-        },
-        acceptDelete() {
-            if (!('alt' in window)) console.log(`deleted data from database ${this.selectedTable}: `, this.selectedData._id.toString());
-            else alt.emit(`${ComponentName}:Remove`, this.selectedTable, this.selectedData._id.toString());
-            this.hideDelete();
-        },
-        hideDelete() {
-            this.selectedData = Object.assign({}, {});
-            this.showDelete = false;
-            this.selectedTable = '';
-        },
-        changeDataByKey(keys: any | any[], value: string | number | boolean) {
-            if (Array.isArray(keys)) {
-                if (keys.length === 2) {
-                    if (typeof value === 'object') this.selectedData[keys[0]][keys[1]] = JSON.parse(value);
-                    else this.selectedData[keys[0]][keys[1]] = value;
-                } else if (keys.length === 3) {
-                    if (typeof value === 'object') this.selectedData[keys[0]][keys[1]][keys[2]] = JSON.parse(value);
-                    else this.selectedData[keys[0]][keys[1]][keys[2]] = value;
-                } else if (keys.length === 4) {
-                    if (typeof value === 'object') this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = JSON.parse(value);
-                    else this.selectedData[keys[0]][keys[1]][keys[2]][keys[3]] = value;
-                }
-            } else {
-                if (typeof value === 'object' && keys !== '_id') this.selectedData[keys] = JSON.parse(value);
-                else this.selectedData[keys] = value;
-            }
-        },
-        selectPosAndRot(keys: string | string[]) {
-            if (!('alt' in window)) return;
-            alt.emit(`${ComponentName}:Position`, keys);
         },
         isVector(key: string) {
             const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside', 'rot', 'rotation'];

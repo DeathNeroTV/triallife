@@ -4,15 +4,13 @@
             <div class="selection pa-4">
                 <template v-if="!selected">
                     <div class="acting-member stack center mb-4">
-                        <div class="headline mb-2 grey--text" style="font-size: 24px !important">
-                            Hello, {{ getMember(character).name.replace('_', ' ') }}.
-                        </div>
-                        <div class="subtitle-2 grey--text">Rank - {{ getRankName(getMember(character).rank) }}</div>
+                        <div class="headline mb-2 grey--text" style="font-size: 24px !important">Hallo, {{ getMember(character).name.replace('_', ' ') }}.</div>
+                        <div class="subtitle-2 grey--text">Rang - {{ getRankName(getMember(character).rank) }}</div>
                     </div>
                     <div class="acting-member">
-                        <span class="subtitle-1 grey--text">Select a member to modify permissions.</span>
+                        <span class="subtitle-1 grey--text">Wählen Sie ein Mitglied aus, um die Berechtigungen zu ändern.</span>
                         <br />
-                        <span class="subtitle-1 grey--text">Permissions may vary by your rank.</span>
+                        <span class="subtitle-1 grey--text">Die Berechtigungen können je nach Rang variieren.</span>
                     </div>
                 </template>
                 <template v-else>
@@ -21,34 +19,21 @@
                             <div class="headline mb-2 grey--text" style="font-size: 24px !important">
                                 {{ selected.name.replace('_', ' ') }}
                             </div>
-                            <div class="subtitle-2 grey--text">Rank - {{ getRankName(selected.rank) }}</div>
+                            <div class="subtitle-2 grey--text">Rang - {{ getRankName(selected.rank) }}</div>
                         </div>
-                        <div
-                            class="permission mb-4"
-                            v-for="(perm, index) in getRankPermissions(selected.rank)"
-                            :key="index"
-                        >
+                        <div class="permission mb-4" v-for="(perm, index) in getRankPermissions(selected.rank)" :key="index">
                             <div class="perm-desc grey--text">
                                 {{ perm.desc }}
                             </div>
                             <div v-if="perm && perm.key && perm.value">
-                                <Button class="perm-button" color="green" @click="permAction(perm)">{{
-                                    perm.name
-                                }}</Button>
+                                <Button class="perm-button" color="green" @click="permAction(perm)">{{ perm.name }}</Button>
                             </div>
                             <div v-else>
                                 <Button class="perm-button" :disable="true">{{ perm.name }}</Button>
                             </div>
                         </div>
                         <div v-for="(componentName, index) in getMembersComponents()" :name="componentName">
-                            <component
-                                :is="componentName"
-                                class="fade-in"
-                                :key="index"
-                                v-bind:faction="faction"
-                                v-bind:character="character"
-                                v-bind:member="selected"
-                            />
+                            <component :is="componentName" class="fade-in" :key="index" v-bind:faction="faction" v-bind:character="character" v-bind:member="selected" />
                         </div>
                     </div>
                 </template>
@@ -66,12 +51,7 @@
                             <sup>[ {{ rank.weight }} ]</sup>
                         </div>
                         <div class="rank-content pa-4">
-                            <div
-                                v-for="(member, index) in getMembersByRank(rank.uid)"
-                                :key="index"
-                                :name="member.name"
-                                class="member mb-2"
-                            >
+                            <div v-for="(member, index) in getMembersByRank(rank.uid)" :key="index" :name="member.name" class="member mb-2">
                                 <div class="split space-between">
                                     <template v-if="!isRankHigher(rank)">
                                         <Button
@@ -277,23 +257,13 @@ export default defineComponent({
                 }
 
                 if (perm.uniqueValue === 'promote') {
-                    alt.emit(
-                        FACTION_EVENTS.WEBVIEW.ACTION,
-                        FACTION_PFUNC.SET_CHARACTER_RANK,
-                        this.selected.id,
-                        ranks[index - 1].uid,
-                    );
+                    alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.SET_CHARACTER_RANK, this.selected.id, ranks[index - 1].uid);
                     this.selected = null;
                     return;
                 }
 
                 if (perm.uniqueValue === 'demote') {
-                    alt.emit(
-                        FACTION_EVENTS.WEBVIEW.ACTION,
-                        FACTION_PFUNC.SET_CHARACTER_RANK,
-                        this.selected.id,
-                        ranks[index + 1].uid,
-                    );
+                    alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.SET_CHARACTER_RANK, this.selected.id, ranks[index + 1].uid);
                     this.selected = null;
                     return;
                 }

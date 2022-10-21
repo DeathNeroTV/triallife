@@ -3,32 +3,22 @@
         <Modal>
             <Frame minWidth="700px" maxWidth="700px" maxHeight="600px">
                 <template v-slot:toolbar>
-                    <Toolbar :overrideCallback="true" @close-click="close">
-                        Purchase a New Vehicle - ${{ faction.bank.toLocaleString() }}
-                    </Toolbar>
+                    <Toolbar :overrideCallback="true" @close-click="close"> Neues Fahrzeug erwerben - {{ getCashFixed(faction.bank) }} $ </Toolbar>
                 </template>
                 <template v-slot:content>
                     <div class="stack fill-full-width">
                         <template v-if="getVehicles.length <= 0">
-                            <h2>No Vehicles Available</h2>
+                            <h2>Keine Fahrzeuge vorhanden</h2>
                         </template>
                         <template v-else>
-                            <div
-                                class="vehicle-option split fill-full-width space-between mb-4"
-                                v-for="(vehicle, index) in getVehicles"
-                                :key="index"
-                            >
+                            <div class="vehicle-option split fill-full-width space-between mb-4" v-for="(vehicle, index) in getVehicles" :key="index">
                                 <div class="vehicle-image">
                                     <img :src="ResolvePath(`../../assets/vehicles/${vehicle.model}.png`)" />
                                 </div>
                                 <div class="vehicle-name subtitle-2">Model: {{ vehicle.model }}</div>
-                                <div class="vehicle-name subtitle-2">${{ vehicle.price }}</div>
+                                <div class="vehicle-name subtitle-2">{{ vehicle.price.toFiced(2) }}</div>
                                 <template v-if="faction.bank >= vehicle.price">
-                                    <Button
-                                        class="veh-button mr-4"
-                                        color="green"
-                                        @click="(e) => purchase(vehicle.model)"
-                                    >
+                                    <Button class="veh-button mr-4" color="green" @click="(e) => purchase(vehicle.model)">
                                         <Icon :size="14" icon="icon-dollar" />
                                     </Button>
                                 </template>
@@ -75,6 +65,11 @@ export default defineComponent({
     computed: {
         getVehicles() {
             return this.faction.settings && this.faction.settings.vehicles ? this.faction.settings.vehicles : [];
+        },
+        getCashFixed() {
+            var parts = this.faction.bank.toFixed(2).split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
         },
     },
     methods: {

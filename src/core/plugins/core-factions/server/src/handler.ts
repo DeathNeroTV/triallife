@@ -24,10 +24,7 @@ class InternalFunctions {
     static create(faction: Faction) {
         faction._id = faction._id.toString();
         factions[faction._id as string] = faction;
-        if (!faction.settings) {
-            faction.settings = DefaultSettings;
-            alt.log(`~lb~3LRP ==> ~w~Keine Standard Settings in der Firma ~lg~${faction.name} ~w~vorhanden`);
-        }
+        if (!faction.settings) faction.settings = DefaultSettings;
         FactionHandler.updateSettings(faction);
     }
 }
@@ -73,8 +70,8 @@ export class FactionHandler {
         if (!this.factionTypes[_faction.type]) _faction.type = this.factionTypes.neutral;
         if (_faction.bank === null || _faction.bank === undefined) _faction.bank = 0;
         const character = await Database.fetchData<Character>('_id', characterOwnerID, Collections.Characters);
-        if (!character) return { status: false, response: `Could not find a character with identifier: ${characterOwnerID}` };
-        if (character.faction) return { status: false, response: `Character is already in a faction.` };
+        if (!character) return { status: false, response: `Spieler wurde nicht gefunden: ${characterOwnerID}` };
+        if (character.faction) return { status: false, response: `Spieler bereits in einer Firma.` };
         const defaultRanks = deepCloneObject<Array<FactionRank>>(DefaultRanks);
         const defaultSettings = deepCloneObject<FactionSettings>(DefaultSettings);
         for (let i = 0; i < defaultRanks.length; i++) {
@@ -82,7 +79,14 @@ export class FactionHandler {
         }
         const faction: Faction = {
             ..._faction,
-            members: {},
+            members: {
+                [characterOwnerID]: {
+                    id: characterOwnerID,
+                    name: character.name,
+                    rank: defaultRanks[0].uid,
+                    hasOwnership: true,
+                },
+            },
             ranks: defaultRanks,
             vehicles: [],
             storages: [],

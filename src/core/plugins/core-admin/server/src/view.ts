@@ -62,7 +62,7 @@ class InternalFunctions {
                 triallife.player.emit.notification(player, 'Die Firma wurde erstellt');
             }
         }
-        InternalFunctions.load(player);
+        await InternalFunctions.load(player);
     }
 
     static async remove(player: alt.Player, collections: string, _id: string) {
@@ -70,7 +70,7 @@ class InternalFunctions {
             const result = await FactionHandler.remove(_id);
             triallife.player.emit.notification(player, result.response);
         }
-        InternalFunctions.load(player);
+        await InternalFunctions.load(player);
     }
 
     static async ban(player: alt.Player, charID: number, state: boolean, reason: string) {
@@ -79,12 +79,12 @@ class InternalFunctions {
             const hasUpdated = await Database.updateDataByFieldMatch('character_id', charID, { banned: { state, reason } }, Collections.Characters);
             triallife.player.emit.soundFrontend(player, hasUpdated ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             if (hasUpdated) triallife.player.emit.notification(player, `Der Charakter wurde erfolgreich ${state ? 'gebannt' : 'entbannt'}.`);
-            InternalFunctions.load(player);
+            await InternalFunctions.load(player);
             return;
         }
         triallife.state.set(target, 'banned', { state, reason }, true);
         triallife.player.emit.soundFrontend(player, state ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
-        InternalFunctions.load(player);
+        await InternalFunctions.load(player);
         if (state) target.kick(`Sie wurden gebannt. Grund: ${reason}`);
     }
 }

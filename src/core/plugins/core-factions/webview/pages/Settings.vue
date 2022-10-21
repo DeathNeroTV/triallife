@@ -1,23 +1,11 @@
 <template>
     <div class="settings-wrapper pa-4">
         <Module name="Head Quarters">
-            <HeadQuarters
-                v-bind:faction="faction"
-                v-bind:character="character"
-                v-bind:is-owner="isOwner"
-                v-bind:pos="pos"
-                v-bind:rot="rot"
-            />
+            <HeadQuarters v-bind:faction="faction" v-bind:character="character" v-bind:is-owner="isOwner" v-bind:pos="pos" v-bind:rot="rot" />
         </Module>
         <br />
         <Module name="Parking">
-            <Parking
-                v-bind:faction="faction"
-                v-bind:character="character"
-                v-bind:is-owner="isOwner"
-                v-bind:pos="pos"
-                v-bind:rot="rot"
-            />
+            <Parking v-bind:faction="faction" v-bind:character="character" v-bind:is-owner="isOwner" v-bind:pos="pos" v-bind:rot="rot" />
         </Module>
         <br />
         <Module v-for="(componentName, index) in getSettingsComponents()" :name="componentName">

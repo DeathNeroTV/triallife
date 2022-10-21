@@ -4,11 +4,11 @@
             <div class="split full-split space-between">
                 <div class="panel mb-4 pb-4 mr-2">
                     <h1 style="margin-bottom: 0px">${{ faction.bank.toLocaleString() }}</h1>
-                    <sup class="grey--text text--lighten-1 pt-2">Faction Balance</sup>
+                    <sup class="grey--text text--lighten-1 pt-2">Aktueller Tresorstand</sup>
                 </div>
                 <div class="panel mb-4 pb-4 ml-2">
                     <h1 style="margin-bottom: 0px">${{ money.toLocaleString() }}</h1>
-                    <sup class="grey--text text--lighten-1 pt-2">Your Balance</sup>
+                    <sup class="grey--text text--lighten-1 pt-2">Ihr Bargeld</sup>
                 </div>
             </div>
             <div class="panel pa-6 mb-4">
@@ -17,34 +17,23 @@
             <div class="split full-split space-between">
                 <div class="panel mb-4 mr-2 pa-4">
                     <template v-if="bankRemove && faction.bank >= 1 && isValid">
-                        <Button class="bank-button" color="red" @click="withdraw">Withdraw</Button>
+                        <Button class="bank-button" color="red" @click="withdraw">Aus Tresor nehmen</Button>
                     </template>
                     <template v-else>
-                        <Button class="bank-button" :disable="true">Withdraw</Button>
+                        <Button class="bank-button" :disable="true">Aus Tresor nehmen</Button>
                     </template>
                 </div>
                 <div class="panel mb-4 ml-2 pa-4">
                     <template v-if="bankAdd && money >= 1 && isValid">
-                        <Button class="bank-button" color="green" @click="deposit">Deposit</Button>
+                        <Button class="bank-button" color="green" @click="deposit">In Tresor legen</Button>
                     </template>
                     <template v-else>
-                        <Button class="bank-button" :disable="true">Deposit</Button>
+                        <Button class="bank-button" :disable="true">In Tresor legen</Button>
                     </template>
                 </div>
             </div>
-            <div
-                v-for="(componentName, index) in getBankComponents()"
-                :name="componentName"
-                class="panel pa-6 mb-4 fill-full-width"
-            >
-                <component
-                    :is="componentName"
-                    class="fade-in"
-                    :key="index"
-                    v-bind:faction="faction"
-                    v-bind:character="character"
-                    v-bind:money="money"
-                />
+            <div v-for="(componentName, index) in getBankComponents()" :name="componentName" class="panel pa-6 mb-4 fill-full-width">
+                <component :is="componentName" class="fade-in" :key="index" v-bind:faction="faction" v-bind:character="character" v-bind:money="money" />
             </div>
         </div>
     </div>

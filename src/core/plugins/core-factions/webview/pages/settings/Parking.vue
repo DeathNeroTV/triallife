@@ -1,14 +1,12 @@
 <template>
     <div class="stack fill-full-width">
         <div class="panel pa-4 mb-4">
-            <div class="setting-header subtitle-1 mb-2">Parking</div>
-            <span class="subtitle-2 mb-2"
-                >Locations of parking spots available for spawning vehicles. Sorted by closest.</span
-            >
+            <div class="setting-header subtitle-1 mb-2">Parkplätze der Firma</div>
+            <span class="subtitle-2 mb-2"> Der Nähe nach aufsteigend</span>
             <div class="setting-content">
                 <div v-for="(spot, index) in getParkingSpots" :key="index">
                     <div class="split space-between fill-full-width mb-4">
-                        <span class="subtitle-2 label">{{ spot.dist.toFixed(2) }} Units Away</span>
+                        <span class="subtitle-2 label">{{ spot.dist.toFixed(2) }} Meter entfernt</span>
                         <template v-if="isOwner">
                             <Button color="red" class="settings-button" @click="() => removeLocation(spot.index)">
                                 <Icon :size="12" icon="icon-cross" />
@@ -22,10 +20,10 @@
                     </div>
                 </div>
                 <template v-if="isOwner">
-                    <Button color="green" class="settings-button" @click="addCurrentLocation"> Add Location </Button>
+                    <Button color="green" class="settings-button" @click="addCurrentLocation"> Position hinzufügen </Button>
                 </template>
                 <template v-else>
-                    <Button :disable="true" class="settings-button"> Add Location </Button>
+                    <Button :disable="true" class="settings-button"> Position hinzufügen </Button>
                 </template>
             </div>
         </div>

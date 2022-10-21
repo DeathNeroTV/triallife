@@ -9,15 +9,7 @@ const defaultFaction = {
     canDisband: false,
     type: 'state',
     members: [],
-    ranks: [
-        {
-            name: '',
-            actionPermissions: [],
-            rankPermissions: [],
-            vehicles: [''],
-            weight: 0.0,
-        },
-    ],
+    ranks: [],
     availableActions: [''],
     actions: {},
     tickActions: [''],
@@ -35,7 +27,12 @@ const defaultFaction = {
                 rot: { x: 0.0, y: 0.0, z: 0.0 },
             },
         ],
-        vehicles: [{ model: '', price: 0.0 }],
+        vehicles: [
+            { 
+                model: '', 
+                price: 0.0 
+            }
+        ],
         maxVehicles: 0,
         blip: 0,
         blipColor: 0,

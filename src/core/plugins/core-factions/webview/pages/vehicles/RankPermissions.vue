@@ -3,7 +3,7 @@
         <Modal>
             <Frame minWidth="700px" maxWidth="700px" maxHeight="600px">
                 <template v-slot:toolbar>
-                    <Toolbar :overrideCallback="true" @close-click="close"> Toggle Ranks with Vehicle Access </Toolbar>
+                    <Toolbar :overrideCallback="true" @close-click="close">Ränge mit Fahrzeugzugang verändern </Toolbar>
                 </template>
                 <template v-slot:content>
                     <div class="stack fill-full-width">

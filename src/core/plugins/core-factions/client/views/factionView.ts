@@ -143,7 +143,7 @@ class InternalFunctions {
 
 export class FactionView {
     static init() {
-        KeybindController.registerKeybind({key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer('faction:Open')});
+        KeybindController.registerKeybind({key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer(FACTION_EVENTS.PROTOCOL.OPEN)});
         alt.onServer(FACTION_EVENTS.PROTOCOL.OPEN, InternalFunctions.open);
         alt.onServer(FACTION_EVENTS.PROTOCOL.REFRESH, InternalFunctions.refresh);
     }

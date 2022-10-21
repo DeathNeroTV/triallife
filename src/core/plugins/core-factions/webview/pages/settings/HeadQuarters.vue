@@ -1,34 +1,32 @@
 <template>
     <div class="stack fill-full-width">
         <div class="panel pa-4 mb-4">
-            <div class="setting-header subtitle-1 mb-2">Faction Head Quarters</div>
-            <span class="subtitle-2 mb-2">Location of the Faction. Click to set to current location.</span>
+            <div class="setting-header subtitle-1 mb-2">Hauptquartier</div>
+            <span class="subtitle-2 mb-2">Firmenposition setzen</span>
             <div class="setting-content">
                 <template v-if="isOwner">
-                    <Button color="green" class="settings-button" @click="setHeadQuarters"> Update Location </Button>
+                    <Button color="green" class="settings-button" @click="setHeadQuarters"> Position aktualisieren </Button>
                 </template>
                 <template v-else>
-                    <Button :disable="true" class="settings-button"> Update Location </Button>
+                    <Button :disable="true" class="settings-button"> Position aktualisieren </Button>
                 </template>
             </div>
         </div>
         <div class="panel pa-4 mb-4" v-if="hasCoordinates && isOwner">
-            <div class="setting-header mb-4">Faction Blip</div>
-            <span class="subtitle-2 mb-2">
-                Blip sprite, and blip color. Setting this value reveals faction to whole server.
-            </span>
+            <div class="setting-header mb-4">Firmenlogo</div>
+            <span class="subtitle-2 mb-2"> Logo Design und Farbe. Wenn diese Werte angeben werden, wird die Firma allen angezeigt </span>
             <div class="setting-content stack space-between">
                 <div class="split space-between fill-full-width mb-4 mt-2">
-                    <span class="overline label">Sprite</span>
-                    <input class="fill-full-width" type="number" v-model="blip" placeholder="Blip number..." />
+                    <span class="overline label">Logo</span>
+                    <input class="fill-full-width" type="number" v-model="blip" placeholder="Logo ID..." />
                 </div>
                 <div class="split space-between fill-full-width mb-4">
-                    <span class="overline label">Sprite Color</span>
-                    <input class="fill-full-width" type="number" v-model="blipColor" placeholder="Blip Color..." />
+                    <span class="overline label">Farbe</span>
+                    <input class="fill-full-width" type="number" v-model="blipColor" placeholder="Logo Farbe..." />
                 </div>
                 <div class="split space-between ml-4">
-                    <Button color="cyan" class="settings-button mr-4" @click="() => setBlip(true)"> Clear </Button>
-                    <Button color="green" class="settings-button ml-4" @click="() => setBlip(false)"> Update </Button>
+                    <Button color="cyan" class="settings-button mr-4" @click="() => setBlip(true)"> Löschen </Button>
+                    <Button color="green" class="settings-button ml-4" @click="() => setBlip(false)"> Aktualisieren </Button>
                 </div>
             </div>
         </div>

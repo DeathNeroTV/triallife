@@ -1,12 +1,7 @@
 <template>
     <div class="vehicles-wrapper pa-4">
         <!-- Toggle Purchase Faction Vehicle Modal -->
-        <AddVehicle
-            v-bind:faction="faction"
-            v-if="addVehicle"
-            @close="() => (addVehicle = false)"
-            @purchase-vehicle="finishPurchase"
-        />
+        <AddVehicle v-bind:faction="faction" v-if="addVehicle" @close="() => (addVehicle = false)" @purchase-vehicle="finishPurchase" />
         <!-- Toggle Rank Permissions for Vehicle Modal -->
         <RankPermissions
             v-bind:faction="faction"
@@ -17,7 +12,7 @@
         />
         <div class="vehicle-panel mb-4" v-if="manageVehicles">
             <div class="split space-between">
-                <div class="overline">Purchase New Vehicle?</div>
+                <div class="overline">Neues Fahrzeug erwerben?</div>
                 <template v-if="faction.bank >= 1">
                     <Button class="veh-button" color="green" @click="addVehicle = true">
                         <Icon :size="14" icon="icon-plus" />
@@ -38,12 +33,7 @@
             <div class="split">
                 <!-- Manage Permissions -->
                 <template v-if="manageVehicles">
-                    <Button
-                        class="veh-button"
-                        color="green"
-                        help="Permissions"
-                        @click="() => showRankPermissions(vehicle)"
-                    >
+                    <Button class="veh-button" color="green" help="Permissions" @click="() => showRankPermissions(vehicle)">
                         <Icon :size="14" icon="icon-cog2" />
                     </Button>
                 </template>
