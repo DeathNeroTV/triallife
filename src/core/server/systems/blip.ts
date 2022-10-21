@@ -21,7 +21,7 @@ export class ServerBlipController {
     static append(blip: Blip): string {
         if (!blip.uid) blip.uid = sha256Random(JSON.stringify(blip));
         const index = globalBlips.findIndex((existing) => existing && existing.uid === blip.uid);
-        if (index >= 0) globalBlips[index] = blip;
+        if (index !== -1) globalBlips[index] = blip;
         else globalBlips.push(blip);
         alt.emitAllClients(SYSTEM_EVENTS.APPEND_BLIP, blip);
         return blip.uid;

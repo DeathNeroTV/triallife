@@ -52,11 +52,11 @@ class AdminView implements ViewModel {
         alt.emitServer(ADMIN_INTERACTIONS.LOAD);
     }
 
-    static modify(collections: string, { ...data }) {
+    static modify(collections: string, data: Object) {
         alt.emitServer(ADMIN_INTERACTIONS.MODIFY, collections, JSON.stringify(data));
     }
 
-    static remove(collections: string, id: Object) {
+    static remove(collections: string, id: string) {
         alt.emitServer(ADMIN_INTERACTIONS.REMOVE, collections, id);
     }
 

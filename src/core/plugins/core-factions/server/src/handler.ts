@@ -11,7 +11,7 @@ import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 import { triallife } from '../../../../server/api/triallife';
 import { BankInfo } from '../../../../shared/interfaces/bank';
 
-const factions: Array<Faction> = [];
+const factions: { [key: string]: Faction } = {};
 
 class InternalFunctions {
     /**
@@ -22,12 +22,13 @@ class InternalFunctions {
      * @memberof InternalFunctions
      */
     static create(faction: Faction) {
+        faction._id = faction._id.toString();
+        factions[faction._id as string] = faction;
         if (!faction.settings) {
             faction.settings = DefaultSettings;
-            alt.logWarning('Keine Standard Settings in der Firma vorhanden');
+            alt.log(`~lb~3LRP ==> ~w~Keine Standard Settings in der Firma ~lg~${faction.name} ~w~vorhanden`);
         }
         FactionHandler.updateSettings(faction);
-        factions.push(faction);
     }
 }
 
@@ -67,10 +68,13 @@ export class FactionHandler {
      * @return {Promise<IGenericResponse>} _id
      * @memberof FactionHandler
      */
-    static async add(_faction: FactionCore): Promise<IGenericResponse<string>> {
+    static async add(characterOwnerID: string, _faction: FactionCore): Promise<IGenericResponse<string>> {
         if (!_faction.name) return { status: false, response: `Firma wurde nicht erstellt, da der Name fehlt.` };
         if (!this.factionTypes[_faction.type]) _faction.type = this.factionTypes.neutral;
         if (_faction.bank === null || _faction.bank === undefined) _faction.bank = 0;
+        const character = await Database.fetchData<Character>('_id', characterOwnerID, Collections.Characters);
+        if (!character) return { status: false, response: `Could not find a character with identifier: ${characterOwnerID}` };
+        if (character.faction) return { status: false, response: `Character is already in a faction.` };
         const defaultRanks = deepCloneObject<Array<FactionRank>>(DefaultRanks);
         const defaultSettings = deepCloneObject<FactionSettings>(DefaultSettings);
         for (let i = 0; i < defaultRanks.length; i++) {
@@ -86,9 +90,12 @@ export class FactionHandler {
             tickActions: [],
             settings: defaultSettings,
         };
-
         const document = await Database.insertData<Faction>(faction, Collections.Factions, true);
         if (!document) return { status: false, response: `Firma wurde nicht gespeichert.` };
+        character.faction = document._id.toString();
+        await Database.updatePartialData(character._id, { faction: character.faction }, Collections.Characters);
+        const target = alt.Player.all.find((x) => x && x.data && x.data._id.toString() === character._id.toString());
+        if (target) target.data.faction = character.faction;
         InternalFunctions.create(document);
         return { status: true, response: document._id.toString() };
     }
@@ -103,16 +110,15 @@ export class FactionHandler {
      * @return {Promise<IGenericResponse<string>>}
      * @memberof FactionCore
      */
-    static async update(_id: Object, partialObject: Partial<Faction>): Promise<IGenericResponse<string>> {
-        delete partialObject._id;
-        const index = factions.findIndex((x) => x._id.toString() === _id.toString());
-        if (index === -1) return { status: false, response: `Firma mit der ID ${JSON.stringify(_id)} wurde nicht gefunden` };
-        Object.keys(factions[index]).forEach((key) => {
+    static async update(_id: string, partialObject: Partial<Faction>): Promise<IGenericResponse<string>> {
+        const faction = factions[_id];
+        if (!faction) return { status: false, response: `Firma mit der ID ${_id} wurde nicht gefunden` };
+        Object.keys(faction).forEach((key) => {
             if (!partialObject[key]) return;
-            factions[index][key] = partialObject[key];
+            faction[key] = partialObject[key];
         });
-        const status = await Database.updatePartialData(_id.toString(), factions[index], Collections.Factions);
-        return { status, response: status ? `Firmendaten wurden aktualisiert` : `Firmendaten wurden nicht aktualisiert` };
+        await Database.updatePartialData(faction._id, partialObject, Collections.Factions);
+        return { status: true, response: `Firmendaten wurden aktualisiert` };
     }
 
     /**
@@ -126,13 +132,13 @@ export class FactionHandler {
      * @param {string} _id
      * @memberof FactionCore
      */
-    static async remove(_id: Object): Promise<IGenericResponse<string>> {
+    static async remove(_id: string): Promise<IGenericResponse<string>> {
         // Find the faction...
-        const index = factions.findIndex((x) => x._id.toString() === _id.toString());
-        if (index === -1) return { status: false, response: `Firma nicht mit der ID ${JSON.stringify(_id)} gefunden` };
+        const faction = factions[_id];
+        if (!faction) return { status: false, response: `Firma nicht mit der ID ${_id} gefunden` };
         // Remove the faction outright...
-        const factionClone = deepCloneObject<Faction>(factions[index]);
-        factions.splice(index, 1);
+        const factionClone = deepCloneObject<Faction>(faction);
+        delete factions[_id];
 
         // Fetch faction owner...
         const ownerIdentifier = await new Promise((resolve: Function) => {
@@ -224,9 +230,10 @@ export class FactionHandler {
         if (factionClone.storages && Array.isArray(factionClone.storages)) {
             for (let i = 0; i < factionClone.storages.length; i++) {
                 const storageId = factionClone.storages[i];
-                Database.deleteById(storageId, Collections.Storage);
+                await Database.deleteById(storageId, Collections.Storage);
             }
         }
+        await Database.deleteById(factionClone._id, Collections.Factions);
         return { status: true, response: `Firma wurde erfolgreich gelöscht` };
     }
 
@@ -238,9 +245,8 @@ export class FactionHandler {
      * @return {Faction}
      * @memberof FactionCore
      */
-    static get(_id: Object): Faction {
-        const index = factions.findIndex((x) => x._id === _id);
-        return index !== -1 ? factions[index] : null;
+    static get(_id: string): Faction {
+        return factions[_id];
     }
 
     /**
@@ -253,13 +259,14 @@ export class FactionHandler {
      */
     static find(nameOrPartialName: string): Faction | null {
         nameOrPartialName = nameOrPartialName.replace(/ /g, '').toLowerCase();
-        const index = factions.findIndex((f) => {
+        const factionsList = Object.values(factions) as Array<Faction>;
+        const index = factionsList.findIndex((f) => {
             const adjustedName = f.name.replace(/ /g, '').toLowerCase();
             if (adjustedName.includes(nameOrPartialName)) return true;
             return false;
         });
         if (index <= -1) return null;
-        return factions[index];
+        return factionsList[index];
     }
 
     /**
@@ -270,7 +277,7 @@ export class FactionHandler {
      * @memberof FactionCore
      */
     static getAllFactions() {
-        return factions;
+        return Object.values(factions) as Array<Faction>;
     }
 
     /**

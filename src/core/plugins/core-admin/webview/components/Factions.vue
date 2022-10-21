@@ -1,8 +1,8 @@
 <template>
-     <div class="wrapper stack split-center">
+    <div class="wrapper stack split-center">
         <div class="split split-center fill-full-width pt-2 pb-2 mb-2 outlined">
             <span class="split split-center fill-full-width center pt-2 pb-2 text-lg-h5">{{ title }}</span>
-            <Button class="mr-2" color="green" :glow="true" :raise="true" @click="e => $emit('modify-data', 'factions', getModifiedData)">
+            <Button class="mr-2" color="green" :glow="true" :raise="true" @click="(e) => $emit('modify-data', 'factions', getModifiedData)">
                 <Icon icon="icon-add" :size="24"></Icon>
             </Button>
         </div>
@@ -20,15 +20,15 @@
                     <tr v-for="(concern, index) in list" :class="'grey ' + (index % 2 === 0 ? 'darken-2' : 'darken-3')" style="text-align: center">
                         <td v-for="(key, idx) in Object.keys(faction)">
                             <template v-if="concern[key]">
-                                {{ key === 'bank' ? getCashFixed(concern[key]) : typeof concern[key] === 'object' || Array.isArray(concern[key]) ? JSON.stringify(concern[key]) : concern[key] }}
+                                {{ getCorrectValue(key, concern[key]) }}
                             </template>
                             <template v-else>&nbsp;</template>
                         </td>
                         <td class="split split-center ma-1">
-                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="e => $emit('modify-data', 'factions', concern)">
+                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="(e) => $emit('modify-data', 'factions', concern)">
                                 <Icon icon="icon-edit" :size="12"></Icon>
                             </Button>
-                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="e => $emit('delete-data', 'factions', concern)">
+                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="(e) => $emit('delete-data', 'factions', concern)">
                                 <Icon icon="icon-bin" :size="12"></Icon>
                             </Button>
                         </td>
@@ -67,22 +67,18 @@ export default defineComponent({
     },
     computed: {
         getModifiedData() {
-            var fact = Object.assign({}, { name: config.defaultFaction.name, type: config.defaultFaction.type });
-            Object.keys(this.faction).forEach((key) => {
-                if (key === 'name' || key === 'type') fact[key] == this.faction[key];
-            });
-            return fact;
+            return Object.assign({}, { name: config.defaultFaction.name, type: config.defaultFaction.type });
         },
     },
     methods: {
-        getCashFixed(amount: number) {
-            try {
-                var parts = amount.toFixed(2).split('.');
+        getCorrectValue(key: string, value: any) {
+            if (key === 'bank') {
+                var parts = value.toFixed(2).split('.');
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 return parts.join(',');
-            } catch {
-                return '0,00';
-            }
+            } else if (key === '_id') return value.toString();
+            else if (typeof value === 'object' || Array.isArray(value)) return JSON.stringify(value);
+            else return value;
         },
     },
 });

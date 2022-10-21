@@ -11,7 +11,7 @@ const lastInvite: { [character: string]: string } = {};
 
 export class FactionCommands {
     static init() {
-        // leave empty
+        alt.onClient(FACTION_EVENTS.PROTOCOL.OPEN, FactionCommands.handleOpenFactionPanel);
     }
 
     /**

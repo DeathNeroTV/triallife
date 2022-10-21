@@ -7,7 +7,7 @@ const defaultFaction = {
     name: '',
     bank: 0.0,
     canDisband: false,
-    type: 'STATE',
+    type: 'state',
     members: [],
     ranks: [
         {

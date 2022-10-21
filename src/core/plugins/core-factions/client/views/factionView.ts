@@ -1,6 +1,8 @@
 import * as alt from 'alt-client';
+import { KeybindController } from '../../../../client/events/keyup';
 import { WebViewController } from '../../../../client/extensions/view2';
 import { isAnyMenuOpen } from '../../../../client/utility/menus';
+import { KEY_BINDS } from '../../../../shared/enums/keyBinds';
 import { PLAYER_SYNCED_META } from '../../../../shared/enums/playerSynced';
 import { VEHICLE_SYNCED_META } from '../../../../shared/enums/vehicleSyncedMeta';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
@@ -141,6 +143,7 @@ class InternalFunctions {
 
 export class FactionView {
     static init() {
+        KeybindController.registerKeybind({key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer('faction:Open')});
         alt.onServer(FACTION_EVENTS.PROTOCOL.OPEN, InternalFunctions.open);
         alt.onServer(FACTION_EVENTS.PROTOCOL.REFRESH, InternalFunctions.refresh);
     }

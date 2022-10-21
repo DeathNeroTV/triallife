@@ -24,7 +24,7 @@ class InternalFunctions {
         data['accounts'] = await Database.fetchAllData<Account>(Collections.Accounts);
         data['banks'] = await Database.fetchAllData<BankInfo>(Collections.Banks);
         data['characters'] = await Database.fetchAllData<Character>(Collections.Characters);
-        data['factions'] = await FactionHandler.getAllFactions();
+        data['factions'] = FactionHandler.getAllFactions();
         data['storage'] = await Database.fetchAllData<Storage>(Collections.Storage);
         data['stores'] = await Database.fetchAllData<Storage>(Collections.Stores);
         data['items'] = await Database.fetchAllData<Item>(Collections.Items);
@@ -37,35 +37,35 @@ class InternalFunctions {
 
     static async modify(player: alt.Player, collections: string, data: string) {
         if (collections === 'factions') {
-            var concernData = JSON.parse(data) as Partial<Faction>;
-            var concern = await FactionHandler.find(concernData.name);
+            var concernData = JSON.parse(data);
+            var concern = FactionHandler.find(concernData.name);
             if (concern) {
-                const result = await FactionHandler.update(concern._id, concernData);
-                if (result.status) {
-                    concern = await FactionHandler.find(concernData.name);
-                    FactionHandler.updateSettings(concern);
+                const result = await FactionHandler.update(concern._id.toString(), concernData);
+                if (!result.status) {
+                    triallife.player.emit.notification(player, result.response);
+                    return;
                 }
+                concern = FactionHandler.get(concern._id.toString());
+                FactionHandler.updateSettings(concern);
                 triallife.player.emit.notification(player, result.response);
-                return;
+            } else {
+                const result = await FactionHandler.add(player.data._id.toString(), {
+                    bank: 0,
+                    canDisband: true,
+                    name: concernData.name,
+                    type: concernData.type,
+                });
+                if (!result.status) {
+                    triallife.player.emit.notification(player, result.response);
+                    return;
+                }
+                triallife.player.emit.notification(player, 'Die Firma wurde erstellt');
             }
-            const result = await FactionHandler.add({
-                bank: 0,
-                canDisband: true,
-                name: concernData.name,
-                type: concernData.type,
-            });
-            if (!result.status) {
-                triallife.player.emit.notification(player, result.response);
-                return;
-            }
-            const conc = FactionHandler.get(result.response);
-            FactionFuncs.kickMember(conc, player.data._id.toString());
-            triallife.player.emit.notification(player, 'Die Firma wurde erstellt');
         }
         InternalFunctions.load(player);
     }
 
-    static async remove(player: alt.Player, collections: string, _id: Object) {
+    static async remove(player: alt.Player, collections: string, _id: string) {
         if (collections === 'factions') {
             const result = await FactionHandler.remove(_id);
             triallife.player.emit.notification(player, result.response);
