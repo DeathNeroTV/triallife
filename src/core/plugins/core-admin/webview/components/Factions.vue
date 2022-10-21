@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper split-center">
-        <Modal v-if="showDialog">
+        <Modal v-if="showModify">
             <Frame minWidth="30vw" maxWidth="30vw" maxHeight="50vh" :scrollable="true">
                 <template v-slot:toolbar>
                     <Toolbar :hideExit="true">
@@ -168,7 +168,7 @@
         </Modal>
         <div class="split split-center fill-full-width pt-2 pb-2 mb-2 outlined">
             <span class="split split-center fill-full-width center pt-2 pb-2 text-lg-h5">{{ title }}</span>
-            <Button class="mr-2" color="green" :glow="true" :raise="true" @click="modifyData({ name: 'Name der Firma...', type: 'state, neutral oder gang...' })">
+            <Button class="mr-2" color="green" :glow="true" :raise="true" @click="toggleDialog('showModify', { name: 'Name der Firma...', type: 'state, neutral oder gang...' })">
                 <Icon icon="icon-add" :size="24"></Icon>
             </Button>
         </div>
@@ -191,10 +191,10 @@
                             <template v-else>&nbsp;</template>
                         </td>
                         <td class="split split-center ma-1">
-                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="modifyData(concern)">
+                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="toggleDialog('showModify', concern)">
                                 <Icon icon="icon-edit" :size="12"></Icon>
                             </Button>
-                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="deleteData(concern)">
+                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="toggleDialog('showDelete', concern)">
                                 <Icon icon="icon-bin" :size="12"></Icon>
                             </Button>
                         </td>
@@ -229,7 +229,7 @@ export default defineComponent({
     data() {
         return {
             showDelete: false,
-            showDialog: false,
+            showModify: false,
             selected: {},
             faction: config.defaultFaction,
         };
@@ -259,32 +259,27 @@ export default defineComponent({
             else if (typeof value === 'object' || Array.isArray(value)) return JSON.stringify(value);
             else return value;
         },
-        modifyData(data: Object) {
+        toggleDialog(key: string, data: Object) {
             this.selected = Object.assign({}, data);
-            this.showDialog = true;
+            this[key] = true;
         },
         acceptModify() {
             if (!('alt' in window)) console.log(`factions-modify: ${JSON.stringify(this.selected)}`);
-            else alt.emit(`${ComponentName}:Modify`, 'factions', this.selected);
+            else alt.emit(`${PageName}:Modify`, 'factions', this.selected);
             this.hideModify();
         },
         hideModify() {
-            this.selectedData = Object.assign({}, {});
-            this.showDialog = false;
-        },
-        deleteData(data: Object) {
-            this.selectedData = Object.assign({}, data);
-            this.showDelete = true;
+            this.selected = Object.assign({}, {});
+            this.showModify = false;
         },
         acceptDelete() {
             if (!('alt' in window)) console.log(`factions-delete: `, this.selected._id.toString());
-            else alt.emit(`${ComponentName}:Remove`, 'factions', this.selected._id.toString());
+            else alt.emit(`${PageName}:Remove`, 'factions', this.selected._id.toString());
             this.hideDelete();
         },
         hideDelete() {
-            this.selectedData = Object.assign({}, {});
+            this.selected = Object.assign({}, {});
             this.showDelete = false;
-            this.selectedTable = '';
         },
         changeInput(keys: any | any[], value: any) {
             if (Array.isArray(keys)) {
@@ -302,7 +297,7 @@ export default defineComponent({
         },
         selectPosAndRot(keys: any | any[]) {
             if (!('alt' in window)) return;
-            alt.emit(`${ComponentName}:Position`, keys);
+            alt.emit(`${PageName}:Position`, keys);
         },
         updatePosRot(keys: any | any[], pos: Object, rot: Object) {
             if (Array.isArray(keys)) {
@@ -324,11 +319,11 @@ export default defineComponent({
     },
     mounted() {
         if (!('alt' in window)) return;
-        alt.on(`${ComponentName}:Position`, this.updatePosRot);
+        alt.on(`${PageName}:Position`, this.updatePosRot);
     },
     unmounted() {
         if (!('alt' in window)) return;
-        alt.off(`${ComponentName}:Position`, this.updatePosRot);
+        alt.off(`${PageName}:Position`, this.updatePosRot);
     },
 });
 </script>
