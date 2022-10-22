@@ -41,12 +41,12 @@ class InternalFunctions {
             const target = allPlayers.find(x => x.data._id === _id);
             const wasDead = target.data.isDead;
             if (target) {
-                Object.keys(target.data).forEach((key) => {
+                for (const key of Object.keys(target.data)) {
                     if (!partialObject[key]) return;
                     target.data[key] = partialObject[key];
                     const isSet = await triallife.state.set(target, key, target.data[key]);
                     if (key !== 'isDead' && isSet) triallife.player.emit.meta(target, key, target.data[key]);
-                });
+                }
                 if (wasDead && !target.data.isDead) {
                     triallife.player.emit.meta(target, 'isDead', false);
                     triallife.player.set.respawned(target, target.pos);
