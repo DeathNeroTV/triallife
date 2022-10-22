@@ -70,7 +70,7 @@ class VehicleCommands {
         try {
             const veh = triallife.vehicle.funcs.tempVehicle(player, model, fwd, new alt.Vector3(0, 0, 0));
 
-            triallife.vehicle.funcs.add({ owner: player.data._id.toString(), fuel: 100, model, position: veh.pos, rotation: veh.rot }, false);
+            triallife.vehicle.funcs.add({ owner: player.data._id, fuel: 100, model, position: veh.pos, rotation: veh.rot }, false);
             veh.destroy();
         } catch (err) {
             console.log(err);

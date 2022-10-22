@@ -65,7 +65,7 @@ export class FactionFuncs {
         }
 
         // Check if the players rank has access to this vehicle specifically
-        const rank = FactionFuncs.getFactionMemberRank(faction, player.data._id.toString());
+        const rank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
         if (!rank) {
             return false;
         }

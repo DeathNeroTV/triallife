@@ -48,7 +48,7 @@ class VehicleCommands {
             return;
         }
 
-        if (player.vehicle.data.owner.toString() !== player.data._id.toString()) {
+        if (player.vehicle.data.owner.toString() !== player.data._id) {
             triallife.player.emit.notification(player, LocaleController.get(LOCALE_KEYS.VEHICLE_NOT_OWN_BY_YOU));
             return;
         }

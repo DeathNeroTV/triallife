@@ -6,7 +6,7 @@ import { KEY_BINDS } from '../../../../shared/enums/keyBinds';
 import { PLAYER_SYNCED_META } from '../../../../shared/enums/playerSynced';
 import { VEHICLE_SYNCED_META } from '../../../../shared/enums/vehicleSyncedMeta';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { Faction, FactionVehicle } from '../../shared/interfaces';
+import { Faction } from '../../shared/interfaces';
 
 const onOpen: Array<(view: alt.WebView, faction: Faction) => void> = [];
 const onClose: Array<(view: alt.WebView, faction: Faction) => void> = [];
@@ -98,6 +98,7 @@ class InternalFunctions {
      */
     private static getFactionVehicles(factionRef: Faction) {
         const spawnedVehicles = [];
+        if (!Array.isArray(factionRef.vehicles)) return spawnedVehicles;
         const currentVehicles = [...alt.Vehicle.all];
         for (const element of currentVehicles) {
             if (!element.hasSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID)) continue;
@@ -115,7 +116,7 @@ class InternalFunctions {
 
 export class FactionView {
     static init() {
-        KeybindController.registerKeybind({key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer(FACTION_EVENTS.PROTOCOL.OPEN)});
+        KeybindController.registerKeybind({ key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer(FACTION_EVENTS.PROTOCOL.OPEN) });
         alt.onServer(FACTION_EVENTS.PROTOCOL.OPEN, InternalFunctions.open);
         alt.onServer(FACTION_EVENTS.PROTOCOL.REFRESH, InternalFunctions.refresh);
     }

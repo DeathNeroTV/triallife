@@ -46,7 +46,7 @@
                                     <Icon icon="icon-map-marker" :size="24"></Icon>
                                 </Button>
                             </div>
-                            <Module v-if="selected.settings.parkingSpots" name="Parkplätze" class="split-center mb-2">
+                            <Module name="Parkplätze" class="split-center mb-2">
                                 <Module :name="'Parkplatz ' + index" v-for="index in selected.settings.parkingSpots.length" class="mb-2">
                                     <div class="split split-center fill-full-width mb-2">
                                         <Input
@@ -83,7 +83,7 @@
                                     </Button>
                                 </div>
                             </Module>
-                            <Module v-if="selected.settings.vehicles" name="Fahrzeuge" class="split-center mb-2">
+                            <Module name="Fahrzeuge" class="split-center mb-2">
                                 <Module :name="'Fahrzeug ' + index" v-for="index in selected.settings.vehicles.length" class="mb-2">
                                     <div class="split split-center fill-full-width">
                                         <Input
@@ -92,7 +92,7 @@
                                             :stack="true"
                                             :readonly="false"
                                             :value="selected.settings.vehicles[index - 1].model"
-                                            :onInput="(text) => changeInput(['settings', 'vehicles', 'model'], text)"
+                                            :onInput="(text) => changeInput(['settings', 'vehicles', index - 1, 'model'], text)"
                                         ></Input>
                                         <Input
                                             class="fill-full-width mr-2"
@@ -100,7 +100,7 @@
                                             :stack="true"
                                             :readonly="false"
                                             :value="selected.settings.vehicles[index - 1].price"
-                                            :onInput="(text) => changeInput(['settings', 'vehicles', 'price'], parseFloat(text))"
+                                            :onInput="(text) => changeInput(['settings', 'vehicles', index - 1, 'price'], parseFloat(text))"
                                         ></Input>
                                         <Button :glow="true" :raise="true" @click="removeInput(['settings', 'vehicles'], index)">
                                             <Icon icon="icon-minus" :size="24"></Icon>
@@ -146,21 +146,60 @@
                             ></Input>
                         </Module>
                         <Module v-if="selected.members" name="Mitglieder" class="split-center mb-2">
-                            <Module class="split split-full fill-full-width mb-2" :name="key" v-for="(key, index) in Object.keys(selected.members)">
-                                <Input class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].name"></Input>
-                                <Input class="mb-2" :readonly="true" label="Rang" :stack="true" :value="selected.members[key].rank"></Input>
+                            <Module name="Mitglied hinzufügen" class="split-center fill-full-width mb-2">
+                                <Input
+                                    class="mb-2"
+                                    :stack="true"
+                                    placeholder="ID des Spielers"
+                                    label="Besitzer festlegen"
+                                    :value="memberID"
+                                    :onInput="(text) => (memberID = text)"
+                                ></Input>
                                 <Choice
                                     class="mb-2"
-                                    label="Inhaber der Firma"
+                                    :stack="true"
+                                    placeholder="Rang auswählen..."
+                                    :value="rankID"
+                                    label="Rang festlegen"
+                                    :options="getRankOptions"
+                                    :onInput="(text) => (rankID = text)"
+                                ></Choice>
+                                <Choice
+                                    class="mb-2"
+                                    :stack="true"
+                                    label="Als Besitzer festlegen"
                                     :options="[
                                         { text: 'Ja', value: true },
                                         { text: 'Nein', value: false },
                                     ]"
-                                    :stack="true"
-                                    :value="selected.members[key].hasOwnership"
-                                    :onInput="(text) => changeInput(['members', key, 'hasOwnership'], text as boolean)"
+                                    :value="ownership"
+                                    :onInput="(text) => (ownership = text as boolean)"
                                 ></Choice>
+                                <Button color="green" :glow="true" :raise="true" @click="addMember(memberID, rankID, ownership)">
+                                    <Icon icon="icon-add" :size="36"></Icon>
+                                </Button>
                             </Module>
+                            <template v-for="(key, index) in Object.keys(selected.members)">
+                                <Module class="split split-center fill-full-width mb-2" :name="key">
+                                    <Input class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].id"></Input>
+                                    <Input class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].name"></Input>
+                                    <Input class="mb-2" :readonly="true" label="Rang" :stack="true" :value="selected.members[key].rank"></Input>
+                                    <Choice
+                                        class="mb-2"
+                                        label="Inhaber der Firma"
+                                        :options="[
+                                            { text: 'Ja', value: true },
+                                            { text: 'Nein', value: false },
+                                        ]"
+                                        :stack="true"
+                                        :value="selected.members[key].hasOwnership"
+                                        :onInput="(text) => changeInput(['members', key, 'hasOwnership'], text as boolean)"
+                                    ></Choice>
+                                    <Button class="fill-full-width mr-2" color="red" :glow="true" :raise="true" @click="removeMember(key)">
+                                        <Icon icon="icon-minus" :size="36"></Icon>
+                                    </Button>
+                                </Module>
+                            </template>
                         </Module>
                     </div>
                     <div class="split split-full">
@@ -205,7 +244,7 @@
             <table class="fill-full-width">
                 <thead class="grey darken-4" style="text-align: center">
                     <tr>
-                        <th class="pl-5 pr-5 pt-2 pb-2" v-for="(key, index) in Object.keys(faction)">
+                        <th class="pl-5 pr-5 pt-2 pb-2" v-for="(key, index) in Object.keys(faction).filter((x) => !Array.isArray(faction[x]) && typeof faction[x] !== 'object')">
                             {{ key.toUpperCase() }}
                         </th>
                         <th class="pl-5 pr-5 pt-2 pb-2">Aktionen</th>
@@ -213,7 +252,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(concern, index) in list" :class="'grey ' + (index % 2 === 0 ? 'darken-2' : 'darken-3')" style="text-align: center">
-                        <td v-for="(key, idx) in Object.keys(faction)">
+                        <td v-for="(key, idx) in Object.keys(faction).filter((x) => !Array.isArray(faction[x]) && typeof faction[x] !== 'object')">
                             <template v-if="concern[key]">
                                 {{ getCorrectValue(key, concern[key]) }}
                             </template>
@@ -260,6 +299,9 @@ export default defineComponent({
             showDelete: false,
             showModify: false,
             selected: {},
+            memberID: '',
+            rankID: '',
+            ownership: false,
             faction: config.defaultFaction,
         };
     },
@@ -277,6 +319,12 @@ export default defineComponent({
         getModifiedData() {
             return Object.assign({}, { name: this.faction.name, type: this.faction.type });
         },
+        getRankOptions() {
+            const ranks = this.selected.ranks.map((rank) => {
+                return { text: rank.name, value: rank.uid };
+            });
+            return ranks;
+        },
     },
     methods: {
         getCorrectValue(key: string, value: any) {
@@ -293,7 +341,7 @@ export default defineComponent({
         },
         acceptModify() {
             if (!('alt' in window)) console.log(`factions-modify: ${JSON.stringify(this.selected)}`);
-            else alt.emit(`${PageName}:Modify`, 'factions', this.selected._id, this.selected);
+            else alt.emit(`${PageName}:Modify`, 'factions', this.selected._id, JSON.stringify(this.selected));
             this.hideModify();
         },
         hideModify() {
@@ -301,8 +349,8 @@ export default defineComponent({
             this.showModify = false;
         },
         acceptDelete() {
-            if (!('alt' in window)) console.log(`factions-delete: `, this.selected._id.toString());
-            else alt.emit(`${PageName}:Remove`, 'factions', this.selected._id.toString());
+            if (!('alt' in window)) console.log(`factions-delete: `, this.selected._id);
+            else alt.emit(`${PageName}:Remove`, 'factions', this.selected._id);
             this.hideDelete();
         },
         hideDelete() {
@@ -337,61 +385,42 @@ export default defineComponent({
             if (Array.isArray(keys)) {
                 if (keys.length === 2) {
                     if (Array.isArray(this.selected[keys[0]][keys[1]])) this.selected[keys[0]][keys[1]].splice(value, 1);
-                    else delete this.selected[keys[0]][keys[1]];
+                    else delete this.selected[keys[0]][keys[1]][value];
                 } else if (keys.length === 3) {
                     if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]])) this.selected[keys[0]][keys[1]][keys[2]].splice(value, 1);
-                    else delete this.selected[keys[0]][keys[1]][keys[2]];
+                    else delete this.selected[keys[0]][keys[1]][keys[2]][value];
                 } else if (keys.length === 4) {
                     if (Array.isArray(this.selected[keys[0]][keys[1]][keys[2]][keys[3]])) this.selected[keys[0]][keys[1]][keys[2]][keys[3]].splice(value, 1);
-                    else delete this.selected[keys[0]][keys[1]][keys[2]][keys[3]];
+                    else delete this.selected[keys[0]][keys[1]][keys[2]][keys[3]][value];
                 }
             } else {
                 if (Array.isArray(this.selected[keys])) this.selected[keys].splice(value, 1);
-                else delete this.selected[keys];
+                else delete this.selected[keys][value];
             }
         },
         selectPosAndRot(keys: any | any[]) {
             if (!('alt' in window)) return;
-            alt.emit(`${PageName}:Position`, keys);
-        },
-        updatePosRot(keys: any | any[], pos: Object, rot: Object) {
-            if (Array.isArray(keys)) {
-                if (keys.length === 2) {
-                    if (this.isPosition(keys[1])) this.selected[keys[0]][keys[1]] = pos;
-                    else if (this.isRotation(keys[1])) this.selected[keys[0]][keys[1]] = rot;
-                } else if (keys.length === 3) {
-                    if (this.isPosition(keys[2])) this.selected[keys[0]][keys[1]][keys[2]] = pos;
-                    else if (this.isRotation(keys[2])) this.selected[keys[0]][keys[1]][keys[2]] = rot;
-                } else if (keys.length === 4) {
-                    if (this.isPosition(keys[3])) this.selected[keys[0]][keys[1]][keys[2]][keys[3]] = pos;
-                    else if (this.isRotation(keys[3])) this.selected[keys[0]][keys[1]][keys[2]][keys[3]] = rot;
-                }
-            } else {
-                if (this.isPosition(keys)) this.selected[keys] = pos;
-                else if (this.isRotation(keys)) this.selected[keys] = rot;
-            }
-        },
-        isPosition(key: string) {
-            const vectorList: Array<string> = ['pos', 'position', 'outside', 'inside'];
-            return vectorList.findIndex((x) => x === key) !== -1;
-        },
-        isRotation(key: string) {
-            const vectorList: Array<string> = ['rot', 'rotation'];
-            return vectorList.findIndex((x) => x === key) !== -1;
+            alt.emit(`${PageName}:Position`, this.selected._id, keys);
         },
         getCashFixed(amount: number) {
             var parts = amount.toFixed(2).split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             return parts.join(',');
         },
-    },
-    mounted() {
-        if (!('alt' in window)) return;
-        alt.on(`${PageName}:Position`, this.updatePosRot);
-    },
-    unmounted() {
-        if (!('alt' in window)) return;
-        alt.off(`${PageName}:Position`, this.updatePosRot);
+        addMember(id: string, rank: string, hasOwnership: boolean) {
+            if ('alt' in window) alt.emit(`${PageName}:AddMember`, this.selected._id, id, rank, hasOwnership);
+            else this.selected.members[this.memberID] = { id, name: 'Sony Vegas', rank, hasOwnership };
+            this.memberID = '';
+            this.rankID = '';
+            this.ownership = false;
+        },
+        removeMember(id: string) {
+            if ('alt' in window) alt.emit(`${PageName}:RemoveMember`, this.selected._id, id);
+            else delete this.selected.members[id];
+            this.memberID = '';
+            this.rankID = '';
+            this.ownership = false;
+        },
     },
 });
 </script>

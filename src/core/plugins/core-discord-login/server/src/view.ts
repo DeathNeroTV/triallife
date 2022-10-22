@@ -11,13 +11,16 @@ import { DiscordController } from '../../../core-discord/server/src/discordContr
 import axios from 'axios';
 
 async function tryToFinishLogin(player: alt.Player, token: string) {
-    const request = await axios.get('https://discordapp.com/api/users/@me', {
-        'headers': {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .catch((err) => { return null; });
+    const request = await axios
+        .get('https://discordapp.com/api/users/@me', {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .catch((err) => {
+            return null;
+        });
     if (!request || !request.data || !request.data.id || !request.data.username) {
         alt.log(`~lb~Discord:OAuth2 ~w~==> Keine Spielerdaten gefunden`);
         return;

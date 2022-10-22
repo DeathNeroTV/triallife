@@ -62,18 +62,4 @@ export interface Account {
      * @memberof Account
      */
     permissionLevel: PERMISSIONS;
-
-    /**
-     * Is this user banned?
-     * @type {boolean}
-     * @memberof Account
-     */
-    banned: boolean;
-
-    /**
-     * Why are they banned?
-     * @type {string}
-     * @memberof Account
-     */
-    reason: string;
 }

@@ -148,8 +148,7 @@ export class AgendaSystem {
         if (!nextCallback) {
             return;
         }
-
-        alt.log(`~g~Going to next agenda @ (${timelines[player.id].agendaIndex})`);
+        alt.log(`~lb~3L:RP ~w~==> ~lg~Aufgabenwechsel ~lk~für ~c~${player.name}~lk~: ~y~@${timelines[player.id].agendaIndex}`);
         nextCallback(player, ...args);
     }
 

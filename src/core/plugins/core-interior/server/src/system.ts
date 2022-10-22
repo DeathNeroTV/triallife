@@ -490,7 +490,7 @@ class InternalSystem {
         const originalOwner = interior.owner;
         const originalPrice = interior.price;
 
-        interior.owner = player.data._id.toString();
+        interior.owner = player.data._id;
         interior.factions = [];
         interior.keys = [];
         interior.price = null;
@@ -814,7 +814,7 @@ export class InteriorSystem {
             return false;
         }
 
-        if (player.data._id.toString() === interior.owner) {
+        if (player.data._id === interior.owner) {
             return true;
         }
 
@@ -897,7 +897,7 @@ export class InteriorSystem {
             return true;
         }
 
-        if (player.data._id.toString() === interior.owner) {
+        if (player.data._id === interior.owner) {
             return true;
         }
 

@@ -36,7 +36,7 @@ class InternalFunctions {
             return false;
         }
 
-        const member = faction.members[player.data._id.toString()] as FactionCharacter;
+        const member = faction.members[player.data._id] as FactionCharacter;
         if (!member) {
             alt.emitClient(player, F_PAYCHECK_EVENTS.GET_PAYCHECK_TIME_LEFT, DEFAULT_HIGH_VALUE);
             return false;
@@ -121,7 +121,7 @@ class InternalFunctions {
             return false;
         }
 
-        const member = faction.members[player.data._id.toString()] as FactionCharacter;
+        const member = faction.members[player.data._id] as FactionCharacter;
         if (!member) {
             return false;
         }
@@ -141,7 +141,7 @@ class InternalFunctions {
         }
 
         faction.bank -= rank.paycheck;
-        faction.members[player.data._id.toString()].nextPaycheck = Date.now() + faction.settings.paycheckClaimTime * 60000;
+        faction.members[player.data._id].nextPaycheck = Date.now() + faction.settings.paycheckClaimTime * 60000;
 
         const didUpdate = await FactionHandler.update(faction._id as string, {
             members: faction.members,

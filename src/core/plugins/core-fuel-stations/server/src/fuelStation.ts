@@ -170,7 +170,7 @@ export class FuelStationSystem {
 
         data.vehicle.isRefueling = true;
         triallife.player.emit.createProgressBar(player, {
-            uid: `FUEL-${player.data._id.toString()}`,
+            uid: `FUEL-${player.data._id}`,
             color: new alt.RGBA(255, 255, 255, 255),
             distance: 15,
             milliseconds: 10000,
@@ -180,7 +180,7 @@ export class FuelStationSystem {
 
         alt.setTimeout(() => {
             if (player) {
-                triallife.player.emit.removeProgressBar(player, `FUEL-${player.data._id.toString()}`);
+                triallife.player.emit.removeProgressBar(player, `FUEL-${player.data._id}`);
                 triallife.player.emit.notification(player, `${LOCALE_FUEL_STATIONS.FUEL_COST}${data.cost.toFixed(2)} $ | ${data.fuel.toFixed(2)}`);
             }
 

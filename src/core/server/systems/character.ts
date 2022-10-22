@@ -66,11 +66,10 @@ const CharacterSystemRef = {
         if (!player || !player.valid) {
             return;
         }
-
         player.data = deepCloneObject(character);
-
         // Increase the value outright
         if (player.data.character_id === undefined || player.data.character_id === null) {
+            player.data._id = player.data._id;
             await Global.increase('nextCharacterId', 1, 1);
             const nextCharacterID = await Global.getKey<number>('nextCharacterId');
             await triallife.state.set(player, 'character_id', nextCharacterID);
@@ -120,7 +119,7 @@ const CharacterSystemRef = {
             player.setSyncedMeta(PLAYER_SYNCED_META.NAME, player.data.name);
             player.setSyncedMeta(PLAYER_SYNCED_META.PING, player.ping);
             player.setSyncedMeta(PLAYER_SYNCED_META.POSITION, player.pos);
-            player.setSyncedMeta(PLAYER_SYNCED_META.DATABASE_ID, player.data._id.toString());
+            player.setSyncedMeta(PLAYER_SYNCED_META.DATABASE_ID, player.data._id);
 
             // Propagation
             triallife.controllers.blip.populateGlobalBlips(player);

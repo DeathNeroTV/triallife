@@ -31,11 +31,11 @@ export class DeathSystem {
             return undefined;
         }
 
-        if (!TimeOfDeath[player.data._id.toString()]) {
+        if (!TimeOfDeath[player.data._id]) {
             return undefined;
         }
 
-        return TimeOfDeath[player.data._id.toString()];
+        return TimeOfDeath[player.data._id];
     }
 
     /**
@@ -46,7 +46,7 @@ export class DeathSystem {
      * @memberof DeathSystem
      */
     static clearRespawnTime(player: alt.Player) {
-        delete TimeOfDeath[player.data._id.toString()];
+        delete TimeOfDeath[player.data._id];
     }
 
     /**
@@ -123,11 +123,11 @@ export class DeathSystem {
         if (player.data.isDead) {
             triallife.player.emit.meta(player, 'isDead', true);
 
-            if (!TimeOfDeath[player.data._id.toString()]) {
-                TimeOfDeath[player.data._id.toString()] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
+            if (!TimeOfDeath[player.data._id]) {
+                TimeOfDeath[player.data._id] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
             }
 
-            alt.emitClient(player, DEATH_EVENTS.UPDATE_DEATH_TIMER_MS, TimeOfDeath[player.data._id.toString()] - Date.now());
+            alt.emitClient(player, DEATH_EVENTS.UPDATE_DEATH_TIMER_MS, TimeOfDeath[player.data._id] - Date.now());
             alt.setTimeout(() => triallife.player.set.respawned(player, player.pos), DEATH_CONFIG.RESPAWN_TIME);
         }
     }
@@ -150,11 +150,11 @@ export class DeathSystem {
         player.spawn(player.pos.x, player.pos.y, player.pos.z, 0);
         triallife.player.emit.meta(player, 'isDead', true);
 
-        if (!TimeOfDeath[player.data._id.toString()]) {
-            TimeOfDeath[player.data._id.toString()] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
+        if (!TimeOfDeath[player.data._id]) {
+            TimeOfDeath[player.data._id] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
         }
 
-        alt.emitClient(player, DEATH_EVENTS.UPDATE_DEATH_TIMER_MS, TimeOfDeath[player.data._id.toString()] - Date.now());
+        alt.emitClient(player, DEATH_EVENTS.UPDATE_DEATH_TIMER_MS, TimeOfDeath[player.data._id] - Date.now());
         alt.setTimeout(() => triallife.player.set.respawned(player, player.pos), DEATH_CONFIG.RESPAWN_TIME);
     }
 }

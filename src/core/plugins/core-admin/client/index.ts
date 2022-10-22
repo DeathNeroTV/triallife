@@ -26,6 +26,8 @@ class AdminView implements ViewModel {
         view.on(`${PAGE_NAME}:Close`, AdminView.close);
         view.on(`${PAGE_NAME}:Modify`, AdminView.modify);
         view.on(`${PAGE_NAME}:Remove`, AdminView.remove);
+        view.on(`${PAGE_NAME}:AddMember`, AdminView.addMember);
+        view.on(`${PAGE_NAME}:RemoveMember`, AdminView.removeMember);
         view.on(`${PAGE_NAME}:Position`, AdminView.position);
         view.on(`${PAGE_NAME}:Ban`, AdminView.ban);
         WebViewController.openPages(PAGE_NAME, true, AdminView.close);
@@ -43,6 +45,9 @@ class AdminView implements ViewModel {
         view.off(`${PAGE_NAME}:Modify`, AdminView.modify);
         view.off(`${PAGE_NAME}:Remove`, AdminView.remove);
         view.off(`${PAGE_NAME}:Position`, AdminView.position);
+        view.off(`${PAGE_NAME}:AddMember`, AdminView.addMember);
+        view.off(`${PAGE_NAME}:RemoveMember`, AdminView.removeMember);
+        view.off(`${PAGE_NAME}:Ban`, AdminView.addMember);
         WebViewController.closePages([PAGE_NAME], true);
         WebViewController.unfocus();
         WebViewController.showCursor(false);
@@ -53,7 +58,7 @@ class AdminView implements ViewModel {
         alt.emitServer(ADMIN_INTERACTIONS.LOAD);
     }
 
-    static modify(collections: string, _id: string, data: Object) {
+    static modify(collections: string, _id: string, data: string) {
         alt.emitServer(ADMIN_INTERACTIONS.MODIFY, collections, _id, data);
     }
 
@@ -71,12 +76,16 @@ class AdminView implements ViewModel {
         alt.emitServer(ADMIN_INTERACTIONS.BAN, charID, state, reason);
     }
 
-    static async position(keys: string | string[]) {
-        const view = await WebViewController.get();
-        var pos = (alt.Player.local.vehicle ? alt.Player.local.vehicle.pos : alt.Player.local.pos) as Vector3;
-        pos = { x: pos.x, y: pos.y, z: pos.z - 1 };
-        const rot = (alt.Player.local.vehicle ? alt.Player.local.vehicle.rot : alt.Player.local.rot) as Vector3;
-        view.emit(`${PAGE_NAME}:Position`, keys, pos, rot);
+    static addMember(factionID: string, memberID: string, rankID: string, hasOwnership: boolean) {
+        alt.emitServer(ADMIN_INTERACTIONS.ADDMEMBER, factionID, memberID, rankID, hasOwnership);
+    }
+
+    static removeMember(factionID: string, memberID: string) {
+        alt.emitServer(ADMIN_INTERACTIONS.REMOVEMEMBER, factionID, memberID);
+    }
+
+    static async position(factionID: string, keys: any | any[]) {
+        alt.emitServer(ADMIN_INTERACTIONS.POSITION, factionID, keys);
     }
 }
 

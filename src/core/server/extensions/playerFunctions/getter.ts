@@ -9,7 +9,7 @@ import { distance } from '../../../shared/utility/vector';
 
 const Getter = {
     async allVehicles(player: alt.Player, excludeKeys = false): Promise<IVehicle[]> {
-        let vehicles = await Database.fetchAllByField<IVehicle>(`owner`, player.data._id.toString(), Collections.Vehicles);
+        let vehicles = await Database.fetchAllByField<IVehicle>(`owner`, player.data._id, Collections.Vehicles);
 
         if (!excludeKeys) {
             const keys = VehicleFuncs.getAllVehicleKeys(player);

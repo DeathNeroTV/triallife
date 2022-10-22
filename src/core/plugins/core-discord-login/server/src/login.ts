@@ -108,12 +108,8 @@ export class LoginController {
             const didPass = await callback(player, account);
             if (!didPass) return;
         }
-        if (player.discord && player.discord.username) {
-            alt.log(`~lb~3LRP ==> ~w~(${player.id}) ${player.discord.username} has authenticated.`);
-        }
-        if (account && account.discord) {
-            alt.log(`~lb~3LRP ==> ~w~(${player.id}) Discord ${account.discord} has logged in with a JWT Token `);
-        }
+        if (player.discord && player.discord.username) alt.log(`~lb~3LRP ~w~==> ~lk~Der Spieler ~y~(${player.id}) ~lg~${player.discord.username} ~lk~ wurde authentifiziert.`);
+        if (account && account.discord) alt.log(`~lb~3LRP ~w~==> ~lk~Der Spieler ~y~(${player.id}) ~lg~${account.discord} wurde authentifiziert`);
         const currentPlayers = [...alt.Player.all];
         const index = currentPlayers.findIndex((p) => p.discord && p.discord.id === player.discord.id && p.id !== player.id);
         if (index >= 1) {
@@ -123,7 +119,6 @@ export class LoginController {
         // Used for DiscordToken skirt.
         if (!account) {
             const accountData = await AccountSystem.getAccount(player, 'discord', player.discord.id);
-
             if (!accountData) {
                 const data: { discord: string; email?: string } = { discord: player.discord.id };
                 if (player.discord.email) data.email = player.discord.email;
@@ -187,15 +182,14 @@ export class LoginController {
             data['vehicles'] = await Database.fetchAllData<VehicleInfo>(Collections.Vehicles);
             triallife.player.emit.meta(target, 'admin', data);
         }
-        alt.log(`~lb~3L:RP ~w~==>  ~lg~${player.data?.name.replace('_', ' ')} ~w~hat sich ausgeloggt.`);
+        alt.log(`~lb~3L:RP ~w~==> ~lg~${player.data?.name.replace('_', ' ')} ~lk~hat sich abgemeldet`);
     }
 
     static bindPlayerToID(player: alt.Player): void {
         if (!player || !player.valid || !player.data) {
             return;
         }
-
-        UserRelation[player.id] = player.data._id.toString();
+        UserRelation[player.id] = player.data._id;
     }
 
     static getDatabaseIdForPlayer(id: number): string | null {

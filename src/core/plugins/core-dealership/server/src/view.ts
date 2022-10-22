@@ -141,7 +141,7 @@ export class DealershipView {
         }
         triallife.vehicle.funcs.add(
             {
-                owner: player.data._id.toString(),
+                owner: player.data._id,
                 model: vehicleInfo.name,
                 fuel: 100,
                 position: { x: 0, y: 0, z: 0 },

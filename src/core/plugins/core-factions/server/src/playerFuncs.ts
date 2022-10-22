@@ -52,11 +52,11 @@ export class FactionPlayerFuncs {
             return false;
         }
 
-        if (!faction.members[player.data._id.toString()]) {
+        if (!faction.members[player.data._id]) {
             return false;
         }
 
-        return faction.members[player.data._id.toString()].hasOwnership;
+        return faction.members[player.data._id].hasOwnership;
     }
 
     /**
@@ -87,7 +87,7 @@ export class FactionPlayerFuncs {
             return null;
         }
 
-        const member = faction.members[player.data._id.toString()];
+        const member = faction.members[player.data._id];
         if (!member) {
             return null;
         }
@@ -109,7 +109,7 @@ export class FactionPlayerFuncs {
             return null;
         }
 
-        return faction.members[player.data._id.toString()];
+        return faction.members[player.data._id];
     }
 
     /**
@@ -134,7 +134,7 @@ export class FactionPlayerFuncs {
         }
 
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
-            const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id.toString());
+            const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
             if (!selfRank.rankPermissions.addMembers) {
                 return false;
             }

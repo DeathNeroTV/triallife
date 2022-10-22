@@ -23,7 +23,7 @@ export class FactionCommands {
     @command('fcreate', '/fcreate [type: (Neutral, State, Gang)] [name] - Open faction panel if in faction.', PERMISSIONS.ADMIN)
     private static async handleFactionCreate(player: alt.Player, type: string, ...name: string[]) {
         const factionName = name.join(' ');
-        const result = await FactionHandler.add(player.data._id.toString(), {
+        const result = await FactionHandler.add(player.data._id, {
             bank: 0,
             canDisband: true,
             name: factionName,
@@ -40,7 +40,7 @@ export class FactionCommands {
     }
 
     @command('fopen', '/fopen - Open faction panel if in faction.', PERMISSIONS.NONE)
-    private static async handleOpenFactionPanel(player: alt.Player) {
+    private static handleOpenFactionPanel(player: alt.Player) {
         if (!player.data.faction) {
             triallife.player.emit.notification(player, 'Sie sind in keiner Firma.');
             return;

@@ -29,7 +29,9 @@ class Startup {
      */
     static database() {
         if (typeof config === 'undefined') {
-            alt.logWarning(`Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`);
+            alt.logWarning(
+                `Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`,
+            );
             process.exit(1);
         }
 
@@ -53,7 +55,9 @@ class Startup {
      */
     static async ares() {
         if (typeof config === 'undefined') {
-            alt.logWarning(`Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`);
+            alt.logWarning(
+                `Konfigurationsdatei konnte nicht geladen werden. Ist die Datei „triallifeConfig.json“ fehlerhaft? Versuchen Sie erneut, die Standardwerte einzustellen.`,
+            );
             process.exit(1);
         }
         // @ts-ignore

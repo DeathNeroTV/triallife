@@ -414,7 +414,7 @@ export default class VehicleFuncs {
         }
 
         // Check Actual Ownership
-        if (vehicle.data.owner === player.data._id.toString()) {
+        if (vehicle.data.owner === player.data._id) {
             return true;
         }
 

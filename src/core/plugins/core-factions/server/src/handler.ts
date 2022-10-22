@@ -122,7 +122,7 @@ export class FactionHandler {
             faction[key] = partialObject[key];
         });
         const status = await Database.updatePartialData(faction._id, partialObject, Collections.Factions);
-        return { status, response: status? `Firmendaten wurden aktualisiert` : `Firmendaten wurden nicht aktualisiert` };
+        return { status, response: status ? `Firmendaten wurden aktualisiert` : `Firmendaten wurden nicht aktualisiert` };
     }
 
     /**
@@ -190,7 +190,7 @@ export class FactionHandler {
             if (!player && member._id === ownerIdentifier) {
                 var amount = factionClone.bank;
                 var facAcc = await Database.fetchData<BankInfo>('owner', factionClone.name, Collections.Banks);
-                const banks = (await Database.fetchAllByField<BankInfo>('owner', member.name, Collections.Banks));
+                const banks = await Database.fetchAllByField<BankInfo>('owner', member.name, Collections.Banks);
                 const prive = banks.find((x) => x.type === 'private');
                 const credit = banks.find((x) => x.type === 'credit');
                 var money = amount + facAcc.amount;
@@ -198,10 +198,10 @@ export class FactionHandler {
                     money = money - credit.amount;
                     await Database.updatePartialData(credit._id, { amount: 0 }, Collections.Banks);
                 }
-                if (prive) {                    
+                if (prive) {
                     await Database.updatePartialData(prive._id, { amount: prive.amount + money }, Collections.Banks);
                     money = 0;
-                } else {                 
+                } else {
                     await Database.updatePartialData(member._id, { cash: member.cash + money }, Collections.Characters);
                     money = 0;
                 }
