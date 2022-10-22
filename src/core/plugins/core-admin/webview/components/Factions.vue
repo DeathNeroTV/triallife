@@ -285,7 +285,7 @@ export default defineComponent({
                 var parts = value.toFixed(2).split('.');
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 return parts.join(',');
-            } else if (typeof value === 'object' || Array.isArray(value)) return JSON.stringify(value);
+            } else if (typeof value === 'object' || Array.isArray(value)) return typeof value;
             else return value;
         },
         toggleDialog(key: string, data: Object) {
