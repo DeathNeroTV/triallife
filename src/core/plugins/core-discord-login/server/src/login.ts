@@ -95,7 +95,6 @@ export class LoginController {
     static async tryLogin(player: alt.Player, account: Partial<Account> = null): Promise<void> {
         if (!player.valid) return;
         delete player.pendingLogin;
-        delete player.discordToken;
 
         const tryBeforeLoginInjections = Injections.get<TryLoginCallback>(LoginInjectionNames.TRY_LOGIN_ACCOUNT_BEGIN);
         for (const callback of tryBeforeLoginInjections) {

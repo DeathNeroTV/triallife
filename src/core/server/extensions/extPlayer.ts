@@ -9,7 +9,6 @@ import { playerConst } from '../api/consts/constPlayer';
 declare module 'alt-server' {
     export interface Player {
         pendingLogin?: boolean;
-        discordToken?: string;
         needsQT?: boolean;
         hasModel?: boolean;
         accountData?: Partial<Account>;

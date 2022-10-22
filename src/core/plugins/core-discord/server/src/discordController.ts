@@ -97,14 +97,6 @@ export class DiscordController {
             triallife.webview.emit(player, DISCORD_LOGIN_EVENTS.TO_WEBVIEW.SET_ERROR_MESSAGE, 'Sie sind noch nicht freigeschaltet!');
             return false;
         }
-        player.discord = {
-            avatar: member.user.avatar,
-            discriminator: member.user.discriminator,
-            flags: member.user.flags.bitfield,
-            id: member.user.id,
-            username: member.user.username,
-            mfa_enabled: member.user.client.user.mfaEnabled,
-        } as DiscordUser;
         return true;
     }
 

@@ -68,7 +68,7 @@ class Startup {
 
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
-        alt.log(`~lb~3L:RP ~w~==>  ~lg~Server ~w~wurde gestartet`);
+        alt.log(`~lb~3L:RP ~w~==>  ~lg~Server ~lk~wurde gestartet`);
         ReconnectHelper.invoke();
     }
 

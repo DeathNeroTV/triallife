@@ -9,18 +9,26 @@ import { JwtProvider } from '../../../../server/systems/jwt';
 import { Account } from '../../../../server/interface/iAccount';
 import { DiscordUser } from '../../../../server/interface/iDiscordUser';
 import { DiscordController } from '../../../core-discord/server/src/discordController';
+import axios from 'axios';
 
-async function tryToFinishLogin(player: alt.Player, id: string) {
-    const player_identifier = player.discordToken;
-    if (!player_identifier) {
+async function tryToFinishLogin(player: alt.Player, token: string) {
+    const request = await axios.get('https://discordapp.com/api/users/@me', {
+        'headers': {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .catch((err) => { return null; });
+    if (!request || !request.data || !request.data.id || !request.data.username) {
         alt.logError(`Player's Discord Token not present`);
         return;
     }
-    const isRegistered = await DiscordController.getUserByID(player, id);
+    const isRegistered = await DiscordController.getUserByID(player, request.data.id);
     if (!isRegistered) {
         alt.logWarning(`[Discord Auth] No Account found for ${player.name}`);
         return;
     }
+    player.discord = request.data as DiscordUser;
     alt.emitClient(player, DISCORD_LOGIN_EVENTS.TO_CLIENT.CLOSE);
     LoginController.tryLogin(player);
 }
@@ -51,8 +59,6 @@ export class LoginView {
                 }
             }
         }
-        const uniquePlayerData = JSON.stringify(player.ip + player.hwidHash + player.hwidExHash);
-        player.discordToken = sha256Random(uniquePlayerData);
         alt.emitClient(player, DISCORD_LOGIN_EVENTS.TO_CLIENT.OPEN);
     }
 }

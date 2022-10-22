@@ -20,8 +20,9 @@ class DiscordLoginView {
         alt.Player.local.isMenuOpen = false;
     }
 
-    static finish() {
-        alt.emitServer(DISCORD_LOGIN_EVENTS.TO_SERVER.TRY_FINISH, alt.Discord.currentUser.id);
+    static async finish() {
+        const token = await alt.Discord.requestOAuth2Token('1026136558614618113');
+        alt.emitServer(DISCORD_LOGIN_EVENTS.TO_SERVER.TRY_FINISH, token);
     }
 }
 
