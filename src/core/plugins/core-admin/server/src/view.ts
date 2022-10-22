@@ -39,8 +39,8 @@ class InternalFunctions {
             if (partialObject._id) delete partialObject._id;
             const allPlayers = [...alt.Player.all].filter(x => x.data);
             const target = allPlayers.find(x => x.data._id === _id);
-            const wasDead = target.data.isDead;
             if (target) {
+                const wasDead = target.data.isDead;
                 for (const key of Object.keys(target.data)) {
                     if (!partialObject[key]) return;
                     target.data[key] = partialObject[key];
