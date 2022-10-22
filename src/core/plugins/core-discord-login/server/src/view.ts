@@ -34,7 +34,7 @@ async function tryToFinishLogin(player: alt.Player, token: string) {
 }
 
 function tryToLeaveServer(player: alt.Player) {
-    player.kick('Sie haben den Server verlassen.');
+    player.kick('3L:RP ==> Server verlassen');
 }
 
 export class LoginView {
