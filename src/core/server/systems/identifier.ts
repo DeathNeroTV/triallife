@@ -35,7 +35,7 @@ const IdentityRef = {
      */
     setPlayerIdentifier(player: alt.Player) {
         if (!player || !player.valid) return;
-        alt.log(`~lb~3L:RP ==> ~lg~${player.data.name.replace('_', ' ')} ~w~hat sich eingeloggt`);
+        alt.log(`~lb~3L:RP ~w~==>  ~lg~${player.data.name.replace('_', ' ')} ~w~hat sich eingeloggt`);
         player.setSyncedMeta(PLAYER_SYNCED_META.IDENTIFICATION_ID, player.data.character_id);
     },
     /**

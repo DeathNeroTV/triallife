@@ -8,5 +8,5 @@ const PLUGIN_NAME = ' GEGENSTÄNDE';
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     RegisterItems.init();
     UpdateItems.init();
-    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
+    alt.log(`~lb~3L:RP ~w~==> ~lg~${PLUGIN_NAME} ~lk~wurde geladen`);
 });

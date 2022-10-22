@@ -6,5 +6,5 @@ const PLUGIN_NAME = ' NAMETAGS';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     Nametags.init();
-    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
+    alt.log(`~lb~3L:RP ~w~==> ~lg~${PLUGIN_NAME} ~lk~wurde geladen`);
 });

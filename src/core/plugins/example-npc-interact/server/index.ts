@@ -13,5 +13,5 @@ PluginSystem.registerPlugin(PLUGIN_NAME, () => {
         uid: `${EXAMPLE_NPC_INTERACT.PREFIX}01`,
     });
 
-    alt.log(`~lb~3L:RP ==>~lg~${PLUGIN_NAME} ~w~wurde geladen`);
+    alt.log(`~lb~3L:RP ~w~==> ~lg~${PLUGIN_NAME} ~lk~wurde geladen`);
 });

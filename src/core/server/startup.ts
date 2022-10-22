@@ -63,12 +63,12 @@ class Startup {
         // @ts-ignore
         await import(`./boot.js`);
         const bootTime = (Date.now() - startTime) / 1000;
-        alt.log(`~lb~3L:RP ==> ~lg~Gesamte Startzeit~w~: ~y~${bootTime.toFixed(2)}s`);
+        alt.log(`~lb~3L:RP ~w~==>  ~lg~Gesamte Startzeit ~w~-- ~y~${bootTime.toFixed(2)}s`);
     }
 
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
-        alt.log(`~lb~3LRP ==> ~lg~Server ~w~wurde gestartet`);
+        alt.log(`~lb~3L:RP ~w~==>  ~lg~Server ~w~wurde gestartet`);
         ReconnectHelper.invoke();
     }
 

@@ -41,7 +41,7 @@ export class KeyHeld {
             onKeyUp,
             onKeyDown,
         });
-        alt.log(`~lb~3L:RP ==> ~lg~${String.fromCharCode(key)} wurde als Tastenkürzel (~lb~haltend~lg~) hinzugefügt.`);
+        alt.log(`~lb~3L:RP ~w~==>  ~lg~${String.fromCharCode(key)} wurde als Tastenkürzel (~lb~haltend~lg~) hinzugefügt.`);
     }
 
     /**

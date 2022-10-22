@@ -12,7 +12,7 @@
                         <Input v-if="selected._id" class="mb-2" label="ID" :stack="true" :readonly="true" :value="selected._id"></Input>
                         <Input v-if="selected.name" class="mb-2" label="Name" :stack="true" :value="selected.name" :onInput="(text) => changeInput('name', text)"></Input>
                         <Input
-                            v-if="selected.bank"
+                            v-if="selected.bank > -1"
                             class="mb-2"
                             label="Tresor"
                             :stack="true"

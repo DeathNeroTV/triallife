@@ -5,6 +5,6 @@ import { PizzaJob } from './src/job';
 const PLUGIN_NAME = ' PIZZA-JOB';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
-    alt.log(`~lg~${PLUGIN_NAME} ~w~wurde geladen`);
+    alt.log(`~lg~${PLUGIN_NAME} ~lk~wurde geladen`);
     PizzaJob.init();
 });
