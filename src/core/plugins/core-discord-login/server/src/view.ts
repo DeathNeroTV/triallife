@@ -1,5 +1,4 @@
 import * as alt from 'alt-server';
-import { sha256Random } from '../../../../server/utility/encryption';
 import { AgendaSystem } from '../../../../server/systems/agenda';
 import { AgendaOrder } from '../../../../server/systems/agenda';
 import { DISCORD_LOGIN_EVENTS } from '../../shared/events';
