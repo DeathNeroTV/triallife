@@ -45,7 +45,6 @@ export class LoginView {
 
     static async show(player: alt.Player) {
         if (!player || !player.valid) return;
-
         const token = await JwtProvider.fetch(player);
         if (typeof token === 'string') {
             const identifier = await JwtProvider.verify(token);
