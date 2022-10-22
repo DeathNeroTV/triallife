@@ -44,7 +44,8 @@ class InternalFunctions {
                 Object.keys(target.data).forEach((key) => {
                     if (!partialObject[key]) return;
                     target.data[key] = partialObject[key];
-                    triallife.state.set(target, key, target.data[key]);
+                    const isSet = await triallife.state.set(target, key, target.data[key]);
+                    if (key !== 'isDead' && isSet) triallife.player.emit.meta(target, key, target.data[key]);
                 });
                 if (wasDead && !target.data.isDead) {
                     triallife.player.emit.meta(target, 'isDead', false);
