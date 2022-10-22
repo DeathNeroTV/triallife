@@ -146,11 +146,10 @@
                             ></Input>
                         </Module>
                         <Module v-if="selected.members" name="Mitglieder" class="split-center mb-2">
-                            <Module v-if="selected.members[key]" class="split split-full fill-full-width mb-2" :name="key" v-for="(key, index) in Object.keys(selected.members)">
-                                <Input v-if="selected.members[key].name" class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].name"></Input>
-                                <Input v-if="selected.members[key].rank" class="mb-2" :readonly="true" label="Rang" :stack="true" :value="selected.members[key].rank"></Input>
+                            <Module class="split split-full fill-full-width mb-2" :name="key" v-for="(key, index) in Object.keys(selected.members)">
+                                <Input class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].name"></Input>
+                                <Input class="mb-2" :readonly="true" label="Rang" :stack="true" :value="selected.members[key].rank"></Input>
                                 <Choice
-                                    v-if="selected.members[key].hasOwnership"
                                     class="mb-2"
                                     label="Inhaber der Firma"
                                     :options="[

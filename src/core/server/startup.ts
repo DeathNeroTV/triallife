@@ -41,11 +41,7 @@ class Startup {
                 MongoUtil.throwConnectionError();
             })
             .then((res) => {
-                if (res) {
-                    alt.log(`MongoDB Verbindung wurde hergestellt.`);
-                    return;
-                }
-
+                if (res) return;
                 MongoUtil.throwConnectionError();
             });
     }
@@ -62,14 +58,12 @@ class Startup {
         }
         // @ts-ignore
         await import(`./boot.js`);
-        const bootTime = (Date.now() - startTime) / 1000;
-        alt.log(`~lb~3L:RP ~w~==>  ~lg~Gesamte Startzeit ~w~-- ~y~${bootTime.toFixed(2)}s`);
     }
 
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
-        alt.log(`~lb~3L:RP ~w~==>  ~lg~Server ~lk~wurde gestartet`);
         ReconnectHelper.invoke();
+        alt.log(`~lb~3L:RP ~w~==> ~lg~Server ~lk~wurde in ~y~${((Date.now() - startTime) / 1000).toFixed(2)}s ~lk~gestartet`);
     }
 
     static handleEarlyConnect(player: alt.Player) {
