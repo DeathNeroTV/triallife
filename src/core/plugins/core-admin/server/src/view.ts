@@ -1,5 +1,4 @@
 import * as alt from 'alt-server';
-
 import Database from '@stuyk/ezmongodb';
 import { ADMIN_INTERACTIONS } from '../../shared/events';
 import { Collections } from '../../../../server/interface/iDatabaseCollections';
@@ -45,14 +44,14 @@ class InternalFunctions {
                 Object.keys(target.data).forEach((key) => {
                     if (!partialObject[key]) return;
                     target.data[key] = partialObject[key];
+                    triallife.state.set(target, key, target.data[key]);
                 });
-                triallife.state.set(target, 'isDead', target.data.isDead);
                 if (wasDead && !target.data.isDead) {
                     triallife.player.emit.meta(target, 'isDead', false);
                     triallife.player.set.respawned(target, target.pos);
                 } else if (!wasDead && target.data.isDead) triallife.player.emit.meta(target, 'isDead', true);
             }
-            const status = await Database.updatePartialData(target.data._id, partialObject, Collections.Characters);
+            const status = await Database.updatePartialData(_id, partialObject, Collections.Characters);
             triallife.player.emit.soundFrontend(player, status ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             triallife.player.emit.notification(player, status ? 'Charakter wurde bearbeitet' : 'Charakter wurde nicht bearbeitet');
         } else if (collections === 'factions') {
