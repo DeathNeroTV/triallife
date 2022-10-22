@@ -1,6 +1,7 @@
 import * as alt from 'alt-client';
 import { triallifeClient } from '../../../client/api/triallife';
 import { DISCORD_LOGIN_EVENTS } from '../shared/events';
+import { DISCORD_CONFIG } from './config';
 
 class DiscordLoginView {
     static open() {
@@ -21,7 +22,7 @@ class DiscordLoginView {
     }
 
     static async finish() {
-        const token = await alt.Discord.requestOAuth2Token('1026136558614618113');
+        const token = await alt.Discord.requestOAuth2Token(DISCORD_CONFIG.CLIENT_ID);
         alt.emitServer(DISCORD_LOGIN_EVENTS.TO_SERVER.TRY_FINISH, token);
     }
 }

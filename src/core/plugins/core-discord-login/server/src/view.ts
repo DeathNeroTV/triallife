@@ -20,12 +20,12 @@ async function tryToFinishLogin(player: alt.Player, token: string) {
     })
     .catch((err) => { return null; });
     if (!request || !request.data || !request.data.id || !request.data.username) {
-        alt.logError(`Player's Discord Token not present`);
+        alt.log(`~lb~Discord:OAuth2 ~lk~==> Keine Spielerdaten gefunden`);
         return;
     }
     const isRegistered = await DiscordController.getUserByID(player, request.data.id);
     if (!isRegistered) {
-        alt.logWarning(`[Discord Auth] No Account found for ${player.name}`);
+        alt.log(`~lb~Discord:OAuth2 ~lk~==> Es wurde kein Benutzerkonto für ~lg~${player.name} ~lk~gefunden`);
         return;
     }
     player.discord = request.data as DiscordUser;
