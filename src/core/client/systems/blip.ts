@@ -27,15 +27,10 @@ function create(blipData: Blip): alt.PointBlip {
 export class BlipController {
     static append(blipData: Blip): alt.PointBlip {
         const index = addedBlips.findIndex((x) => x['uid'] && blipData.uid === x['uid']);
-        if (index >= 0) {
-            const removedBlips = addedBlips.splice(index, 1);
-            for (let i = 0; i < removedBlips.length; i++) {
-                try {
-                    removedBlips[i].destroy();
-                } catch (err) {}
-            }
+        if (index !== -1) {
+            addedBlips[index].destroy();
+            addedBlips.splice(index, 1);
         }
-
         const blip = create(blipData);
         blip['uid'] = blipData.uid;
         addedBlips.push(blip);

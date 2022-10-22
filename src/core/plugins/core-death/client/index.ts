@@ -1,6 +1,5 @@
 import * as alt from 'alt-client';
 import * as native from 'natives';
-import { SHARED_CONFIG } from '../../../shared/configurations/shared';
 import { SYSTEM_EVENTS } from '../../../shared/enums/system';
 import { drawText2D } from '../../../client/utility/text';
 import { Timer } from '../../../client/utility/timers';
@@ -22,20 +21,13 @@ class InternalFunctions {
     }
 
     private static handleMetaChange(key: string, newValue: any): void {
-        if (key !== 'isDead') {
-            return;
-        }
-
+        if (key !== 'isDead') return;
         if (newValue) {
-            if (!interval) {
-                interval = Timer.createInterval(InternalFunctions.tick, 0, 'death.ts');
-            }
-
-            native.animpostfxPlay('DeathFailOut', 0, false);
+            if (!interval) interval = Timer.createInterval(InternalFunctions.tick, 0, 'death.ts');
+            native.animpostfxPlay('DeathFailOut', 0, true);
             native.playSoundFrontend(-1, 'Bed', 'WastedSounds', true);
             return;
         }
-
         if (interval) {
             Timer.clearInterval(interval);
             interval = undefined;
@@ -50,11 +42,8 @@ class InternalFunctions {
                 native.setPedToRagdoll(alt.Player.local.scriptID, -1, -1, 0, false, false, false);
             }
         }
-
         const timeLeft = timeInTheFuture - Date.now();
-        if (timeLeft > 0) {
-            drawText2D(`${(timeLeft / 1000).toFixed(2)}s Until Respawn`, { x: 0.5, y: 0.2 }, 0.5, new alt.RGBA(255, 255, 255, 255));
-        }
+        if (timeLeft > 0) drawText2D(`${(timeLeft / 1000).toFixed(2)}s Until Respawn`, { x: 0.5, y: 0.5 }, 0.5, new alt.RGBA(255, 255, 255, 255));
     }
 }
 

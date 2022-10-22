@@ -1,5 +1,4 @@
 import * as alt from 'alt-server';
-import { Collections } from '../../../../server/interface/iDatabaseCollections';
 import { sha256Random } from '../../../../server/utility/encryption';
 import { StorageView } from '../../../../server/views/storage';
 import { DefaultRanks, DefaultSettings } from '../../shared/defaultData';
@@ -9,7 +8,6 @@ import { IGenericResponse } from '../../../../shared/interfaces/iResponse';
 import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 import { triallife } from '../../../../server/api/triallife';
 import { BankInfo } from '../../../../shared/interfaces/bank';
-import Database from '@stuyk/ezmongodb';
 
 const factions: { [key: string]: Faction } = {};
 
@@ -49,7 +47,7 @@ export class FactionHandler {
      * @memberof FactionCore
      */
     static async init() {
-        const factions = await Database.fetchAllData<Faction>(Collections.Factions);
+        const factions = await triallife.database.funcs.fetchAllData<Faction>(triallife.database.collections.Factions);
         if (factions.length <= 0) return;
         for (let i = 0; i < factions.length; i++) {
             InternalFunctions.create(factions[i]);
@@ -69,7 +67,7 @@ export class FactionHandler {
         if (!_faction.name) return { status: false, response: `Firma wurde nicht erstellt, da der Name fehlt.` };
         if (!this.factionTypes[_faction.type]) _faction.type = this.factionTypes.neutral;
         if (_faction.bank === null || _faction.bank === undefined) _faction.bank = 0;
-        const character = await Database.fetchData<Character>('_id', characterOwnerID, Collections.Characters);
+        const character = await triallife.database.funcs.fetchData<Character>('_id', characterOwnerID, triallife.database.collections.Characters);
         if (!character) return { status: false, response: `Spieler wurde nicht gefunden: ${characterOwnerID}` };
         if (character.faction) return { status: false, response: `Spieler bereits in einer Firma.` };
         const defaultRanks = deepCloneObject<Array<FactionRank>>(DefaultRanks);
@@ -94,10 +92,10 @@ export class FactionHandler {
             tickActions: [],
             settings: defaultSettings,
         };
-        const document = await Database.insertData<Faction>(faction, Collections.Factions, true);
+        const document = await triallife.database.funcs.insertData<Faction>(faction, triallife.database.collections.Factions, true);
         if (!document) return { status: false, response: `Firma wurde nicht gespeichert.` };
         character.faction = document._id.toString();
-        await Database.updatePartialData(character._id, { faction: character.faction }, Collections.Characters);
+        await triallife.database.funcs.updatePartialData(character._id, { faction: character.faction }, triallife.database.collections.Characters);
         const target = alt.Player.all.find((x) => x && x.data && x.data._id.toString() === character._id.toString());
         if (target) triallife.state.set(target, 'faction', character.faction, true);
         InternalFunctions.create(document);
@@ -121,7 +119,7 @@ export class FactionHandler {
             if (!partialObject[key]) return;
             faction[key] = partialObject[key];
         });
-        const status = await Database.updatePartialData(faction._id, partialObject, Collections.Factions);
+        const status = await triallife.database.funcs.updatePartialData(faction._id, partialObject, triallife.database.collections.Factions);
         return { status, response: status ? `Firmendaten wurden aktualisiert` : `Firmendaten wurden nicht aktualisiert` };
     }
 
@@ -155,8 +153,8 @@ export class FactionHandler {
         });
 
         // Clear all members...
-        const members = await Database.fetchAllByField<Character>('faction', factionClone._id, Collections.Characters);
-        const banking = await Database.fetchData<BankInfo>('owner', factionClone.name, Collections.Banks);
+        const members = await triallife.database.funcs.fetchAllByField<Character>('faction', factionClone._id, triallife.database.collections.Characters);
+        const banking = await triallife.database.funcs.fetchData<BankInfo>('owner', factionClone.name, triallife.database.collections.Banks);
         let onlinePlayers: Array<alt.Player> = [];
         for (let i = 0; i < members.length; i++) {
             const member = members[i];
@@ -189,34 +187,34 @@ export class FactionHandler {
             // For non-logged in character owner add bank balance
             if (!player && member._id === ownerIdentifier) {
                 var amount = factionClone.bank;
-                var facAcc = await Database.fetchData<BankInfo>('owner', factionClone.name, Collections.Banks);
-                const banks = await Database.fetchAllByField<BankInfo>('owner', member.name, Collections.Banks);
+                var facAcc = await triallife.database.funcs.fetchData<BankInfo>('owner', factionClone.name, triallife.database.collections.Banks);
+                const banks = await triallife.database.funcs.fetchAllByField<BankInfo>('owner', member.name, triallife.database.collections.Banks);
                 const prive = banks.find((x) => x.type === 'private');
                 const credit = banks.find((x) => x.type === 'credit');
                 var money = amount + facAcc.amount;
                 if (credit && credit.amount - money <= -1) {
                     money = money - credit.amount;
-                    await Database.updatePartialData(credit._id, { amount: 0 }, Collections.Banks);
+                    await triallife.database.funcs.updatePartialData(credit._id, { amount: 0 }, triallife.database.collections.Banks);
                 }
                 if (prive) {
-                    await Database.updatePartialData(prive._id, { amount: prive.amount + money }, Collections.Banks);
+                    await triallife.database.funcs.updatePartialData(prive._id, { amount: prive.amount + money }, triallife.database.collections.Banks);
                     money = 0;
                 } else {
-                    await Database.updatePartialData(member._id, { cash: member.cash + money }, Collections.Characters);
+                    await triallife.database.funcs.updatePartialData(member._id, { cash: member.cash + money }, triallife.database.collections.Characters);
                     money = 0;
                 }
                 continue;
             }
             // Remove faction from character
-            await Database.updatePartialData(member._id, { faction: null }, Collections.Characters);
+            await triallife.database.funcs.updatePartialData(member._id, { faction: null }, triallife.database.collections.Characters);
         }
-        if (banking) await Database.deleteById(banking._id, Collections.Banks);
+        if (banking) await triallife.database.funcs.deleteById(banking._id, triallife.database.collections.Banks);
         // Clear all vehicles...
         for (let i = 0; i < factionClone.vehicles.length; i++) {
             const vehicleId = factionClone.vehicles[i];
             const vehicle = alt.Vehicle.all.find((v) => v && v.valid && v.data && v.data._id === vehicleId);
             if (vehicle) vehicle.destroy();
-            await Database.deleteById(vehicleId, Collections.Vehicles);
+            await triallife.database.funcs.deleteById(vehicleId, triallife.database.collections.Vehicles);
         }
 
         // Force close storage...
@@ -230,10 +228,10 @@ export class FactionHandler {
         if (factionClone.storages && Array.isArray(factionClone.storages)) {
             for (let i = 0; i < factionClone.storages.length; i++) {
                 const storageId = factionClone.storages[i];
-                await Database.deleteById(storageId, Collections.Storage);
+                await triallife.database.funcs.deleteById(storageId, triallife.database.collections.Storage);
             }
         }
-        const status = await Database.deleteById(factionClone._id, Collections.Factions);
+        const status = await triallife.database.funcs.deleteById(factionClone._id, triallife.database.collections.Factions);
         return { status, response: status ? `Firma wurde erfolgreich gelöscht` : `Firma wurde nicht gelöscht` };
     }
 

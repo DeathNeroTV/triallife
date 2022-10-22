@@ -1,6 +1,7 @@
 import * as alt from 'alt-server';
 import { triallife } from '../../../../server/api/triallife';
 import { command } from '../../../../server/decorators/commands';
+import { DEFAULT_CONFIG } from '../../../../server/triallife/main';
 import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
 import { LOCALE_KEYS } from '../../../../shared/locale/languages/keys';
 import { LocaleController } from '../../../../shared/locale/locale';
@@ -51,7 +52,7 @@ export class DeathCommands {
         if (Date.now() < timeInFuture) {
             return;
         }
-
-        triallife.player.set.respawned(player, player.pos);
+        const position = triallife.player.get.closestRespawn(player);
+        triallife.player.set.respawned(player, position);
     }
 }

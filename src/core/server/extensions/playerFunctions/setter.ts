@@ -15,8 +15,6 @@ import Database from '@stuyk/ezmongodb';
 import ConfigUtil from '../../utility/config';
 import { PLAYER_SYNCED_META } from '../../../shared/enums/playerSynced';
 import { PlayerEvents } from '../../events/playerEvents';
-import { playerConst } from '../../api/consts/constPlayer';
-import { IVector3 } from 'alt-shared';
 import { StateManager } from '../../systems/stateManager';
 import { triallife } from '../../api/triallife';
 import { JwtProvider } from '../../systems/jwt';

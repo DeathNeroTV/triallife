@@ -143,18 +143,12 @@ export class DeathSystem {
      * @memberof DeathSystem
      */
     private static handleDeath(player: alt.Player, weaponHash: any = null): void {
-        if (!player || !player.valid) {
-            return;
-        }
-
+        if (!player || !player.valid) return;
         player.spawn(player.pos.x, player.pos.y, player.pos.z, 0);
         triallife.player.emit.meta(player, 'isDead', true);
-
-        if (!TimeOfDeath[player.data._id]) {
-            TimeOfDeath[player.data._id] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
-        }
-
+        if (!TimeOfDeath[player.data._id]) TimeOfDeath[player.data._id] = Date.now() + DEATH_CONFIG.RESPAWN_TIME;
+        const position = triallife.player.get.closestRespawn(player);
         alt.emitClient(player, DEATH_EVENTS.UPDATE_DEATH_TIMER_MS, TimeOfDeath[player.data._id] - Date.now());
-        alt.setTimeout(() => triallife.player.set.respawned(player, player.pos), DEATH_CONFIG.RESPAWN_TIME);
+        alt.setTimeout(() => triallife.player.set.respawned(player, position), DEATH_CONFIG.RESPAWN_TIME);
     }
 }

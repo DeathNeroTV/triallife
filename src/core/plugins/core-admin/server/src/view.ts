@@ -11,6 +11,7 @@ import { Item } from '../../../../shared/interfaces/inventory';
 import { Interior } from '../../../core-interior/shared/interfaces';
 import { VehicleInfo } from '../../../../shared/interfaces/vehicleInfo';
 import { FactionHandler } from '../../../core-factions/server/src/handler';
+import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 
 class InternalFunctions {
     static show(player: alt.Player) {
@@ -19,6 +20,7 @@ class InternalFunctions {
 
     static async load(player: alt.Player) {
         var data = {};
+        const stringKeys: Array<string> = ['accounts', 'banks', 'characters']; 
         data['accounts'] = await Database.fetchAllData<Account>(Collections.Accounts);
         data['banks'] = await Database.fetchAllData<BankInfo>(Collections.Banks);
         data['characters'] = await Database.fetchAllData<Character>(Collections.Characters);
@@ -28,6 +30,13 @@ class InternalFunctions {
         data['items'] = await Database.fetchAllData<Item>(Collections.Items);
         data['interiors'] = await Database.fetchAllData<Interior>(Collections.Interiors);
         data['vehicles'] = await Database.fetchAllData<VehicleInfo>(Collections.Vehicles);
+        for (const key of Object.keys(data).filter(x => stringKeys.findIndex(y => x === y))) {
+            for (var i = 0; i < data[key].length; i++) {
+                if (data[key][i] && data[key][i]._id && typeof data[key][i]._id !== 'string') {
+                    data[key][i]._id = data[key][i]._id.toString();
+                }
+            }
+        }
         triallife.player.emit.meta(player, 'admin', data);
     }
 
@@ -44,13 +53,19 @@ class InternalFunctions {
                 for (const key of Object.keys(target.data)) {
                     if (!partialObject[key]) return;
                     target.data[key] = partialObject[key];
-                    const isSet = await triallife.state.set(target, key, target.data[key]);
-                    if (key !== 'isDead' && isSet) triallife.player.emit.meta(target, key, target.data[key]);
+                    if (key !== 'isDead') {
+                        const isSet = await triallife.state.set(target, key, partialObject[key]);
+                        if (isSet) triallife.player.emit.meta(target, key, partialObject[key]);
+                    }
                 }
                 if (wasDead && !target.data.isDead) {
                     triallife.player.emit.meta(target, 'isDead', false);
+                    await triallife.state.set(target, 'isDead', false);
                     triallife.player.set.respawned(target, target.pos);
-                } else if (!wasDead && target.data.isDead) triallife.player.emit.meta(target, 'isDead', true);
+                } else if (!wasDead && target.data.isDead) {                    
+                    await triallife.state.set(target, 'isDead', true);
+                    triallife.player.emit.meta(target, 'isDead', true);
+                }
             }
             const status = await Database.updatePartialData(_id, partialObject, Collections.Characters);
             triallife.player.emit.soundFrontend(player, status ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
@@ -110,8 +125,9 @@ class InternalFunctions {
     }
 
     static async addMember(player: alt.Player, factionID: string, memberID: string, rankID: string, hasOwnership: boolean) {
-        const concern = FactionHandler.get(factionID);
+        const concern = deepCloneObject<Faction>(FactionHandler.get(factionID));
         if (!concern) return;
+        delete concern._id;
         if (concern.members[memberID]) {
             concern.members[memberID].rank = rankID;
             concern.members[memberID].hasOwnership = hasOwnership;
@@ -132,8 +148,9 @@ class InternalFunctions {
     }
 
     static async removeMember(player: alt.Player, factionID: string, memberID: string) {
-        const concern = FactionHandler.get(factionID);
+        const concern =  deepCloneObject<Faction>(FactionHandler.get(factionID));
         if (!concern) return;
+        delete concern._id;
         if (!concern.members[memberID]) return;
         delete concern.members[memberID];
         const target = alt.Player.all.find((x) => x.data && x.data._id === memberID);
@@ -146,8 +163,9 @@ class InternalFunctions {
     }
 
     static async position(player: alt.Player, factionID: string, keys: any | any[]) {
-        const faction = FactionHandler.get(factionID);
+        const faction = deepCloneObject<Faction>(FactionHandler.get(factionID));
         if (!faction) return;
+        delete faction._id;
         const pos = player.vehicle ? player.vehicle.pos : { x: player.pos.x, y: player.pos.y, z: player.pos.z - 1 };
         const rot = player.vehicle ? player.vehicle.rot : { x: player.rot.x, y: player.rot.y, z: player.rot.z };
         if (Array.isArray(keys)) {

@@ -1,5 +1,6 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
+import { DiscordController } from '../plugins/core-discord/server/src/discordController';
 
 import { SYSTEM_EVENTS } from '../shared/enums/system';
 import { IConfig } from './interface/iConfig';
@@ -67,7 +68,11 @@ class Startup {
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
         ReconnectHelper.invoke();
-        alt.log(`~lb~3L:RP ~w~==> ~lg~Server ~lk~wurde in ~y~${((Date.now() - startTime) / 1000).toFixed(2)}s ~lk~gestartet`);
+        const bootTime = ((Date.now() - startTime) / 1000).toFixed(0)
+        alt.log(`~lb~3L:RP ~w~==> ~lg~Server ~lk~wurde in ~y~${bootTime}s ~lk~gestartet`);
+        await DiscordController.sendToChannel('856843454868488192', `Sie können jetzt den Trial Life Server betreten.`);
+        await DiscordController.sendToChannel('856843454868488192', `Der Server brauchte ${bootTime} Sekunden für den Start.`);
+        await DiscordController.sendToChannel('856843454868488192', `Euer Server Team`);
     }
 
     static handleEarlyConnect(player: alt.Player) {

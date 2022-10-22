@@ -6,6 +6,8 @@ import { Character } from '../../../shared/interfaces/character';
 import VehicleFuncs from '../vehicleFuncs';
 import { PERMISSIONS } from '../../../shared/flags/permissionFlags';
 import { distance } from '../../../shared/utility/vector';
+import { Vector3 } from '../../../shared/interfaces/vector';
+import { DEFAULT_CONFIG } from '../../triallife/main';
 
 const Getter = {
     async allVehicles(player: alt.Player, excludeKeys = false): Promise<IVehicle[]> {
@@ -44,6 +46,19 @@ const Getter = {
     playersByGridSpace(player: alt.Player, maxDistance: number): Array<alt.Player> {
         const currentPlayers = [...alt.Player.all];
         return currentPlayers.filter((p) => p && p.valid && p.data && player.gridSpace === p.gridSpace && distance(player.pos, p.pos) < maxDistance);
+    },
+
+    closestRespawn(player: alt.Player): Vector3 {
+        const hospitals = [...DEFAULT_CONFIG.VALID_HOSPITALS];
+        let targetPos = hospitals[0];
+        let dist = distance(player.pos, targetPos);
+        for (let i = 0; i < hospitals.length; i++) {
+            const newDistance = distance(player.pos, hospitals[i]);
+            if (dist > newDistance) continue;
+            dist = newDistance;
+            targetPos = hospitals[i];
+        }
+        return targetPos;
     },
 
     closestPlayer(player: alt.Player): alt.Player {
