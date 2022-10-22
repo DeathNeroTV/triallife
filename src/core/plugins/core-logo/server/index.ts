@@ -3,7 +3,7 @@ import { AgendaSystem } from '../../../server/systems/agenda';
 import { PluginSystem } from '../../../server/systems/plugins';
 import { triallife_EXAMPLE_AGENDA } from '../shared/enums';
 
-const PLUGIN_NAME = ' LOGO';
+const PLUGIN_NAME = 'LOGO';
 
 /**
  * `Show the triallife logo and then wait 2 seconds before continuing`

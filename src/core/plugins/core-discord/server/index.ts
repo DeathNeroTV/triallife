@@ -4,7 +4,7 @@ import { DISCORD_CONFIG } from './config';
 import { DiscordCommands } from './src/commands';
 import { DiscordController } from './src/discordController';
 
-const PLUGIN_NAME = ' DISCORD_BOT';
+const PLUGIN_NAME = 'DISCORD_BOT';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     if (!DISCORD_CONFIG.TOKEN) {

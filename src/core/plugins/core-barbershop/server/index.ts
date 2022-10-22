@@ -3,7 +3,7 @@ import { PluginSystem } from '../../../server/systems/plugins';
 import { BarbershopCommands } from './src/commands';
 import { BarbershopView } from './src/view';
 
-const PLUGIN_NAME = ' FRISEURE';
+const PLUGIN_NAME = 'FRISEURE';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     BarbershopView.init();

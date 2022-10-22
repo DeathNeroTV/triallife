@@ -3,7 +3,7 @@ import { PluginSystem } from '../../../server/systems/plugins';
 import { createDefaultInteriors } from './src/interiors';
 import { InteriorSystem } from './src/system';
 
-const PLUGIN_NAME = ' GEBÄUDE';
+const PLUGIN_NAME = 'GEBÄUDE';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     await InteriorSystem.init();

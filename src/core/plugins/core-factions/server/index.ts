@@ -5,7 +5,7 @@ import { FactionCommands } from './src/commands';
 import { FactionFuncs } from './src/funcs';
 import { FactionHandler } from './src/handler';
 
-const PLUGIN_NAME = ' FIRMENSYSTEM';
+const PLUGIN_NAME = 'FIRMENSYSTEM';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, async () => {
     await FactionHandler.init();

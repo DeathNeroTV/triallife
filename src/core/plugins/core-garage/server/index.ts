@@ -4,7 +4,7 @@ import { GarageFunctions } from './src/view';
 import './src/garages';
 import { GarageSystem } from './src/system';
 
-const PLUGIN_NAME = ' GARAGEN';
+const PLUGIN_NAME = 'GARAGEN';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     GarageSystem.init();

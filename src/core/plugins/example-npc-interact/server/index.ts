@@ -3,7 +3,7 @@ import { triallife } from '../../../server/api/triallife';
 import { PluginSystem } from '../../../server/systems/plugins';
 import { EXAMPLE_NPC_INTERACT } from '../shared/info';
 
-const PLUGIN_NAME = ' BEISPIEL-NPC';
+const PLUGIN_NAME = 'BEISPIEL-NPC';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     triallife.controllers.ped.append({

@@ -3,7 +3,7 @@ import { PluginSystem } from '../../../server/systems/plugins';
 import { Keys } from './system/keys';
 import { WebSocketClient } from './system/ws';
 
-const PLUGIN_NAME = ' Debug';
+const PLUGIN_NAME = 'Debug';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     WebSocketClient.init();

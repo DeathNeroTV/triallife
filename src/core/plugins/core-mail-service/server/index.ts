@@ -1,7 +1,7 @@
 import { PluginSystem } from '../../../server/systems/plugins';
 import { MailService } from './src/mailer';
 
-const PLUGIN_NAME = ' MAIL-SERVICE';
+const PLUGIN_NAME = 'MAIL-SERVICE';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     MailService.init();

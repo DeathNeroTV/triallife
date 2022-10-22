@@ -2,7 +2,7 @@ import * as alt from 'alt-server';
 import { PluginSystem } from '../../../server/systems/plugins';
 import { AdminFunctions } from './src/view';
 
-const PLUGIN_NAME = ' ADMIN';
+const PLUGIN_NAME = 'ADMIN';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     AdminFunctions.init();

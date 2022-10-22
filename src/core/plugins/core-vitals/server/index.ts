@@ -5,7 +5,7 @@ import { VitalsSystem } from './src/system';
 import './src/commands';
 import { VitalsEffects } from './src/effects';
 
-const PLUGIN_NAME = ' VITALITÄT';
+const PLUGIN_NAME = 'VITALITÄT';
 
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     VitalsSystem.init();

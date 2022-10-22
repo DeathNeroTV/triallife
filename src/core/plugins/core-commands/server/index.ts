@@ -6,7 +6,7 @@ import { ConsoleCommands } from './commands/consoleCommands';
 import './commands/moderator';
 import './commands/player';
 
-const PLUGIN_NAME = ' ROLEPLAY-BEFEHLE';
+const PLUGIN_NAME = 'ROLEPLAY-BEFEHLE';
 PluginSystem.registerPlugin(PLUGIN_NAME, () => {
     ConsoleCommander.init(alt);
     ConsoleCommands.init();

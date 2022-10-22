@@ -46,16 +46,28 @@
                                     <Icon icon="icon-map-marker" :size="24"></Icon>
                                 </Button>
                             </div>
-                            <Module name="Parkplätze" class="split-center mb-2">
-                                <Module :name="'Parkplatz ' + index + 1" v-for="(parking, index) in selected.settings.parkingSpots" class="mb-2">
+                            <Module v-if="selected.settings.parkingSpots" name="Parkplätze" class="split-center mb-2">
+                                <Module :name="'Parkplatz ' + index" v-for="index in selected.settings.parkingSpots.length" class="mb-2">
                                     <div class="split split-center fill-full-width mb-2">
-                                        <Input class="fill-full-width mr-2" label="Position" :stack="true" :readonly="true" :value="JSON.stringify(parking.pos)"></Input>
+                                        <Input
+                                            class="fill-full-width mr-2"
+                                            label="Position"
+                                            :stack="true"
+                                            :readonly="true"
+                                            :value="JSON.stringify(selected.settings.parkingSpots[index - 1].pos)"
+                                        ></Input>
                                         <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index - 1, 'pos'])">
                                             <Icon icon="icon-map-marker" :size="24"></Icon>
                                         </Button>
                                     </div>
                                     <div class="split split-center fill-full-width">
-                                        <Input class="fill-full-width mr-2" label="Rotation" :stack="true" :readonly="true" :value="JSON.stringify(parking.rot)"></Input>
+                                        <Input
+                                            class="fill-full-width mr-2"
+                                            label="Rotation"
+                                            :stack="true"
+                                            :readonly="true"
+                                            :value="JSON.stringify(selected.settings.parkingSpots[index - 1].rot)"
+                                        ></Input>
                                         <Button :glow="true" :raise="true" @click="selectPosAndRot(['settings', 'parkingSpots', index - 1, 'rot'])">
                                             <Icon icon="icon-map-marker" :size="24"></Icon>
                                         </Button>
@@ -72,14 +84,14 @@
                                 </div>
                             </Module>
                             <Module v-if="selected.settings.vehicles" name="Fahrzeuge" class="split-center mb-2">
-                                <Module :name="'Fahrzeug ' + index + 1" v-for="(vehicle, index) in selected.settings.vehicles" class="mb-2">
+                                <Module :name="'Fahrzeug ' + index" v-for="index in selected.settings.vehicles.length" class="mb-2">
                                     <div class="split split-center fill-full-width">
                                         <Input
                                             class="fill-full-width mr-2"
                                             label="Model"
                                             :stack="true"
                                             :readonly="false"
-                                            :value="vehicle.model"
+                                            :value="selected.settings.vehicles[index - 1].model"
                                             :onInput="(text) => changeInput(['settings', 'vehicles', 'model'], text)"
                                         ></Input>
                                         <Input
@@ -87,7 +99,7 @@
                                             label="Preis"
                                             :stack="true"
                                             :readonly="false"
-                                            :value="vehicle.price"
+                                            :value="selected.settings.vehicles[index - 1].price"
                                             :onInput="(text) => changeInput(['settings', 'vehicles', 'price'], parseFloat(text))"
                                         ></Input>
                                         <Button :glow="true" :raise="true" @click="removeInput(['settings', 'vehicles'], index)">
@@ -133,8 +145,24 @@
                                 :onInput="(text) => changeInput(['settings', 'motd'], text)"
                             ></Input>
                         </Module>
-                        <Module v-if="selected.ranks" name="Ränge" class="split-center mb-2"> </Module>
-                        <Module v-if="selected.members" name="Mitglieder" class="split-center mb-2"> </Module>
+                        <Module v-if="selected.members" name="Mitglieder" class="split-center mb-2">
+                            <Module v-if="selected.members[key]" class="split split-full fill-full-width mb-2" :name="key" v-for="(key, index) in Object.keys(selected.members)">
+                                <Input v-if="selected.members[key].name" class="mb-2" :readonly="true" label="Name" :stack="true" :value="selected.members[key].name"></Input>
+                                <Input v-if="selected.members[key].rank" class="mb-2" :readonly="true" label="Rang" :stack="true" :value="selected.members[key].rank"></Input>
+                                <Choice
+                                    v-if="selected.members[key].hasOwnership"
+                                    class="mb-2"
+                                    label="Inhaber der Firma"
+                                    :options="[
+                                        { text: 'Ja', value: true },
+                                        { text: 'Nein', value: false },
+                                    ]"
+                                    :stack="true"
+                                    :value="selected.members[key].hasOwnership"
+                                    :onInput="(text) => changeInput(['members', key, 'hasOwnership'], text as boolean)"
+                                ></Choice>
+                            </Module>
+                        </Module>
                     </div>
                     <div class="split split-full">
                         <Button class="fill-full-width mr-2" color="green" @click="acceptModify">

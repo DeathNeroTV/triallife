@@ -3,7 +3,7 @@ import { triallife } from '../../../server/api/triallife';
 import { command } from '../../../server/decorators/commands';
 import { PluginSystem } from '../../../server/systems/plugins';
 import { PERMISSIONS } from '../../../shared/flags/permissionFlags';
-const PLUGIN_NAME = ' ROLEPLAY-BEFEHLE';
+const PLUGIN_NAME = 'ROLEPLAY-BEFEHLE';
 
 class Commands {
     @command('testextrasound', '/testextrasound', PERMISSIONS.ADMIN)
