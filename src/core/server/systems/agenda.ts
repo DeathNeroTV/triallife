@@ -43,7 +43,7 @@ export class AgendaSystem {
         }
 
         agenda[id] = callback;
-        alt.log(`~lb~3L:RP ~lk~==> ~lg~Aufgabe ~lk~zur Zeitlinie hinzugefügt ~y~@${id}`);
+        alt.log(`~lb~3L:RP ~w~==> ~lg~Aufgabe ~lk~zur Zeitlinie hinzugefügt ~y~@${id}`);
     }
 
     /**
