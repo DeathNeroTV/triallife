@@ -28,14 +28,8 @@ export class Injections {
      * @memberof Injections
      */
     static add(injectionName: string, callback: UnknownFunction) {
-        if (!injections[injectionName]) {
-            injections[injectionName] = [];
-        }
-
-        if (typeof callback !== 'function') {
-            throw new Error(`Callback in Injections.add is not of function type.`);
-        }
-
+        if (!injections[injectionName]) injections[injectionName] = [];
+        if (typeof callback !== 'function') throw new Error(`Callback in Injections.add is not of function type.`);
         injections[injectionName].push(callback);
     }
 
@@ -49,10 +43,7 @@ export class Injections {
      * @memberof Injections
      */
     static get<T>(injectionName: VehicleInjectionNames | PlayerInjectionNames | string): Array<T | UnknownFunction> {
-        if (!injections[injectionName]) {
-            return [];
-        }
-
+        if (!injections[injectionName]) return [];
         return injections[injectionName];
     }
 }

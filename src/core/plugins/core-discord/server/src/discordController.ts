@@ -1,11 +1,12 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { ActivityType, APIEmbed, Client, Embed, EmbedBuilder, GatewayIntentBits, Guild, GuildMember, TextChannel } from 'discord.js';
+import { ActivityType, Client, Colors, EmbedBuilder, GatewayIntentBits, Guild, GuildMember, TextChannel } from 'discord.js';
 import { triallife } from '../../../../server/api/triallife';
 import { Account } from '../../../../server/interface/iAccount';
 import { Collections } from '../../../../server/interface/iDatabaseCollections';
 import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
 import { DISCORD_LOGIN_EVENTS } from '../../../core-discord-login/shared/events';
+import { DISCORD_CONFIG } from '../config';
 import { LOCALE_DISCORD_ALLOW_LIST } from '../config/locales';
 
 const client: Client<boolean> = new Client({
@@ -32,7 +33,17 @@ export class DiscordController {
         client.login(_token);
     }
 
-    static dispose() {
+    static async dispose() {
+        await DiscordController.sendEmbed(DISCORD_CONFIG.TEXT_CHANNEL_ID, new EmbedBuilder({
+            color: Colors.DarkGreen,
+            title: 'Trial Life Roleplay',
+            description: 'Der Server ist offline',
+            fields: [
+                { name: 'Platform', value: 'PC', inline: false },
+                { name: 'Hardware', value: 'Headset & Mikrofon', inline: false },
+                { name: 'Software', value: 'alt:V Client & Discord App', inline: false },
+            ]
+        }));
         client.destroy();
     }
 

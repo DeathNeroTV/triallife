@@ -13,9 +13,7 @@ import { VehicleInfo } from '../../../../shared/interfaces/vehicleInfo';
 import { FactionHandler } from '../../../core-factions/server/src/handler';
 import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 import { IVehicle } from '../../../../shared/interfaces/iVehicle';
-import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
 import { FactionFuncs } from '../../../core-factions/server/src/funcs';
-import { FactionPlayerFuncs } from '../../../core-factions/server/src/playerFuncs';
 import { Vehicle_Behavior } from '../../../../shared/enums/vehicle';
 import { InteriorSystem } from '../../../core-interior/server/src/system';
 import { StateManager } from '../../../../server/systems/stateManager';
@@ -223,7 +221,7 @@ class InternalFunctions {
         const faction = deepCloneObject<Faction>(FactionHandler.get(factionID));
         if (!faction) return;
         delete faction._id;
-        const pos = player.vehicle ? player.vehicle.pos : { x: player.pos.x, y: player.pos.y, z: player.pos.z - 1 };
+        const pos = player.vehicle ? player.vehicle.pos : { x: player.pos.x, y: player.pos.y, z: player.pos.z - 0.5 };
         const rot = player.vehicle ? player.vehicle.rot : { x: player.rot.x, y: player.rot.y, z: player.rot.z };
         if (Array.isArray(keys)) {
             if (keys.length === 2) {

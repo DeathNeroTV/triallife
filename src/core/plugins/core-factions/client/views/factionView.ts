@@ -101,9 +101,10 @@ class InternalFunctions {
         for (const element of currentVehicles) {
             if (!element.hasSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID)) continue;
             const id = element.getSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID);
-            if (factionRef.vehicles.findIndex((veh) => veh.id === id) === -1) continue;
+            if (factionRef.vehicles.findIndex((veh) => veh.id === id) <= -1) continue;
             spawnedVehicles.push(id);
         }
+        console.log(`${faction.name} Fahrzeugliste: ${JSON.stringify(spawnedVehicles)}`);
         return spawnedVehicles;
     }
 

@@ -5,7 +5,7 @@ const CollectionName = 'global';
 let uid: string;
 
 export interface IGlobal {
-    _id?: any;
+    _id?: unknown;
 }
 
 export class Global {

@@ -197,7 +197,7 @@ export default class VehicleFuncs {
             document.rotation.y,
             document.rotation.z,
         );
-        vehicle.setSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID, document._id.toString());
+        vehicle.setSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID, document._id as string);
         vehicle.modelName = document.model;
         SpawnedVehicles[document.id] = vehicle;
         // Setup Default Values

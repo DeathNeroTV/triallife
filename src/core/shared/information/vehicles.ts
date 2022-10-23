@@ -500,7 +500,7 @@ export const VehicleData: Array<VehicleInfo> = [
         name: 'oracle2',
         type: VEHICLE_TYPE.VEHICLE,
         class: VEHICLE_CLASS.COUPE,
-        sell: false,
+        sell: true,
         price: 999999999,
         storage: 24,
     },

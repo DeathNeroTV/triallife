@@ -88,7 +88,6 @@ export default defineComponent({
                 console.log(`Adding Spot with pos: ${JSON.stringify(this.pos)}`);
                 return;
             }
-
             alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.ADD_PARKING_SPOT, this.pos, this.rot);
         },
         removeLocation(index: number) {

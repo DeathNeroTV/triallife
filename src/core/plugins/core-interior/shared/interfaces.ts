@@ -9,7 +9,7 @@ export interface Interior {
      * @type {unknown}
      * @memberof Interior
      */
-    _id?: any;
+    _id?: unknown;
 
     /**
      * A unique identifier for this interior.

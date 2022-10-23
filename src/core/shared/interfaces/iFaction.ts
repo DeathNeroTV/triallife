@@ -46,7 +46,7 @@ export interface IFaction {
      * @type {unknown}
      * @memberof IFaction
      */
-    _id?: any;
+    _id?: unknown;
 
     /**
      * The name of this faction.

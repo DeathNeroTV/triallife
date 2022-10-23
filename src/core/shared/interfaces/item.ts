@@ -6,7 +6,7 @@ export interface ItemData {
 }
 
 export interface Item<T = ItemData> {
-    _id?: any;
+    _id?: unknown;
     name: string;
     dbName?: string;
     uuid?: string;

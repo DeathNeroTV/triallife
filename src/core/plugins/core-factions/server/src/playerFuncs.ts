@@ -7,7 +7,7 @@ import { FactionFuncs } from './funcs';
 import { FactionHandler } from './handler';
 import { triallife } from '../../../../server/api/triallife';
 import { FACTION_EVENTS } from '../../shared/factionEvents';
-import { distance, getClosestVector } from '../../../../shared/utility/vector';
+import { distance } from '../../../../shared/utility/vector';
 
 /**
  * Bound to the player to manipulate individual faction functionality.
@@ -512,18 +512,9 @@ export class FactionPlayerFuncs {
      */
     static async addParkingSpot(player: alt.Player, pos: alt.Vector3, rot: alt.Vector3) {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
-        if (!FactionPlayerFuncs.isOwner(player)) {
-            return false;
-        }
-
-        if (!player.vehicle) {
-            return await FactionFuncs.addParkingSpot(faction, new alt.Vector3(pos.x, pos.y, pos.z - 0.5), rot);
-        }
-
+        if (!faction) return false;
+        if (!FactionPlayerFuncs.isOwner(player)) return false;
+        if (!player.vehicle) return await FactionFuncs.addParkingSpot(faction, new alt.Vector3(pos.x, pos.y, pos.z - 0.5), rot);
         return await FactionFuncs.addParkingSpot(faction, pos, rot);
     }
 
@@ -535,14 +526,8 @@ export class FactionPlayerFuncs {
      */
     static async removeParkingSpot(player: alt.Player, index: number) {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
-        if (!FactionPlayerFuncs.isOwner(player)) {
-            return false;
-        }
-
+        if (!faction) return false;
+        if (!FactionPlayerFuncs.isOwner(player)) return false;
         return await FactionFuncs.removeParkingSpot(faction, index);
     }
 
@@ -607,7 +592,12 @@ export class FactionPlayerFuncs {
             if (!selfRank.vehicles) return false;
             if (selfRank.vehicles.findIndex((x) => x === vehicleId) <= -1) return false;
         }
-        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots) || faction.settings.parkingSpots.length <= 0) {
+        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots)) {
+            triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
+            return false;
+        }
+        if (faction.settings.parkingSpots.length <= 0) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
             return false;
@@ -617,7 +607,6 @@ export class FactionPlayerFuncs {
         });
         return await FactionFuncs.spawnVehicle(faction, vehicleId, sortedSpots[0]);
     }
-
     
     /**
      * If the player is the owner or admin, or if the player's rank has the vehicleId in the vehicles
@@ -631,22 +620,24 @@ export class FactionPlayerFuncs {
         if (!faction) return false;
         if (!faction.vehicles || !Array.isArray(faction.vehicles)) return false;
         const vehicleIndex = faction.vehicles.findIndex((x) => x.id === vehicleId);
-        if (vehicleIndex == -1) return false;
+        if (vehicleIndex === -1) return false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             // Get the current acting member's rank.
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
             if (!selfRank.vehicles) return false;
             if (selfRank.vehicles.findIndex((x) => x === vehicleId) <= -1) return false;
         }
-        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots) || faction.settings.parkingSpots.length <= 0) {
+        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots)) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
             return false;
         }
-        const sortedSpots = faction.settings.parkingSpots.sort((a, b) => {
-            return distance(player.pos, a.pos) - distance(player.pos, b.pos);
-        });
-        return await FactionFuncs.despawnVehicle(faction, vehicleId, sortedSpots[0]);
+        if (faction.settings.parkingSpots.length <= 0) {
+            triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
+            return false;
+        }
+        return await FactionFuncs.despawnVehicle(faction, vehicleId);
     }
 
     /**
@@ -660,14 +651,7 @@ export class FactionPlayerFuncs {
      * @memberof FactionPlayerFuncs
      */
     static invoke(player: alt.Player, functionName: string, ...args: any[]): boolean {
-        console.log(`invoking...`);
-        console.log(functionName, JSON.stringify(args));
-
-        if (!FactionPlayerFuncs[functionName]) {
-            return false;
-        }
-
-        console.log('invoked');
+        if (!FactionPlayerFuncs[functionName]) return false;
         return FactionPlayerFuncs[functionName](player, ...args);
     }
 }

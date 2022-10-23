@@ -8,6 +8,9 @@ import { IGenericResponse } from '../../../../shared/interfaces/iResponse';
 import { deepCloneObject } from '../../../../shared/utility/deepCopy';
 import { triallife } from '../../../../server/api/triallife';
 import { BankInfo } from '../../../../shared/interfaces/bank';
+import { FactionFuncs } from './funcs';
+import { ServerMarkerController } from '../../../../server/streamers/marker';
+import { MARKER_TYPE } from '../../../../shared/enums/markerTypes';
 
 const factions: { [key: string]: Faction } = {};
 
@@ -278,9 +281,10 @@ export class FactionHandler {
      */
     static updateSettings(faction: Faction) {
         if (!faction.settings) return;
-        if (faction.settings.blip && faction.settings.blip > -1) {
+        if (faction.settings.blip && faction.settings.blip > -1) { 
+            //Adding blips to faction if value is bigger as 0  
             triallife.controllers.blip.append({
-                uid: faction._id.toString(),
+                uid: faction._id as string,
                 color: faction.settings.blipColor,
                 sprite: faction.settings.blip,
                 pos: faction.settings.position,
@@ -288,6 +292,23 @@ export class FactionHandler {
                 text: faction.name,
                 shortRange: true,
             });
-        } else triallife.controllers.blip.remove(faction._id.toString());
+        } else triallife.controllers.blip.remove(faction._id as string); //otherwise remove blip from server
+        //Adding markers to all Parking >Spots for better despawn action       
+        if (faction.settings.parkingSpots && faction.settings.parkingSpots.length > 0) {
+            for (let index = 0; index < faction.settings.parkingSpots.length; index++){
+                ServerMarkerController.append({
+                    pos: faction.settings.parkingSpots[index].pos,
+                    color: new alt.RGBA(0, 135, 54, 100),
+                    type: MARKER_TYPE.HORIZONTAL_BARS,
+                    dimension: 0,
+                    bobUpAndDown: false,
+                    faceCamera: true,
+                    maxDistance: 5,
+                    rotate: false,
+                    scale: new alt.Vector3(1),
+                    uid: `${faction._id as string}-parkingSpot-${index}`
+                });
+            }
+        }
     }
 }

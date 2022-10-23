@@ -10,6 +10,8 @@ import { FACTION_EVENTS } from '../../shared/factionEvents';
 import { triallife } from '../../../../server/api/triallife';
 import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
 import { IVehicle } from '../../../../shared/interfaces/iVehicle';
+import { ServerMarkerController } from '../../../../server/streamers/marker';
+import { MARKER_TYPE } from '../../../../shared/enums/markerTypes';
 import { distance, distance2d } from '../../../../shared/utility/vector';
 
 let hasInitialized = false;
@@ -35,46 +37,25 @@ export class FactionFuncs {
      * @returns None
      */
     static init() {
-        if (hasInitialized) {
-            return;
-        }
-
+        if (hasInitialized) return;
         hasInitialized = true;
         triallife.injections.vehicle.ownership('vehicle-ownership', FactionFuncs.handleOwnershipInjection);
     }
 
     private static handleOwnershipInjection(player: alt.Player, vehicle: alt.Vehicle) {
-        if (!vehicle.data) {
-            return false;
-        }
-
+        if (!vehicle.data) return false;
         // Check if vehicle is owned by a faction
         const faction = FactionHandler.get(vehicle.data.owner);
-        if (!faction) {
-            return false;
-        }
-
+        if (!faction) return false;
         // Check if in same faction
-        if (vehicle.data.owner !== player.data.faction) {
-            return false;
-        }
-
+        if (vehicle.data.owner !== player.data.faction) return false;
         // Check if the vehicle identifier exists in the faction vehicles list
         const index = faction.vehicles.findIndex((fv) => fv.id === vehicle.data._id.toString());
-        if (index <= -1) {
-            return false;
-        }
-
+        if (index <= -1) return false;
         // Check if the players rank has access to this vehicle specifically
         const rank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
-        if (!rank) {
-            return false;
-        }
-
-        if (rank.vehicles && !rank.vehicles.includes(vehicle.data._id.toString())) {
-            return false;
-        }
-
+        if (!rank) return false;
+        if (rank.vehicles && !rank.vehicles.includes(vehicle.data._id.toString())) return false;
         return true;
     }
 
@@ -88,7 +69,6 @@ export class FactionFuncs {
     static updateMembers(faction: Faction) {
         const memberIdentifiers = Object.keys(faction.members);
         const members = alt.Player.all.filter((p) => p && p.valid && p.data && memberIdentifiers.includes(p.data._id.toString()));
-
         alt.emitClient(members, FACTION_EVENTS.PROTOCOL.REFRESH, faction);
     }
 
@@ -342,11 +322,9 @@ export class FactionFuncs {
      */
     static async kickMember(faction: Faction, characterID: string): Promise<boolean> {
         const character = await Database.fetchData<Character>(`_id`, characterID, Collections.Characters);
-
         if (character) {
             await Database.updatePartialData(character._id.toString(), { faction: null }, Collections.Characters);
         }
-
         const target = alt.Player.all.find((p) => p.data && p.data._id.toString() === characterID);
         if (target && target.valid) {
             target.data.faction = null;
@@ -694,21 +672,14 @@ export class FactionFuncs {
      * @memberof FactionFuncs
      */
     static async removeVehicle(faction: Faction, vehicleUid: string) {
-        if (!faction.vehicles) {
-            return false;
-        }
-
+        if (!faction.vehicles) return false;
         const index = faction.vehicles.findIndex((fv) => fv.id === vehicleUid);
-        if (index <= -1) {
-            return false;
-        }
-
+        if (index <= -1) return false;
         faction.vehicles.splice(index, 1);
         const didUpdate = await FactionHandler.update(faction._id as string, { vehicles: faction.vehicles });
         if (didUpdate.status) {
             FactionFuncs.updateMembers(faction);
         }
-
         return didUpdate.status;
     }
 
@@ -939,17 +910,27 @@ export class FactionFuncs {
      * @returns a boolean value.
      */
     static async addParkingSpot(faction: Faction, pos: alt.Vector3, rot: alt.Vector3) {
-        if (!faction.settings.parkingSpots) {
-            faction.settings.parkingSpots = [];
-        }
-
+        if (!faction.settings.parkingSpots) faction.settings.parkingSpots = [];
         faction.settings.parkingSpots.push({ pos, rot });
-        const didUpdate = await FactionHandler.update(faction._id as string, { settings: faction.settings });
+        faction.settings.parkingSpots.forEach((spot, index) => {
+            ServerMarkerController.append({
+                pos,
+                color: new alt.RGBA(0, 135, 54, 100),
+                type: MARKER_TYPE.HORIZONTAL_BARS,
+                dimension: 0,
+                bobUpAndDown: false,
+                faceCamera: true,
+                maxDistance: 5,
+                rotate: false,
+                scale: new alt.Vector3(1),
+                uid: `${faction._id.toString()}-parkingSpot-${index}`
+            });
+        });
+        const didUpdate = await FactionHandler.update(faction._id.toString(), { settings: faction.settings });
         if (didUpdate.status) {
             FactionFuncs.updateMembers(faction);
             FactionHandler.updateSettings(faction);
         }
-
         return didUpdate.status;
     }
 
@@ -960,21 +941,15 @@ export class FactionFuncs {
      * @returns A boolean value.
      */
     static async removeParkingSpot(faction: Faction, index: number) {
-        if (!faction.settings.parkingSpots) {
-            return false;
-        }
-
-        if (!faction.settings.parkingSpots[index]) {
-            return false;
-        }
-
+        if (!faction.settings.parkingSpots) return false;
+        if (!faction.settings.parkingSpots[index]) return false;
+        ServerMarkerController.remove(`${faction._id.toString()}-parkingSpot-${index}`);
         faction.settings.parkingSpots.splice(index, 1);
-        const didUpdate = await FactionHandler.update(faction._id as string, { settings: faction.settings });
+        const didUpdate = await FactionHandler.update(faction._id.toString(), { settings: faction.settings });
         if (didUpdate.status) {
             FactionFuncs.updateMembers(faction);
             FactionHandler.updateSettings(faction);
         }
-
         return didUpdate.status;
     }
 
@@ -1071,29 +1046,31 @@ export class FactionFuncs {
     }
 
     static async spawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
-        const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
-        if (vehIndex !== -1) return false;
+        const vehicle = alt.Vehicle.all.find((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
+        if (vehicle) return false;
         // Check if the parking spot is free.
         const isSpotFree = await FactionFuncs.isParkingSpotFree(location.pos);
         if (!isSpotFree) return false;
         // Spawn the vehicle.
         const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, triallife.database.collections.Vehicles);
         if (!vehicleInfo) return false;
-        VehicleFuncs.spawn(vehicleInfo, location.pos, location.rot);
+        triallife.vehicle.funcs.spawn(vehicleInfo, location.pos, location.rot);
         FactionFuncs.updateMembers(faction);
         return true;
     }
 
-    static async despawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
-        const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
-        if (vehIndex === -1) return false;
-        // Check if the vehicle stays on parking spot.
-        const isSpotOccupied = await FactionFuncs.isVehicleInParkingSpot(alt.Vehicle.all[vehIndex], location.pos);
-        if (!isSpotOccupied) return false;
-        // Spawn the vehicle.
+    static async despawnVehicle(faction: Faction, vehicleId: string) {
+        const vehicle = alt.Vehicle.all.find((ref) => ref && ref.data && ref.data._id.toString() === vehicleId);
+        if (!vehicle) return false;
+        // Check if the vehicle stays on parking spot.        
+        const location = faction.settings.parkingSpots.sort((a, b) => {
+            return distance(vehicle.pos, a.pos) - distance(vehicle.pos, b.pos);
+        });
+        if (!FactionFuncs.isCloseToSpot(vehicle.pos, location)) return false;
         const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, triallife.database.collections.Vehicles);
         if (!vehicleInfo) return false;
-        VehicleFuncs.despawn(vehicleInfo._id);
+        // Despawn the vehicle.
+        triallife.vehicle.funcs.despawn(vehicle.data.id);
         FactionFuncs.updateMembers(faction);
         return true;
     }
@@ -1113,11 +1090,11 @@ export class FactionFuncs {
                 resolve();
             }, 250);
         });
-        const index = alt.Vehicle.all.findIndex((veh) => veh && veh.valid && pointTest.isEntityIn(veh));
+        const spaceOccupied = alt.Vehicle.all.find((veh) => veh && veh.valid && pointTest.isEntityIn(veh));
         try {
             pointTest.destroy();
         } catch (err) {}
-        return index !== -1;
+        return spaceOccupied ? false : true;
     }
 
     /**
@@ -1128,18 +1105,12 @@ export class FactionFuncs {
      * @returns a boolean value.
      * @memberof FactionFuncs
      */
-    static async isVehicleInParkingSpot(veh: alt.Vehicle, parkingSpot: Vector3) {
-        const pointTest = new alt.ColshapeSphere(parkingSpot.x, parkingSpot.y, parkingSpot.z - 1, 2);
-        // Have to do a small sleep to the ColShape propogates entities inside of it.
-        await new Promise((resolve: Function) => {
-            alt.setTimeout(() => {
-                resolve();
-            }, 250);
-        });
-        const isInPoint = pointTest.isEntityIn(veh);
-        try {
-            pointTest.destroy();
-        } catch (err) {}
-        return isInPoint;
+    static isCloseToSpot(pos: Vector3, parkingSpots: Array<{ pos:Vector3, rot:Vector3 }>) {
+        for (let i = 0; i < parkingSpots.length; i++) {
+            const dist = distance2d(pos, parkingSpots[i].pos);
+            if (dist >= 5) continue;
+            return true;
+        }
+        return false;
     }
 }

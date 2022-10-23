@@ -14,7 +14,7 @@
             <div class="split space-between">
                 <div class="overline">Neues Fahrzeug erwerben?</div>
                 <template v-if="faction.bank >= 1">
-                    <Button class="veh-button" color="green" @click="addVehicle = true">
+                    <Button class="veh-button" color="green" @click="() => (addVehicle = true)">
                         <Icon :size="14" icon="icon-plus" />
                     </Button>
                 </template>
@@ -32,27 +32,19 @@
             <div class="vehicle-name subtitle-2">Model: {{ vehicle.model }}</div>
             <div class="split">
                 <!-- Manage Permissions -->
-                <template v-if="manageVehicles">
-                    <Button class="veh-button" color="green" help="Permissions" @click="() => showRankPermissions(vehicle)">
-                        <Icon :size="14" icon="icon-cog2" />
-                    </Button>
-                </template>
-                <template v-else>
-                    <Button class="veh-button" color="green" :disable="true">
-                        <Icon :size="14" icon="icon-cog2" />
-                    </Button>
-                </template>
+                <Button v-if="manageVehicles" class="veh-button" color="green" help="Berechtigungen" @click="() => showRankPermissions(vehicle)">
+                    <Icon :size="14" icon="icon-cog2" />
+                </Button>
+                <Button v-else class="veh-button" color="green" :disable="true">
+                    <Icon :size="14" icon="icon-cog2" />
+                </Button>
                 <!-- Spawn / Despawn Vehicle -->
-                <template v-if="!isVehicleSpawned(vehicle)">
-                    <Button class="veh-button" color="green" help="Ausparken" @click="() => spawnVehicle(vehicle.id)">
-                        <Icon :size="14" icon="icon-upload2" />
-                    </Button>
-                </template>
-                <template v-else>
-                    <Button class="veh-button" color="green" help="Einparken" @click="() => despawnVehicle(vehicle.id)">
-                        <Icon :size="14" icon="icon-download2" />
-                    </Button>
-                </template>
+                <Button v-if="!isVehicleSpawned(vehicle)" class="veh-button" color="green" help="Ausparken" @click="() => spawnVehicle(vehicle.id)">
+                    <Icon :size="14" icon="icon-upload2" />
+                </Button>
+                <Button v-else class="veh-button" color="green" help="Einparken" @click="() => despawnVehicle(vehicle.id)">
+                    <Icon :size="14" icon="icon-download2" />
+                </Button>
             </div>
         </div>
     </div>
@@ -108,7 +100,6 @@ export default defineComponent({
         updateFaction() {
             const member = FactionParser.getMember(this.faction, this.character);
             const rank = FactionParser.getRank(this.faction, member);
-
             this.manageVehicles = member.hasOwnership || rank.rankPermissions.manageVehicles ? true : false;
         },
         showRankPermissions(vehicle: { id: string; model: string }) {
@@ -134,7 +125,7 @@ export default defineComponent({
         },
         isVehicleSpawned(vehicle: { model: string; id: string }) {
             const index = this.spawnedVehicles.findIndex((id) => id === vehicle.id);
-            return index !== -1;
+            return index >= 0 ? true : false;
         },
         spawnVehicle(uid: string) {
             if (!('alt' in window)) {

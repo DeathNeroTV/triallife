@@ -274,7 +274,7 @@ async function runServer() {
 
     await sleep(50);
     handleStreamerProcess(true);
-    handleServerProcess(true);
+    handleServerProcess(false);
 }
 
 if (passedArguments.includes('start')) {

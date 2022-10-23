@@ -88,13 +88,8 @@ export default defineComponent({
             this.money = money;
             this.pos = pos;
             this.rot = rot;
-
-            if (typeof spawnedVehicles === 'string') {
-                console.log(spawnedVehicles);
-                this.spawnedVehicles = JSON.parse(spawnedVehicles);
-            } else {
-                this.spawnedVehicles = spawnedVehicles;
-            }
+            if (typeof spawnedVehicles === 'string') this.spawnedVehicles = JSON.parse(spawnedVehicles);
+            else this.spawnedVehicles = spawnedVehicles;
         },
         updateFactionProp(faction: Faction) {
             this.faction = faction;

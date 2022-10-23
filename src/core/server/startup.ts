@@ -1,10 +1,12 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
+import { ChildProcess } from 'child_process';
 import { Colors, EmbedBuilder, TextChannel } from 'discord.js';
 import { DISCORD_CONFIG } from '../plugins/core-discord/server/config';
 import { DiscordController } from '../plugins/core-discord/server/src/discordController';
 
 import { SYSTEM_EVENTS } from '../shared/enums/system';
+import { ConsoleCommander } from '../shared/utility/consoleCommander';
 import { IConfig } from './interface/iConfig';
 import ConfigUtil from './utility/config';
 import MongoUtil from './utility/mongo';
@@ -15,6 +17,7 @@ let config: IConfig | undefined;
 
 class Startup {
     static async begin() {
+        ConsoleCommander.registerConsoleCommand('exit', Startup.handleStop);
         // Validate the Configuration
         config = ConfigUtil.get();
 
@@ -73,10 +76,9 @@ class Startup {
         const bootTime = ((Date.now() - startTime) / 1000).toFixed(0);
         const embed = new EmbedBuilder({
             color: Colors.DarkGreen,
-            title: 'Server Status',
-            description: 'Der Server ist wieder online',
+            title: 'Trial Life Roleplay',
+            description: 'Der Server ist online',
             fields: [
-                { name: 'Name des Servers', value: 'Trial Life Roleplay', inline: false },
                 { name: 'Startzeit', value: `${bootTime} Sekunden`, inline: false },
                 { name: 'Platform', value: 'PC', inline: false },
                 { name: 'Hardware', value: 'Headset & Mikrofon', inline: false },
@@ -97,9 +99,13 @@ class Startup {
             alt.log(`~lb~3LRP ==> ~w~Ein Wiederverbindungsereignis ist zu früh aufgetreten. Versuchen Sie es nochmal.`);
         }
     }
+
+    static async handleStop() {
+        await DiscordController.dispose();
+        alt.stopServer();
+    }
 }
 
 alt.on('playerConnect', Startup.handleEarlyConnect);
 alt.on(SYSTEM_EVENTS.BOOTUP_ENABLE_ENTRY, Startup.toggleEntry);
-
 Startup.begin();
