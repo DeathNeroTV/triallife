@@ -6,7 +6,7 @@ import net from 'net';
 const DefaultServerCFGName = 'server.cfg';
 const DefaultViteServer = '127.0.0.1';
 const DefaultVitePort = 3000;
-const DefaultConfigName = 'triallifeConfig.json';
+const DefaultConfigName = 'TriallifeConfig.json';
 let configCache: IConfig;
 let firstRun = true;
 let isVueDebug = false;
@@ -78,17 +78,15 @@ export default {
     getVueDebugMode(): boolean {
         return isVueDebug;
     },
-    gettriallifeVersion(): string {
+    getTrialLifeVersion(): string {
         const file = fs.readFileSync('package.json').toString();
         let data: { version: string };
-
         try {
             data = JSON.parse(file);
         } catch (err) {
             alt.logError(`Failed to read package.json. Run your package.json through a JSON linter. Google it.`);
             process.exit(1);
         }
-
         return data.version;
     },
 };
