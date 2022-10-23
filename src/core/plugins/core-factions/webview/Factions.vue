@@ -1,8 +1,8 @@
 <template>
     <div class="factions-wrapper stack">
         <div class="toolbar split space-between">
-            <span class="pl-2">{{ faction && faction.name ? faction.name : 'Unbekannte Firma' }}</span>
-            <Icon class="red--text red--hover hover pr-2" :size="24" icon="icon-times-circle" @click="close" />
+            <span class="center grey--text text-darken-3">{{ faction && faction.name ? faction.name : 'Unbekannte Firma' }}</span>
+            <Icon class="red--text red--hover hover pr-2" :size="24" icon="icon-times-rectangle-o" @click="close" />
         </div>
         <div class="split" style="width: 100%">
             <div class="factions-nav">
@@ -58,12 +58,12 @@ export default defineComponent({
         return {
             pageIndex: 0,
             pages: [
-                { name: 'Members', page: 'Members' },
-                { name: 'Ranks', page: 'Ranks' },
-                { name: 'Bank', page: 'Bank' },
-                { name: 'Vehicles', page: 'Vehicles' },
-                { name: 'Actions', page: 'Actions' },
-                { name: 'Settings', page: 'Settings' },
+                { name: 'Members', page: 'Members', trans: 'Mitglieder' },
+                { name: 'Ranks', page: 'Ranks', trans: 'Ränge' },
+                { name: 'Bank', page: 'Bank', trans: 'Tresor' },
+                { name: 'Vehicles', page: 'Vehicles', trans: 'Fahrzeuge' },
+                { name: 'Actions', page: 'Actions', trans: 'Aktionen' },
+                { name: 'Settings', page: 'Settings', trans: 'Einstellungen' },
             ],
             faction: null,
             // Character IDs and their associated test ranks...
@@ -100,19 +100,11 @@ export default defineComponent({
             this.faction = faction;
         },
         close() {
-            if (!('alt' in window)) {
-                return;
-            }
-
-            console.log('test');
+            if (!('alt' in window)) return;
             alt.emit(FACTION_EVENTS.WEBVIEW.CLOSE);
         },
         handlePress(e: KeyboardEvent) {
-            // Escape
-            if (e.keyCode !== 27) {
-                return;
-            }
-
+            if (e.key.toLowerCase() !== 'escape') return;
             this.close();
         },
     },
@@ -142,8 +134,6 @@ export default defineComponent({
     max-height: 35px;
     background-color: rgba(12, 12, 12, 1);
     border-bottom: 2px solid rgba(48, 48, 48, 1);
-    border-top-right-radius: 6px;
-    border-top-left-radius: 6px;
 }
 
 .factions-wrapper {
@@ -156,8 +146,6 @@ export default defineComponent({
     overflow: hidden;
     border: 2px solid rgba(22, 22, 22, 1);
     box-shadow: 2px 2px 10px black;
-    border-top-right-radius: 6px;
-    border-top-left-radius: 6px;
 }
 
 .factions-nav {

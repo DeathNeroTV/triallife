@@ -26,12 +26,12 @@ class CurrencyCommands {
 
     @command('addbank', '/addbank [type] [amount] [iban]', PERMISSIONS.ADMIN | PERMISSIONS.OWNER)
     private static async addBankCommand(player: alt.Player, amount: string, iban: string | null = null): Promise<void> {
-        var bank = await Database.fetchData<BankInfo>('iban', iban, Collections.Banks);
         if (iban === null || iban === undefined) {
-            bank = (await triallife.player.currency.getAllBankAccountsPlayer(player)).find((x) => x.type === 'private');
-            await triallife.player.currency.setBank(player, parseFloat(amount), bank.iban);
+            var bank = (await triallife.player.currency.getAllBankAccountsPlayer(player)).find((x) => x.type === 'private');
+            await triallife.player.currency.addBank(player, parseFloat(amount), bank.iban);
             return;
         }
+        var bank = await Database.fetchData<BankInfo>('iban', iban, Collections.Banks);
         const target = triallife.systems.identifier.getPlayerByName(bank.owner);
         if (!target) {
             triallife.player.emit.notification(player, 'Spieler wurde nicht gefunden');
@@ -56,10 +56,10 @@ class CurrencyCommands {
 
     @command('setbank', '/setbank [amount] [id]', PERMISSIONS.ADMIN | PERMISSIONS.OWNER)
     private static async setBankCommand(player: alt.Player, amount: string, id: string | null = null): Promise<void> {
-        const banks = await Database.fetchAllByField<BankInfo>('type', 'private', Collections.Banks);
+        const banks = await Database.fetchData<BankInfo>('iban', 'id', Collections.Banks);
         if (id === null || id === undefined) {
             const index = banks.findIndex((x) => x.owner === player.data.name);
-            if (index !== -1) triallife.player.currency.setBank(parseFloat(amount), banks[index].iban);
+            if (index !== -1) triallife.player.currency.setBank(player, parseFloat(amount), banks[index]._id.toString());
             return;
         }
         const target = triallife.systems.identifier.getPlayer(id);
@@ -68,6 +68,6 @@ class CurrencyCommands {
             return;
         }
         const index = banks.findIndex((x) => x.owner === target.data.name);
-        triallife.player.currency.setBank(parseFloat(amount), banks[index].iban);
+        triallife.player.currency.setBank(target, parseFloat(amount), banks[index]._id.toString());
     }
 }

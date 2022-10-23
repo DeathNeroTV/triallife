@@ -143,8 +143,8 @@ export default defineComponent({
         updateData({ ...data }) {
             Object.keys(data).forEach((key) => (this[key] = data[key]));
         },
-        handlePress(e) {
-            if (e.keyCode !== 27) return;
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
             if (!('alt' in window)) return;
             alt.emit(`${ComponentName}:Close`);
         },

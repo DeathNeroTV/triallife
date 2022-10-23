@@ -17,16 +17,16 @@
                     </Button>
                     <v-card-text class="fill-full-width mt-2 grey darken-1">
                         <div class="split split-center no-select grey darken-1 pa-2">
-                            IBAN:&nbsp;<div class="no-select">{{ bank.iban }}</div>
+                            IBAN:&nbsp;
+                            <div class="no-select">{{ bank.iban }}</div>
                         </div>
                         <div class="split split-center no-select grey darken-2 pa-2">
-                            Kontostand:&nbsp;<div class="no-select">{{ showBankAmount(index) }}</div>
-                        </div>
-                        <div class="split split-center no-select grey darken-1 pa-2">
-                            Inhaber:&nbsp;<div class="no-select">{{ showBankOwner(index) }}</div>
+                            Kontostand:&nbsp;
+                            <div class="no-select">{{ showBankAmount(index) }}</div>
                         </div>
                         <div class="split split-center no-select grey darken-2 pa-2">
-                            Bank:&nbsp;<div class="no-select">{{ bank.name }}</div>
+                            Bank:&nbsp;
+                            <div class="no-select">{{ bank.name }}</div>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -121,10 +121,6 @@ export default defineComponent({
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             return parts.join(',');
         },
-        showBankOwner(index: number) {
-            if (this.banks.length <= 0) return 'Unbekannt';
-            return this.banks[index].owner;
-        },
         relayClosePage() {
             this.$emit('close-page', `${ComponentName}:Close`);
         },
@@ -139,8 +135,8 @@ export default defineComponent({
             this.cash = cash;
             this.banks = banks;
         },
-        handlePress(e) {
-            if (e.keyCode !== 27) return;
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
             if (!('alt' in window)) return;
             alt.emit(`${ComponentName}:Close`);
         },
@@ -194,32 +190,30 @@ export default defineComponent({
     },
     mounted() {
         document.addEventListener('keyup', this.handlePress);
-
         if ('alt' in window) {
             alt.on(`${ComponentName}:Update`, this.updateBalances);
             alt.emit(`${ComponentName}:Ready`);
             alt.emit('ready');
-        } else {
-            const cash = Math.floor(Math.random() * 5000000);
-            const banks = [
-                {
-                    _id: 1,
-                    iban: this.getRandomIban,
-                    name: 'Fleeca Bank',
-                    owner: 'Sony Vegas',
-                    amount: Math.floor(Math.random() * 5000000),
-                    type: 'private',
-                },
-            ];
-            this.updateBalances(banks, cash);
-            this.selectSetting(-1);
+            return;
         }
+        const cash = Math.floor(Math.random() * 5000000);
+        const banks = [
+            {
+                _id: 1,
+                iban: this.getRandomIban,
+                name: 'Fleeca Bank',
+                owner: 'Sony Vegas',
+                amount: Math.floor(Math.random() * 5000000),
+                type: 'private',
+            },
+        ];
+        this.updateBalances(banks, cash);
+        this.selectSetting(-1);
     },
     unmounted() {
         document.removeEventListener('keyup', this.handlePress);
-        if ('alt' in window) {
-            alt.off(`${ComponentName}:Update`, this.updateBalances);
-        }
+        if (!('alt' in window)) return;
+        alt.off(`${ComponentName}:Update`, this.updateBalances);
     },
 });
 </script>

@@ -75,11 +75,8 @@ export default defineComponent({
         setVehicles(vehicles: Array<VehicleInfo>) {
             this.vehicles = vehicles;
         },
-        handlePress(e: { keyCode: number }) {
-            if (e.keyCode !== 27) {
-                return;
-            }
-
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
             this.exit();
         },
         exit() {

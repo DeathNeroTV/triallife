@@ -1,8 +1,6 @@
 <template>
     <div class="container">
-        <span class="price-item-invalid pr-3" v-if="!isComponentAvailable()">
-            ${{ getPrice() }} {{ getItemPriceText }}
-        </span>
+        <span class="price-item-invalid pr-3" v-if="!isComponentAvailable()"> ${{ getPrice() }} {{ getItemPriceText }} </span>
         <span class="price-item pr-3" v-else>${{ getPrice() }} {{ getItemPriceText }}</span>
         <span class="price-all pr-3">${{ getAllPricing() }} {{ getAllPriceText }}</span>
         <div class="money pl-4 pb-2 green--text text--lighten-1">${{ money.toFixed(2).toLocaleString() }}</div>
@@ -24,9 +22,7 @@
                         :value="name"
                         :rules="[
                             (text) => {
-                                return new RegExp(/^[a-zA-Z ]+$/gm).test(text)
-                                    ? null
-                                    : 'Name cannot include special characters';
+                                return new RegExp(/^[a-zA-Z ]+$/gm).test(text) ? null : 'Name cannot include special characters';
                             },
                             (text) => {
                                 return text.length >= 4 ? null : 'Name must be at least 4 characters';
@@ -46,9 +42,7 @@
                         :value="desc"
                         :rules="[
                             (text) => {
-                                return new RegExp(/^[a-zA-Z ]+$/gm).test(text)
-                                    ? null
-                                    : 'Name cannot include special characters';
+                                return new RegExp(/^[a-zA-Z ]+$/gm).test(text) ? null : 'Name cannot include special characters';
                             },
                             (text) => {
                                 return text.length >= 4 ? null : 'Name must be at least 4 characters';
@@ -81,13 +75,7 @@
         <!-- Right Panel -->
         <div class="creator stack">
             <!-- Navigation -->
-            <Navigation
-                v-bind:page-index="pageIndex"
-                v-bind:pages="pages"
-                v-bind:page-name="pageName"
-                @next="nextPage"
-                @prev="prevPage"
-            />
+            <Navigation v-bind:page-index="pageIndex" v-bind:pages="pages" v-bind:page-name="pageName" @next="nextPage" @prev="prevPage" />
             <!-- Customization -->
             <template v-if="page">
                 <Option v-bind:page="page" @force-populate="forcePopulate" @update-component="updateComponent" />
@@ -97,11 +85,7 @@
             <div class="footer pa-4" v-if="page">
                 <div class="split split-full space-between">
                     <template v-if="isComponentAvailable() && hasEnoughMoney()">
-                        <Button
-                            class="smooth-button fill-full-width mr-3"
-                            color="green"
-                            @click="togglePurchaseInterface(true)"
-                        >
+                        <Button class="smooth-button fill-full-width mr-3" color="green" @click="togglePurchaseInterface(true)">
                             <span class="green--text">{{ getPurchaseText }}</span>
                         </Button>
                     </template>
@@ -529,11 +513,8 @@ export default defineComponent({
 
             alt.emit(`${ComponentName}:PageUpdate`, this.pageIndex);
         },
-        handlePress(e) {
-            if (e.keyCode !== 27) {
-                return;
-            }
-
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
             this.handleClose();
         },
         handleClose() {

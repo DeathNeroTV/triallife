@@ -17,4 +17,5 @@ export const FACTION_PFUNC = {
     PURCHASE_VEHICLE: `purchaseVehicle`,
     TOGGLE_VEHICLE_RANK_PERMISSION: `toggleVehicleRankPermission`,
     SPAWN_VEHICLE: `spawnVehicle`,
+    DESPAWN_VEHICLE: `despawnVehicle`,
 };

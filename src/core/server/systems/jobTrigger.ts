@@ -88,7 +88,6 @@ export class ServerJobTrigger {
         if (!player || !player.valid) {
             return;
         }
-
         LastTriggers[player.id] = data;
         alt.emitClient(player, VIEW_EVENTS_JOB_TRIGGER.OPEN, deepCloneObject(data));
     }

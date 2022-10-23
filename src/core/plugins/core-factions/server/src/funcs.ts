@@ -246,13 +246,9 @@ export class FactionFuncs {
      */
     static async addBank(faction: Faction, amount: number): Promise<boolean> {
         amount = Math.abs(amount);
-
         faction.bank += amount;
         const didUpdate = await FactionHandler.update(faction._id as string, { bank: faction.bank });
-        if (didUpdate.status) {
-            FactionFuncs.updateMembers(faction);
-        }
-
+        if (didUpdate.status) FactionFuncs.updateMembers(faction);
         return didUpdate.status;
     }
 
@@ -268,17 +264,10 @@ export class FactionFuncs {
      */
     static async subBank(faction: Faction, amount: number): Promise<boolean> {
         amount = Math.abs(amount);
-
-        if (faction.bank - amount < 0) {
-            return false;
-        }
-
+        if (faction.bank - amount < 0) return false;
         faction.bank -= amount;
         const didUpdate = await FactionHandler.update(faction._id as string, { bank: faction.bank });
-        if (didUpdate.status) {
-            FactionFuncs.updateMembers(faction);
-        }
-
+        if (didUpdate.status) FactionFuncs.updateMembers(faction);
         return didUpdate.status;
     }
 
@@ -997,32 +986,17 @@ export class FactionFuncs {
      * @returns A boolean value.
      */
     static async purchaseVehicle(faction: Faction, model: string) {
-        if (!faction.settings.vehicles) {
-            return false;
-        }
-
+        if (!faction.settings.vehicles) return false;
         // Check that the faction has access to a vehicle list
-        if (!Array.isArray(faction.settings.vehicles)) {
-            return false;
-        }
-
+        if (!Array.isArray(faction.settings.vehicles)) return false;
         // Check that the model exists in the list of vehicles for the faction.
         const index = faction.settings.vehicles.findIndex((x) => x.model === model);
-        if (index <= -1) {
-            return false;
-        }
-
+        if (index <= -1) return false;
         // Check that the faction has enough money
         const price = Math.abs(faction.settings.vehicles[index].price);
-        if (faction.bank < price) {
-            return false;
-        }
-
+        if (faction.bank < price) return false;
         // Check for max vehicles
-        if (typeof faction.settings.maxVehicles === 'number' && faction.vehicles.length >= faction.settings.maxVehicles) {
-            return false;
-        }
-
+        if (typeof faction.settings.maxVehicles === 'number' && faction.vehicles.length >= faction.settings.maxVehicles) return false;
         // Attempt to create the vehicle in the database.
         let newVehicle: IVehicle;
         try {
@@ -1036,22 +1010,15 @@ export class FactionFuncs {
             alt.logWarning(`Could not create vehicle ${model} for faction ${faction.name}`);
             return false;
         }
-
         // Remove the cost from the bank.
         faction.bank -= Math.abs(price);
-
         // Add the vehicle to the faction vehicles list.
         faction.vehicles.push({ model, id: newVehicle._id.toString() });
-
         const didUpdate = await FactionHandler.update(faction._id as string, {
             vehicles: faction.vehicles,
             bank: faction.bank,
         });
-
-        if (didUpdate.status) {
-            FactionFuncs.updateMembers(faction);
-        }
-
+        if (didUpdate.status) FactionFuncs.updateMembers(faction);
         return didUpdate.status;
     }
 
@@ -1105,23 +1072,28 @@ export class FactionFuncs {
 
     static async spawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
         const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
-        if (vehIndex >= 0) {
-            return false;
-        }
-
+        if (vehIndex !== -1) return false;
         // Check if the parking spot is free.
         const isSpotFree = await FactionFuncs.isParkingSpotFree(location.pos);
-        if (!isSpotFree) {
-            return false;
-        }
-
+        if (!isSpotFree) return false;
         // Spawn the vehicle.
         const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, triallife.database.collections.Vehicles);
-        if (!vehicleInfo) {
-            return false;
-        }
-
+        if (!vehicleInfo) return false;
         VehicleFuncs.spawn(vehicleInfo, location.pos, location.rot);
+        FactionFuncs.updateMembers(faction);
+        return true;
+    }
+
+    static async despawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
+        const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
+        if (vehIndex === -1) return false;
+        // Check if the parking spot is free.
+        const isSpotFree = await FactionFuncs.isParkingSpotFree(location.pos);
+        if (!isSpotFree) return false;
+        // Spawn the vehicle.
+        const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, triallife.database.collections.Vehicles);
+        if (!vehicleInfo) return false;
+        VehicleFuncs.despawn(vehicleInfo.id);
         FactionFuncs.updateMembers(faction);
         return true;
     }

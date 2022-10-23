@@ -40,14 +40,10 @@
             placeholder="Empfänger (IBAN)"
         />
         <template v-if="validity.transfer && validity.id">
-            <Button class="fill-full-width" :color="color" @click="action">
-                Überweisen
-            </Button>
+            <Button class="fill-full-width" :color="color" @click="action"> Überweisen </Button>
         </template>
         <template v-else>
-            <Button class="fill-full-width" color="grey" :disable="true">
-                Überweisen
-            </Button>
+            <Button class="fill-full-width" color="grey" :disable="true"> Überweisen </Button>
         </template>
     </div>
 </template>
@@ -93,7 +89,7 @@ export default defineComponent({
         action() {
             if (!this.validity.transfer || !this.validity.id) return;
             if (!('alt' in window)) return;
-            alt.emit(`${PageName}:Transfer`, this.value, this.bank.iban, this.id);
+            alt.emit(`${PageName}:Transfer`, this.value, this.bank._id, this.id);
         },
         idChange(text: string) {
             this.id = [...text]

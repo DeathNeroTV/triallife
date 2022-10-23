@@ -14,12 +14,7 @@
                                     <img :src="ResolvePath(`../../assets/icons/${item.icon}.png`)" />
                                 </div>
                                 <span style="width: 100%">{{ item.name }} ({{ item.quantity }}x)</span>
-                                <Button
-                                    class="mr-2"
-                                    color="orange"
-                                    @click="startSplit('storage', index)"
-                                    v-if="item.quantity >= 2"
-                                >
+                                <Button class="mr-2" color="orange" @click="startSplit('storage', index)" v-if="item.quantity >= 2">
                                     <Icon class="stat-icon" :size="18" icon="icon-filter_list"></Icon>
                                 </Button>
                                 <Button color="green" @click="moveFromStorage(index)">
@@ -31,10 +26,7 @@
                                 <span class="center pt-4">{{ locales.LABEL_SPLIT_TEXT }}</span>
                                 <span class="center pt-2">{{ splitAmount }}x</span>
 
-                                <div
-                                    class="split split-full center pt-4"
-                                    v-if="getItem() && getItem().quantity - 1 >= 2"
-                                >
+                                <div class="split split-full center pt-4" v-if="getItem() && getItem().quantity - 1 >= 2">
                                     <Button color="green" @click="setIncrementAmount(null, -1)">
                                         <Icon :size="14" icon="icon-chevron-left"></Icon>
                                     </Button>
@@ -63,17 +55,10 @@
                                 <Button color="green" @click="moveFromPlayer(index)">
                                     <Icon class="stat-icon" :size="18" icon="icon-chevron-left"></Icon>
                                 </Button>
-                                <Button
-                                    class="mr-2"
-                                    color="orange"
-                                    v-if="item.quantity >= 2"
-                                    @click="startSplit('inventory', index)"
-                                >
+                                <Button class="mr-2" color="orange" v-if="item.quantity >= 2" @click="startSplit('inventory', index)">
                                     <Icon class="stat-icon" :size="18" icon="icon-filter_list"></Icon>
                                 </Button>
-                                <span style="width: 100%; text-align: right"
-                                    >{{ item.name }} ({{ item.quantity }}x)</span
-                                >
+                                <span style="width: 100%; text-align: right">{{ item.name }} ({{ item.quantity }}x)</span>
                                 <div class="icon-wrap pl-2">
                                     <img :src="ResolvePath(`../../assets/icons/${item.icon}.png`)" />
                                 </div>
@@ -82,10 +67,7 @@
                                 <span class="center pt-4">{{ locales.LABEL_SPLIT_TEXT }}</span>
                                 <span class="center pt-2">{{ splitAmount }}x</span>
 
-                                <div
-                                    class="split split-full center pt-4"
-                                    v-if="getItem() && getItem().quantity - 1 >= 2"
-                                >
+                                <div class="split split-full center pt-4" v-if="getItem() && getItem().quantity - 1 >= 2">
                                     <Button color="green" @click="setIncrementAmount(null, -1)">
                                         <Icon :size="14" icon="icon-chevron-left"></Icon>
                                     </Button>
@@ -178,15 +160,9 @@ export default defineComponent({
         setLocales(localeObject) {
             this.locales = localeObject;
         },
-        handlePress(e) {
-            if (e.keyCode !== 27) {
-                return;
-            }
-
-            if (!('alt' in window)) {
-                return;
-            }
-
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
+            if (!('alt' in window)) return;
             alt.emit(`${ComponentName}:Close`);
         },
         startSplit(name: string, index: number) {

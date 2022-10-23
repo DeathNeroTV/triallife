@@ -44,13 +44,13 @@
                 </template>
                 <!-- Spawn / Despawn Vehicle -->
                 <template v-if="!isVehicleSpawned(vehicle)">
-                    <Button class="veh-button" color="green" help="Spawn" @click="() => spawnVehicle(vehicle.id)">
+                    <Button class="veh-button" color="green" help="Ausparken" @click="() => spawnVehicle(vehicle.id)">
                         <Icon :size="14" icon="icon-upload2" />
                     </Button>
                 </template>
                 <template v-else>
-                    <Button class="veh-button" color="green" :disable="true">
-                        <Icon :size="14" icon="icon-upload2" />
+                    <Button class="veh-button" color="green" help="Einparken" @click="() => despawnVehicle(vehicle.id)">
+                        <Icon :size="14" icon="icon-download2" />
                     </Button>
                 </template>
             </div>
@@ -122,7 +122,6 @@ export default defineComponent({
                 console.log(`Attempting to purchase ${model}`);
                 return;
             }
-
             alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.PURCHASE_VEHICLE, model);
         },
         toggleRank(rank: string, vehicleId: string) {
@@ -135,15 +134,21 @@ export default defineComponent({
         },
         isVehicleSpawned(vehicle: { model: string; id: string }) {
             const index = this.spawnedVehicles.findIndex((id) => id === vehicle.id);
-            return index >= 0 ? true : false;
+            return index !== -1;
         },
         spawnVehicle(uid: string) {
             if (!('alt' in window)) {
                 console.log(`Spawning vehicle with ${uid}`);
                 return;
             }
-
             alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.SPAWN_VEHICLE, uid);
+        },
+        despawnVehicle(uid: string) {
+            if (!('alt' in window)) {
+                console.log(`Despawning vehicle with ${uid}`);
+                return;
+            }
+            alt.emit(FACTION_EVENTS.WEBVIEW.ACTION, FACTION_PFUNC.DESPAWN_VEHICLE, uid);
         },
     },
 });

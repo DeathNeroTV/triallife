@@ -19,14 +19,10 @@
             placeholder="Betrag"
         />
         <template v-if="validity.withdraw">
-            <Button class="fill-full-width" :color="color" @click="action">
-                Auszahlen
-            </Button>
+            <Button class="fill-full-width" :color="color" @click="action"> Auszahlen </Button>
         </template>
         <template v-else>
-            <Button class="fill-full-width" color="grey" :disable="true">
-                Auszahlen
-            </Button>
+            <Button class="fill-full-width" color="grey" :disable="true"> Auszahlen </Button>
         </template>
     </div>
 </template>
@@ -70,7 +66,7 @@ export default defineComponent({
         action() {
             if (!this.validity.withdraw) return;
             if (!('alt' in window)) return;
-            alt.emit(`${PageName}:Withdraw`, this.value, this.bank.iban);
+            alt.emit(`${PageName}:Withdraw`, this.value, this.bank._id);
         },
         inputChange(text: number) {
             if (typeof text === 'string') text = parseFloat(text);

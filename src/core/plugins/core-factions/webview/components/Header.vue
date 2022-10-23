@@ -26,10 +26,7 @@ export default defineComponent({
             return this.faction.name;
         },
         getMotd() {
-            if (!this.faction.motd) {
-                return `Message of the day has not been set by faction owner.`;
-            }
-
+            if (!this.faction.motd) return `Die Nachricht des Tages wurde nicht vom Firmenbesitzer festgelegt.`;
             return this.faction.motd;
         },
     },

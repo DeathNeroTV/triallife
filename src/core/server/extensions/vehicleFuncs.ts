@@ -246,27 +246,20 @@ export default class VehicleFuncs {
      * @memberof VehicleFuncs
      */
     static async despawn(id: number): Promise<boolean> {
-        if (!SpawnedVehicles[id]) {
-            return false;
-        }
-
+        if (!SpawnedVehicles[id]) return false;
         if (!SpawnedVehicles[id].valid) {
             delete SpawnedVehicles[id];
             return false;
         }
-
         const beforeDespawnInjections = Injections.get<VehicleDespawnCallback>(VehicleInjectionNames.DESPAWN_START);
         for (const callback of beforeDespawnInjections) {
             callback(SpawnedVehicles[id]);
         }
-
         VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.DESPAWNED, SpawnedVehicles[id]);
-
         try {
             SpawnedVehicles[id].destroy();
             delete SpawnedVehicles[id];
         } catch (err) {}
-
         return true;
     }
 

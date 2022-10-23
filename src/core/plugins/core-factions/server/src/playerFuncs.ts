@@ -695,7 +695,6 @@ export class FactionPlayerFuncs {
         const sortedSpots = faction.settings.parkingSpots.sort((a, b) => {
             return distance(player.pos, a.pos) - distance(player.pos, b.pos);
         });
-
         return await FactionFuncs.spawnVehicle(faction, vehicleId, sortedSpots[0]);
     }
 

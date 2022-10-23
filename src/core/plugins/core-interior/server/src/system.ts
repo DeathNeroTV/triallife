@@ -500,14 +500,14 @@ class InternalSystem {
             const target = alt.Player.all.find((x) => x && x.data && x.data._id.toString() === originalOwner);
             if (target) {
                 const index = banks.findIndex((x) => x.owner === target.data.name);
-                if (index !== -1) triallife.player.currency.addBank(originalPrice, banks[index].iban);
+                if (index !== -1) triallife.player.currency.addBank(target, originalPrice, banks[index].iban);
                 else triallife.player.currency.add(target, originalPrice);
                 triallife.player.emit.sound2D(target, 'item_purchase');
                 triallife.player.emit.notification(player, LOCALE_INTERIOR_VIEW.LABEL_DID_SELL_INTERIOR);
             } else {
                 const targetData = await Database.fetchData<Character>(`_id`, originalOwner, Collections.Characters);
                 const index = banks.findIndex((x) => x.owner === targetData.name);
-                await triallife.player.currency.addBank(originalPrice, banks[index].iban);
+                await triallife.player.currency.addBank(null, originalPrice, banks[index].iban);
             }
         }
 

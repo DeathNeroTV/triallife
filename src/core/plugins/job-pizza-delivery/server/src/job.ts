@@ -206,7 +206,7 @@ export class PizzaJob {
             callbackOnFinish: (player: alt.Player) => {
                 // Payout 100 - 200; Random;
                 const earned = Math.floor(Math.random() * 100) + 100;
-                triallife.player.currency.add(player, CurrencyTypes.CASH, earned);
+                triallife.player.currency.add(player, earned);
                 triallife.player.emit.notification(player, `~g~$${earned}`);
             },
         });

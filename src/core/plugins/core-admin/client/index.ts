@@ -39,6 +39,7 @@ class AdminView implements ViewModel {
 
     static async close() {
         alt.toggleGameControls(true);
+        WebViewController.setOverlaysVisible(true);
         const view = await WebViewController.get();
         view.off(`${PAGE_NAME}:Ready`, AdminView.ready);
         view.off(`${PAGE_NAME}:Close`, AdminView.close);
@@ -48,7 +49,7 @@ class AdminView implements ViewModel {
         view.off(`${PAGE_NAME}:AddMember`, AdminView.addMember);
         view.off(`${PAGE_NAME}:RemoveMember`, AdminView.removeMember);
         view.off(`${PAGE_NAME}:Ban`, AdminView.addMember);
-        WebViewController.closePages([PAGE_NAME], true);
+        WebViewController.closePages([PAGE_NAME]);
         WebViewController.unfocus();
         WebViewController.showCursor(false);
         alt.Player.local.isMenuOpen = false;

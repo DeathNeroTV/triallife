@@ -16,6 +16,7 @@ let camera: number;
 let hasRegisteredOnce = false;
 
 class BarbershopView implements ViewModel {
+    
     /**
      * Opens the BarberShop WebView and sets up current data for the player.
      *
@@ -26,25 +27,18 @@ class BarbershopView implements ViewModel {
      * @memberof BarbershopView
      */
     static async open(_isSelfService: boolean, _currentData: BarbershopData) {
-        if (isAnyMenuOpen()) {
-            return;
-        }
-
+        if (isAnyMenuOpen()) return;
         currentData = _currentData;
         isSelfService = _isSelfService;
-
         triallifeClient.webview.ready(PAGE_NAME, BarbershopView.ready);
         triallifeClient.webview.open([PAGE_NAME], true, BarbershopView.close);
-
         if (!hasRegisteredOnce) {
             hasRegisteredOnce = true;
             triallifeClient.webview.on(BarbershopEvents.WebViewEvents.UPDATE, BarbershopView.update);
             triallifeClient.webview.on(BarbershopEvents.WebViewEvents.SAVE_CLOSE, BarbershopView.saveClose);
         }
-
         WebViewController.focus();
         WebViewController.showCursor(true);
-
         alt.toggleGameControls(false);
         alt.Player.local.isMenuOpen = true;
     }
@@ -60,17 +54,11 @@ class BarbershopView implements ViewModel {
      */
     static async close(doNotEmit = false) {
         BarbershopView.destroyCamera();
-
         alt.toggleGameControls(true);
         WebViewController.unfocus();
         WebViewController.showCursor(false);
-
         alt.Player.local.isMenuOpen = false;
-
-        if (doNotEmit) {
-            return;
-        }
-
+        if (doNotEmit) return;
         alt.emitServer(BarbershopEvents.ServerClientEvents.CLOSE);
     }
 

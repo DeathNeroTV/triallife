@@ -41,11 +41,12 @@ class InternalFunctions implements ViewModel {
 
     static async close() {
         alt.toggleGameControls(true);
+        WebViewController.setOverlaysVisible(true);
         const view = await WebViewController.get();
         view.off(`${PAGE_NAME}:Ready`, InternalFunctions.ready);
         view.off(`${PAGE_NAME}:Spawn`, InternalFunctions.spawn);
         view.off(`${PAGE_NAME}:Despawn`, InternalFunctions.despawn);
-        WebViewController.closePages([PAGE_NAME], true);
+        WebViewController.closePages([PAGE_NAME]);
         WebViewController.unfocus();
         WebViewController.showCursor(false);
         alt.Player.local.isMenuOpen = false;

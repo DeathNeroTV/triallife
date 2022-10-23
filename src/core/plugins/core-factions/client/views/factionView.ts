@@ -16,6 +16,7 @@ let faction: Faction;
 let isOpen = false;
 
 class InternalFunctions {
+
     static async open(_faction: Faction) {
         faction = _faction;
         // Just updates faction data dynamically for users.
@@ -66,11 +67,9 @@ class InternalFunctions {
         for (const element of onClose) {
             element(view, faction);
         }
-
         WebViewController.closePages([FACTION_EVENTS.WEBVIEW.NAME]);
         WebViewController.unfocus();
         WebViewController.showCursor(false);
-
         alt.Player.local.isMenuOpen = false;
     }
 
@@ -81,7 +80,7 @@ class InternalFunctions {
             FACTION_EVENTS.WEBVIEW.UPDATE_DATA,
             faction,
             alt.Player.local.getSyncedMeta(PLAYER_SYNCED_META.DATABASE_ID),
-            alt.Player.local.meta.cash + alt.Player.local.meta.banks.find((x) => x.type === 'private').amount,
+            alt.Player.local.meta.cash,
             alt.Player.local.pos,
             alt.Player.local.rot,
             vehicleList,
@@ -98,7 +97,6 @@ class InternalFunctions {
      */
     private static getFactionVehicles(factionRef: Faction) {
         const spawnedVehicles = [];
-        if (!Array.isArray(factionRef.vehicles)) return spawnedVehicles;
         const currentVehicles = [...alt.Vehicle.all];
         for (const element of currentVehicles) {
             if (!element.hasSyncedMeta(VEHICLE_SYNCED_META.DATABASE_ID)) continue;
@@ -115,6 +113,7 @@ class InternalFunctions {
 }
 
 export class FactionView {
+    
     static init() {
         KeybindController.registerKeybind({ key: KEY_BINDS.FACTIONS, singlePress: () => alt.emitServer(FACTION_EVENTS.PROTOCOL.OPEN) });
         alt.onServer(FACTION_EVENTS.PROTOCOL.OPEN, InternalFunctions.open);

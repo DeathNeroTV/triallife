@@ -137,8 +137,8 @@ export default defineComponent({
             this.basket.forEach((item: Item) => items.push(item));
             alt.emit(`${ComponentName}:PurchaseAll`, items, uid);
         },
-        handlePress(e) {
-            if (e.keyCode !== 27) return;
+        handlePress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
             this.handleClose();
         },
         handleClose() {

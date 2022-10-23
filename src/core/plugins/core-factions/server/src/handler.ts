@@ -175,12 +175,10 @@ export class FactionHandler {
                         await triallife.player.currency.addBank(player, money, prive.iban);
                         money = 0;
                     } else {
-                        player.data.cash = player.data.cash + money;
+                        triallife.player.currency.add(player, money);
                         money = 0;
                     }
-                    triallife.state.set(player, 'cash', player.data.cash, true);
                     triallife.player.sync.currencyData(player);
-                    triallife.player.emit.notification(player, `+ ${factionClone.bank} $`);
                 }
                 onlinePlayers.push(player);
             }

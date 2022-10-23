@@ -19,14 +19,10 @@
             class="fill-full-width mt-2 mb-2"
         />
         <template v-if="validity.deposit">
-            <Button class="fill-full-width" :color="color" @click="action">
-                Einzahlen
-            </Button>
+            <Button class="fill-full-width" :color="color" @click="action"> Einzahlen </Button>
         </template>
         <template v-else>
-            <Button class="fill-full-width" color="grey" :disable="true">
-                Einzahlen
-            </Button>
+            <Button class="fill-full-width" color="grey" :disable="true"> Einzahlen </Button>
         </template>
     </div>
 </template>
@@ -71,7 +67,7 @@ export default defineComponent({
         action() {
             if (!this.validity.deposit) return;
             if (!('alt' in window)) return;
-            alt.emit(`${PageName}:Deposit`, this.value, this.bank.iban);
+            alt.emit(`${PageName}:Deposit`, this.value, this.bank._id);
         },
         inputChange(text: number) {
             if (typeof text === 'string') text = parseFloat(text);

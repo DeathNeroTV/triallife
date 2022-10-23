@@ -1,9 +1,15 @@
 <template>
     <div class="wrapper">
         <Modal>
-            <Frame minWidth="700px" maxWidth="700px" maxHeight="600px">
+            <Frame minWidth="40vw" maxWidth="40vw" minHeight="50vh" maxHeight="50vh" :scrollable="true">
                 <template v-slot:toolbar>
-                    <Toolbar :overrideCallback="true" @close-click="close"> Neues Fahrzeug erwerben - {{ getCashFixed(faction.bank) }} $ </Toolbar>
+                    <Toolbar :overrideCallback="true" @close-click="close">
+                        <div class="split split-center space-between">
+                            <span class="green--text">Neues Fahrzeug erwerben</span>
+                            <span class="grey--text">&nbsp;-&nbsp;</span>
+                            <span class="blue--text mr-2">{{ getBankFixed }} $</span>
+                        </div>
+                    </Toolbar>
                 </template>
                 <template v-slot:content>
                     <div class="stack fill-full-width">
@@ -16,7 +22,7 @@
                                     <img :src="ResolvePath(`../../assets/vehicles/${vehicle.model}.png`)" />
                                 </div>
                                 <div class="vehicle-name subtitle-2">Model: {{ vehicle.model }}</div>
-                                <div class="vehicle-name subtitle-2">{{ vehicle.price.toFiced(2) }}</div>
+                                <div class="vehicle-name subtitle-2">Preis: {{ getCashFixed(vehicle.price) }} $</div>
                                 <template v-if="faction.bank >= vehicle.price">
                                     <Button class="veh-button mr-4" color="green" @click="(e) => purchase(vehicle.model)">
                                         <Icon :size="14" icon="icon-dollar" />
@@ -66,7 +72,7 @@ export default defineComponent({
         getVehicles() {
             return this.faction.settings && this.faction.settings.vehicles ? this.faction.settings.vehicles : [];
         },
-        getCashFixed() {
+        getBankFixed() {
             var parts = this.faction.bank.toFixed(2).split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             return parts.join(',');
@@ -78,6 +84,11 @@ export default defineComponent({
         },
         purchase(model: string) {
             this.$emit('purchase-vehicle', model);
+        },
+        getCashFixed(amount: number) {
+            var parts = amount.toFixed(2).split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
         },
     },
 });

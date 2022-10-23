@@ -3,11 +3,11 @@
         <div class="stack center">
             <div class="split full-split space-between">
                 <div class="panel mb-4 pb-4 mr-2">
-                    <h1 style="margin-bottom: 0px">${{ faction.bank.toLocaleString() }}</h1>
+                    <h1 style="margin-bottom: 0px">${{ getCashFixed(faction.bank) }}</h1>
                     <sup class="grey--text text--lighten-1 pt-2">Aktueller Tresorstand</sup>
                 </div>
                 <div class="panel mb-4 pb-4 ml-2">
-                    <h1 style="margin-bottom: 0px">${{ money.toLocaleString() }}</h1>
+                    <h1 style="margin-bottom: 0px">${{ getCashFixed(money) }}</h1>
                     <sup class="grey--text text--lighten-1 pt-2">Ihr Bargeld</sup>
                 </div>
             </div>
@@ -112,6 +112,11 @@ export default defineComponent({
 
             this.manageRanks = rank.rankPermissions.manageRanks;
             this.manageRankPermissions = rank.rankPermissions.manageRankPermissions;
+        },
+        getCashFixed(amount: number) {
+            var parts = amount.toFixed(2).split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
         },
     },
     watch: {

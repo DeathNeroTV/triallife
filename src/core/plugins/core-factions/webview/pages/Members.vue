@@ -112,15 +112,7 @@ export default defineComponent({
             return Object.keys(FactionPageInjections.members);
         },
         getMemberSelectColor(member: FactionCharacter) {
-            if (!this.selected) {
-                return 'blue';
-            }
-
-            if (this.selected.name !== member.name) {
-                return 'blue';
-            }
-
-            return 'cyan';
+            return !this.selected || this.selected.name !== member.name ? 'grey' : 'green';
         },
         getMemberSelectClass(member: FactionCharacter) {
             if (!this.selected) {
@@ -347,7 +339,6 @@ export default defineComponent({
     box-sizing: border-box;
     border: 2px solid rgba(28, 28, 28, 1);
     background: rgb(48, 48, 48);
-    border-radius: 6px;
 }
 
 .perm-desc {
@@ -357,7 +348,7 @@ export default defineComponent({
 }
 
 .perm-button {
-    border-radius: 6px;
+    border-radius: 0;
 }
 
 .selection {
@@ -378,7 +369,7 @@ export default defineComponent({
 }
 
 .member-button {
-    border-radius: 6px;
+    border-radius: 0;
     width: 100%;
 }
 
@@ -398,7 +389,7 @@ export default defineComponent({
 }
 
 .member-selected {
-    border-color: #00bcd4 !important;
+    border-color: rgb(0, 135, 54) !important;
     box-shadow: 0px 0px 3px #00bcd4;
     background: rgb(48, 48, 48);
 }
@@ -409,7 +400,6 @@ export default defineComponent({
     box-sizing: border-box;
     border: 2px solid rgba(28, 28, 28, 1);
     background: rgba(28, 28, 28, 1);
-    border-radius: 6px;
     background: rgb(48, 48, 48);
 }
 
@@ -419,7 +409,6 @@ export default defineComponent({
     box-sizing: border-box;
     border: 2px solid rgba(28, 28, 28, 1);
     background: rgba(28, 28, 28, 1);
-    border-radius: 6px;
     background: rgb(48, 48, 48);
 }
 </style>

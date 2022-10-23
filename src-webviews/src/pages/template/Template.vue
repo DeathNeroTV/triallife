@@ -62,11 +62,10 @@ export default defineComponent({
     },
     // Used to define functions you can call with 'this.x'
     methods: {
-        handleKeyPress(e) {
-            // Escape Key
-            if (e.keyCode === 27 && 'alt' in window) {
-                alt.emit(`${ComponentName}:Close`);
-            }
+        handleKeyPress(e: KeyboardEvent) {
+            if (e.key.toLowerCase() !== 'escape') return;
+            if (!('alt' in window)) return;
+            alt.emit(`${ComponentName}:Close`);
         },
         sendSomeData(arg1: string) {
             console.log(arg1);

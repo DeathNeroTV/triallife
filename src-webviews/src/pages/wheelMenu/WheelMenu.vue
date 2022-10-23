@@ -2,9 +2,7 @@
     <div class="wheel-menu">
         <div class="wheel-wrapper">
             <div class="wheel-menu-page overline">
-                <div class="wheel-menu-page-box">
-                    {{ optionIndex / maxOptions + 1 }} / {{ Math.floor(options.length / maxOptions) + 1 }} Seiten
-                </div>
+                <div class="wheel-menu-page-box">{{ optionIndex / maxOptions + 1 }} / {{ Math.floor(options.length / maxOptions) + 1 }} Seiten</div>
             </div>
             <div class="wheel-menu-label overline">
                 <div class="wheel-menu-label-box">
@@ -14,20 +12,9 @@
             <div class="wheel-option" style="left: calc(50vw - 62.2px); top: calc(50vh - 62.2px)" @click="close">
                 <Icon class="wheel-icon" icon="icon-times-circle" :size="36" />
             </div>
-            <div
-                class="wheel-option"
-                v-for="(option, index) in getCurrentOptions"
-                :key="index"
-                @click="selectOption(option.uid)"
-                :style="getPositionalStyle(index)"
-            >
+            <div class="wheel-option" v-for="(option, index) in getCurrentOptions" :key="index" @click="selectOption(option.uid)" :style="getPositionalStyle(index)">
                 <template v-if="!option.image">
-                    <Icon
-                        class="wheel-icon mb-2"
-                        :class="getColor(option)"
-                        :icon="option.icon ? option.icon : 'icon-question'"
-                        :size="36"
-                    />
+                    <Icon class="wheel-icon mb-2" :class="getColor(option)" :icon="option.icon ? option.icon : 'icon-question'" :size="36" />
                 </template>
                 <template v-else>
                     <img class="wheel-icon mb-2" :src="ResolvePath(option.image)" :alt="option.label" />
@@ -36,12 +23,7 @@
                     {{ option.name }}
                 </div>
             </div>
-            <div
-                class="wheel-number overline"
-                v-for="(option, index) in getCurrentOptions"
-                :key="index"
-                :style="getPositionalStyle(index, 1.35, true)"
-            >
+            <div class="wheel-number overline" v-for="(option, index) in getCurrentOptions" :key="index" :style="getPositionalStyle(index, 1.35, true)">
                 {{ index + 1 }}
             </div>
         </div>
@@ -124,9 +106,7 @@ export default defineComponent({
 
             if (point) {
                 if (multiplyRadius && typeof multiplyRadius === 'number') {
-                    style += `left: calc(50vw - 62.2px - ${point.x * multiplyRadius}vw); top: calc(50vh - 62.2px - ${
-                        point.y * multiplyRadius
-                    }vh);`;
+                    style += `left: calc(50vw - 62.2px - ${point.x * multiplyRadius}vw); top: calc(50vh - 62.2px - ${point.y * multiplyRadius}vh);`;
                 } else {
                     style += `left: calc(50vw - 62.2px - ${point.x}vw); top: calc(50vh - 62.2px - ${point.y}vh);`;
                 }
@@ -191,17 +171,10 @@ export default defineComponent({
             }
         },
         handleKeyUp(e) {
-            if (e.keyCode < 49 || e.keyCode > 56) {
-                return;
-            }
-
+            if (e.keyCode < 49 || e.keyCode > 56) return;
             const index = e.keyCode - 49;
             const option = this.options[index + this.optionIndex];
-
-            if (!option) {
-                return;
-            }
-
+            if (!option) return;
             this.selectOption(option.uid);
         },
     },

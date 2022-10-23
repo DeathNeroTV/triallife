@@ -1,16 +1,7 @@
 <template>
     <div class="wrapper stack">
-        <Button
-            class="mr-2 ml-2"
-            v-for="(page, index) in pages"
-            :key="index"
-            :color="getButtonColor(index)"
-            :class="getButtonSpacing(index)"
-            :raise="false"
-            :style="getButtonStyle()"
-            @click="navigate(index)"
-        >
-            {{ page.name }}
+        <Button v-for="(page, index) in pages" :key="index" :color="getButtonColor(index)" :raise="false" :style="getButtonStyle" :class="getButtonClass" @click="navigate(index)">
+            {{ page.trans }}
         </Button>
     </div>
 </template>
@@ -18,11 +9,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Button from '@components/Button.vue';
-import Icon from '@components/Icon.vue';
 
 interface iPage {
     name: string;
     page: string;
+    trans: string;
 }
 
 const ComponentName = 'Navigation';
@@ -38,28 +29,21 @@ export default defineComponent({
     },
     components: {
         Button,
-        Icon,
     },
-    methods: {
+    computed: {
         getButtonStyle() {
             let style = '';
-
             style += 'background: transparent !important;';
             style += 'border: 0px !important;';
-
             return style;
         },
-        getButtonColor(index: number) {
-            if (index === this.page) {
-                return 'orange';
-            }
-
-            return 'blue';
+        getButtonClass() {
+            return { 'mt-1': true, 'mb-1': true };
         },
-        getButtonSpacing(index: number) {
-            return {
-                'mt-2': true,
-            };
+    },
+    methods: {
+        getButtonColor(index: number) {
+            return index === this.page ? 'green' : 'grey';
         },
         navigate(pageIndex: number) {
             this.$emit('navigate', pageIndex);

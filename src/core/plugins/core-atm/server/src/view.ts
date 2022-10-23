@@ -13,7 +13,7 @@ import { BankInfo } from '../../../../shared/interfaces/bank';
 
 const INTERACTION_RANGE = 1.5;
 class InternalFunctions {
-    static async deposit(player: alt.Player, amount: number, iban: string): Promise<void> {
+    static async deposit(player: alt.Player, amount: number, _id: string): Promise<void> {
         if (player.data.cash < amount) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             return;
@@ -22,18 +22,18 @@ class InternalFunctions {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             return;
         }
-        if (!triallife.player.currency.addBank(player, amount, iban)) {
+        if (!triallife.player.currency.addBank(player, amount, _id)) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             return;
         }
         var parts = amount.toFixed(2).split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        triallife.player.emit.notification(player, `Sie haben ${parts.join(',')} $ eingezahlt`);
+        triallife.player.emit.notification(player, `~r~- ${parts.join(',')} $`);
         triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
     }
 
-    static async withdraw(player: alt.Player, amount: number, iban: string): Promise<void> {
-        if (!triallife.player.currency.subBank(player, amount, iban)) {
+    static async withdraw(player: alt.Player, amount: number, _id: string): Promise<void> {
+        if (!triallife.player.currency.subBank(player, amount, _id)) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             return;
         }
@@ -43,14 +43,16 @@ class InternalFunctions {
         }
         var parts = amount.toFixed(2).split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        triallife.player.emit.notification(player, `Sie haben ${parts.join(',')} $ abgehoben`);
+        triallife.player.emit.notification(player, `~g~+ ${parts.join(',')} $`);
         triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
     }
 
-    static async transfer(player: alt.Player, amount: number, iban1: string, iban2: string): Promise<void> {
-        const bankPlayer = await Database.fetchData<BankInfo>('iban', iban1, Collections.Banks);
-        const bankTarget = await Database.fetchData<BankInfo>('iban', iban2, Collections.Banks);
-        const target = [...alt.Player.all].find((x) => x.data && bankTarget.type === 'private' && x.data.name === bankTarget.owner);
+    static async transfer(player: alt.Player, amount: number, _id: string, iban: string): Promise<void> {
+        const bankPlayer = await Database.fetchData<BankInfo>('_id', _id, Collections.Banks);
+        const bankTarget = await Database.fetchData<BankInfo>('iban', iban, Collections.Banks);
+        const target = [...alt.Player.all].find((x) => x.data && bankTarget.type === 'private' && x.data._id.toString() === bankTarget.owner);
+        var parts = amount.toFixed(2).split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         if (!bankPlayer || !bankTarget) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             triallife.player.sync.currencyData(player);
@@ -61,19 +63,22 @@ class InternalFunctions {
             triallife.player.sync.currencyData(player);
             return;
         }
-        if (!triallife.player.currency.subBank(player, amount, iban1)) {
+        if (!triallife.player.currency.subBank(player, amount, bankPlayer._id)) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             triallife.player.sync.currencyData(player);
             return;
         }
-        if (!triallife.player.currency.addBank(target, amount, iban2)) {
-            triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
-            triallife.player.sync.currencyData(player);
-            return;
-        }
-        var parts = amount.toFixed(2).split('.');
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        triallife.player.emit.notification(player, `Sie haben ${parts.join(',')} $ überwiesen`);
+        if (target) {
+            if (!triallife.player.currency.addBank(target, amount, bankTarget._id)) {
+                triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                triallife.player.sync.currencyData(player);
+                return;
+            }
+            triallife.player.emit.notification(target, `~g~+${parts.join(',')} $~w~-~y~Überweisung`);
+            triallife.player.emit.soundFrontend(target, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+        } else await Database.updatePartialData(bankTarget._id, { amount: bankTarget.amount + amount }, Collections.Banks);
+        triallife.player.sync.currencyData(player);
+        triallife.player.emit.notification(player, `~r~-${parts.join(',')} $~w~-~y~Uberweisung`);
         triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
     }
 
@@ -86,8 +91,8 @@ class InternalFunctions {
         if (!triallife.player.currency.add(target, amount)) return;
         var parts = amount.toFixed(2).split('.');
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        const msgTarget = LocaleController.get(LOCALE_KEYS.PLAYER_RECEIVED_BLANK, `+ ${parts.join(',')} $`, player.data.name);
-        const msgPlayer = LocaleController.get(LOCALE_KEYS.PLAYER_RECEIVED_BLANK, `- ${parts.join(',')} $`, target.data.name);
+        const msgTarget = LocaleController.get(LOCALE_KEYS.PLAYER_RECEIVED_BLANK, `~g~+ ${parts.join(',')} $`, player.data.name);
+        const msgPlayer = LocaleController.get(LOCALE_KEYS.PLAYER_RECEIVED_BLANK, `~r~- ${parts.join(',')} $`, target.data.name);
         triallife.player.emit.notification(target, msgTarget);
         triallife.player.emit.notification(player, msgPlayer);
         triallife.player.emit.soundFrontend(target, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
