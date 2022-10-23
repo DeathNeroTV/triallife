@@ -1,6 +1,5 @@
 import * as alt from 'alt-server';
 import { triallife } from '../../../../server/api/triallife';
-import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
 import { ConsoleCommander } from '../../../../shared/utility/consoleCommander';
 import { LOCALE_DISCORD_ALLOW_LIST } from '../config/locales';
 import { DiscordController } from './discordController';

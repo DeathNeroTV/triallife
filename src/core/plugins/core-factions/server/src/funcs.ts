@@ -10,6 +10,7 @@ import { FACTION_EVENTS } from '../../shared/factionEvents';
 import { triallife } from '../../../../server/api/triallife';
 import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
 import { IVehicle } from '../../../../shared/interfaces/iVehicle';
+import { distance, distance2d } from '../../../../shared/utility/vector';
 
 let hasInitialized = false;
 
@@ -101,7 +102,7 @@ export class FactionFuncs {
      * @return {Promise<boolean>}
      * @memberof FactionFuncs
      */
-    static async setOwner(faction: Faction, characterIdentifier: string): Promise<boolean> {
+    static async setOwner(faction: Faction, characterIdentifier: string | null): Promise<boolean> {
         if (!faction.members[characterIdentifier]) {
             return false;
         }
@@ -176,7 +177,6 @@ export class FactionFuncs {
                 return member;
             }
         }
-
         return undefined;
     }
 
@@ -1087,13 +1087,13 @@ export class FactionFuncs {
     static async despawnVehicle(faction: Faction, vehicleId: string, location: { pos: Vector3; rot: Vector3 }) {
         const vehIndex = alt.Vehicle.all.findIndex((veh) => veh && veh.data && veh.data._id.toString() === vehicleId);
         if (vehIndex === -1) return false;
-        // Check if the parking spot is free.
-        const isSpotFree = await FactionFuncs.isParkingSpotFree(location.pos);
-        if (!isSpotFree) return false;
+        // Check if the vehicle stays on parking spot.
+        const isSpotOccupied = await FactionFuncs.isVehicleInParkingSpot(alt.Vehicle.all[vehIndex], location.pos);
+        if (!isSpotOccupied) return false;
         // Spawn the vehicle.
         const vehicleInfo = await Database.fetchData<IVehicle>('_id', vehicleId, triallife.database.collections.Vehicles);
         if (!vehicleInfo) return false;
-        VehicleFuncs.despawn(vehicleInfo.id);
+        VehicleFuncs.despawn(vehicleInfo._id);
         FactionFuncs.updateMembers(faction);
         return true;
     }
@@ -1107,24 +1107,39 @@ export class FactionFuncs {
      */
     static async isParkingSpotFree(parkingSpot: Vector3) {
         const pointTest = new alt.ColshapeSphere(parkingSpot.x, parkingSpot.y, parkingSpot.z - 1, 2);
-
         // Have to do a small sleep to the ColShape propogates entities inside of it.
         await new Promise((resolve: Function) => {
             alt.setTimeout(() => {
                 resolve();
             }, 250);
         });
-
-        const spaceOccupied = alt.Vehicle.all.find((veh) => veh && veh.valid && pointTest.isEntityIn(veh));
-
+        const index = alt.Vehicle.all.findIndex((veh) => veh && veh.valid && pointTest.isEntityIn(veh));
         try {
             pointTest.destroy();
         } catch (err) {}
+        return index !== -1;
+    }
 
-        if (spaceOccupied) {
-            return false;
-        }
-
-        return true;
+    /**
+     * Checks if selected vehicle is in a parking spot.
+     * @static
+     * @param {alt.Vehicle} veh
+     * @param {Vector3} parkingSpot
+     * @returns a boolean value.
+     * @memberof FactionFuncs
+     */
+    static async isVehicleInParkingSpot(veh: alt.Vehicle, parkingSpot: Vector3) {
+        const pointTest = new alt.ColshapeSphere(parkingSpot.x, parkingSpot.y, parkingSpot.z - 1, 2);
+        // Have to do a small sleep to the ColShape propogates entities inside of it.
+        await new Promise((resolve: Function) => {
+            alt.setTimeout(() => {
+                resolve();
+            }, 250);
+        });
+        const isInPoint = pointTest.isEntityIn(veh);
+        try {
+            pointTest.destroy();
+        } catch (err) {}
+        return isInPoint;
     }
 }

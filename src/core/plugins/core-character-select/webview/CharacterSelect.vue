@@ -46,7 +46,7 @@
                 </Button>
             </div>
             <!-- Stats -->
-            <div class="stat-wrapper pa-5 split center" style="width: 100%; box-sizing: border-box !important;">
+            <div class="stat-wrapper pa-5 split center" style="width: 100%; box-sizing: border-box !important">
                 <div class="stat split">
                     <div class="stat split split-center mr-5">
                         <span class="stat-text overline grey--text">Bargeld:</span>

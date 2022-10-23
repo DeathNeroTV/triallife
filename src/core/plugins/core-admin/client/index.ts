@@ -28,6 +28,7 @@ class AdminView implements ViewModel {
         view.on(`${PAGE_NAME}:Remove`, AdminView.remove);
         view.on(`${PAGE_NAME}:AddMember`, AdminView.addMember);
         view.on(`${PAGE_NAME}:RemoveMember`, AdminView.removeMember);
+        view.on(`${PAGE_NAME}:ClearLogs`, AdminView.clearLogs);
         view.on(`${PAGE_NAME}:Position`, AdminView.position);
         view.on(`${PAGE_NAME}:Ban`, AdminView.ban);
         WebViewController.openPages(PAGE_NAME, true, AdminView.close);
@@ -48,6 +49,7 @@ class AdminView implements ViewModel {
         view.off(`${PAGE_NAME}:Position`, AdminView.position);
         view.off(`${PAGE_NAME}:AddMember`, AdminView.addMember);
         view.off(`${PAGE_NAME}:RemoveMember`, AdminView.removeMember);
+        view.off(`${PAGE_NAME}:ClearLogs`, AdminView.clearLogs);
         view.off(`${PAGE_NAME}:Ban`, AdminView.addMember);
         WebViewController.closePages([PAGE_NAME]);
         WebViewController.unfocus();
@@ -87,6 +89,10 @@ class AdminView implements ViewModel {
 
     static async position(factionID: string, keys: any | any[]) {
         alt.emitServer(ADMIN_INTERACTIONS.POSITION, factionID, keys);
+    }
+
+    static async clearLogs(bankID: string) {
+        alt.emitServer(ADMIN_INTERACTIONS.POSITION, bankID);
     }
 }
 

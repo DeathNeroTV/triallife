@@ -94,28 +94,25 @@
             <table class="fill-full-width">
                 <thead class="grey darken-4" style="text-align: center">
                     <tr>
-                        <th
-                            class="pl-5 pr-5 pt-2 pb-2"
-                            v-for="(key, index) in Object.keys(character).filter((x) => !Array.isArray(character[x]) && typeof character[x] !== 'object')"
-                        >
+                        <th class="pl-5 pr-5 pt-2 pb-2" v-for="key of Object.keys(character).filter((x) => !Array.isArray(character[x]) && typeof character[x] !== 'object')">
                             {{ key.toUpperCase() }}
                         </th>
                         <th class="pl-5 pr-5 pt-2 pb-2">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(player, index) in list" :class="'grey ' + (index % 2 === 0 ? 'darken-2' : 'darken-3')" style="text-align: center">
-                        <td v-for="(key, idx) in Object.keys(character).filter((x) => !Array.isArray(character[x]) && typeof character[x] !== 'object')">
-                            <template v-if="player[key]">
-                                {{ getCorrectValue(key, player[key]) }}
+                    <tr v-for="(info, index) in list" :class="'grey ' + (index % 2 === 0 ? 'darken-2' : 'darken-3')" style="text-align: center">
+                        <td v-for="key of Object.keys(character).filter((x) => !Array.isArray(character[x]) && typeof character[x] !== 'object')">
+                            <template v-if="info[key]">
+                                {{ getCorrectValue(info[key]) }}
                             </template>
                             <template v-else>&nbsp;</template>
                         </td>
                         <td class="split split-center ma-1">
-                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="toggleDialog('showModify', player)">
+                            <Button class="fill-full-width" color="green" :glow="true" :raise="true" @click="toggleDialog('showModify', info)">
                                 <Icon icon="icon-edit" :size="12"></Icon>
                             </Button>
-                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="toggleDialog('showDelete', player)">
+                            <Button class="fill-full-width ml-1" color="green" :glow="true" :raise="true" @click="toggleDialog('showDelete', info)">
                                 <Icon icon="icon-bin" :size="12"></Icon>
                             </Button>
                         </td>
@@ -140,7 +137,7 @@ import Modal from '@components/Modal.vue';
 import Toolbar from '@components/Toolbar.vue';
 import Frame from '@components/Frame.vue';
 
-const ComponentName = 'Factions';
+const ComponentName = 'Characters';
 export default defineComponent({
     name: ComponentName,
     props: {
@@ -170,12 +167,13 @@ export default defineComponent({
     },
     computed: {},
     methods: {
-        getCorrectValue(key: string, value: any) {
-            if (key === 'bank') {
+        getCorrectValue(value: any) {
+            if (typeof value === 'number') {
                 var parts = value.toFixed(2).split('.');
                 parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 return parts.join(',') + ' $';
-            } else return value;
+            } else if (typeof value === 'boolean') return value ? 'Ja' : 'Nein';
+            else return value.toString();
         },
         toggleDialog(key: string, data: Object) {
             this.selected = Object.assign({}, data);

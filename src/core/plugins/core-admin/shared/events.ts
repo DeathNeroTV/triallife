@@ -6,6 +6,7 @@ export enum ADMIN_INTERACTIONS {
     MODIFY = 'admin:Modify',
     REMOVE = 'admin:Remove',
     POSITION = 'admin:Position',
+    CLEARLOGS = 'admin:ClearLogs',
     ADDMEMBER = 'admin:AddMember',
     REMOVEMEMBER = 'admin:RemoveMember',
 }

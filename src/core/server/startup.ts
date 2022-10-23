@@ -1,5 +1,7 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
+import { Colors, EmbedBuilder, TextChannel } from 'discord.js';
+import { DISCORD_CONFIG } from '../plugins/core-discord/server/config';
 import { DiscordController } from '../plugins/core-discord/server/src/discordController';
 
 import { SYSTEM_EVENTS } from '../shared/enums/system';
@@ -68,11 +70,23 @@ class Startup {
     static async toggleEntry() {
         alt.off('playerConnect', Startup.handleEarlyConnect);
         ReconnectHelper.invoke();
-        const bootTime = ((Date.now() - startTime) / 1000).toFixed(0)
-        alt.log(`~lb~3L:RP ~w~==> ~lg~Server ~lk~wurde in ~y~${bootTime}s ~lk~gestartet`);
-        await DiscordController.sendToChannel('856843454868488192', `Sie können jetzt den Trial Life Server betreten.`);
-        await DiscordController.sendToChannel('856843454868488192', `Der Server brauchte ${bootTime} Sekunden für den Start.`);
-        await DiscordController.sendToChannel('856843454868488192', `Euer Server Team`);
+        const bootTime = ((Date.now() - startTime) / 1000).toFixed(0);
+        const embed = new EmbedBuilder({
+            color: Colors.DarkGreen,
+            title: 'Server Status',
+            description: 'Der Server ist wieder online',
+            fields: [
+                { name: 'Name des Servers', value: 'Trial Life Roleplay', inline: false },
+                { name: 'Startzeit', value: `${bootTime} Sekunden`, inline: false },
+                { name: 'Platform', value: 'PC', inline: false },
+                { name: 'Hardware', value: 'Headset & Mikrofon', inline: false },
+                { name: 'Software', value: 'alt:V Client & Discord App', inline: false },
+            ]
+        });
+        const channel = await DiscordController.guild.channels.fetch(DISCORD_CONFIG.TEXT_CHANNEL_ID) as TextChannel;
+        const messages = await channel.messages.fetch();
+        if (messages.size > 0) await channel.bulkDelete(messages);
+        await DiscordController.sendEmbed(DISCORD_CONFIG.TEXT_CHANNEL_ID, embed);
     }
 
     static handleEarlyConnect(player: alt.Player) {

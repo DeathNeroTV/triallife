@@ -150,7 +150,7 @@ class InternalFunctions {
 
         if (didUpdate.status) {
             FactionFuncs.updateMembers(faction);
-            await triallife.player.currency.add(player, CurrencyTypes.CASH, rank.paycheck);
+            await triallife.player.currency.add(player, rank.paycheck);
             triallife.player.emit.sound2D(player, 'unlock', 0.5);
         }
 

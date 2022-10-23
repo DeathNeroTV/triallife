@@ -28,13 +28,9 @@ export class FactionPlayerFuncs {
     static isAdmin(player: alt.Player): boolean {
         for (let i = 0; i < FACTION_CONFIG.FactionAdmins.length; i++) {
             const isAdmin = isFlagEnabled(player.accountData.permissionLevel, FACTION_CONFIG.FactionAdmins[i]);
-            if (!isAdmin) {
-                continue;
-            }
-
+            if (!isAdmin) continue;
             return true;
         }
-
         return false;
     }
 
@@ -48,14 +44,8 @@ export class FactionPlayerFuncs {
      */
     static isOwner(player: alt.Player): boolean {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
-        if (!faction.members[player.data._id]) {
-            return false;
-        }
-
+        if (!faction) return false;
+        if (!faction.members[player.data._id]) return false;
         return faction.members[player.data._id].hasOwnership;
     }
 
@@ -83,15 +73,9 @@ export class FactionPlayerFuncs {
      */
     static getPlayerFactionRank(player: alt.Player): FactionRank | null {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return null;
-        }
-
+        if (!faction) return null;
         const member = faction.members[player.data._id];
-        if (!member) {
-            return null;
-        }
-
+        if (!member) return null;
         return faction.ranks.find((r) => r.uid === member.rank);
     }
 
@@ -105,10 +89,7 @@ export class FactionPlayerFuncs {
      */
     static getPlayerInFaction(player: alt.Player): FactionCharacter {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return null;
-        }
-
+        if (!faction) return null;
         return faction.members[player.data._id];
     }
 
@@ -124,27 +105,17 @@ export class FactionPlayerFuncs {
      * @memberof FactionFuncs
      */
     static async addMember(player: alt.Player, target: alt.Player): Promise<boolean> {
-        if (!target || !target.valid || !target.data || target.data.faction) {
-            return false;
-        }
-
+        if (!target || !target.valid || !target.data || target.data.faction) return false;
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
+        if (!faction) return false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
             if (!selfRank.rankPermissions.addMembers) {
                 return false;
             }
         }
-
         const didUpdate = await FactionFuncs.addMember(faction, target.data._id.toString());
-        if (!didUpdate) {
-            return false;
-        }
-
+        if (!didUpdate) return false;
         target.data.faction = faction._id as string;
         return true;
     }
@@ -162,33 +133,18 @@ export class FactionPlayerFuncs {
      */
     static async kickMember(player: alt.Player, characterId: string): Promise<boolean> {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
-        if (!faction.members[characterId]) {
-            return false;
-        }
-
+        if (!faction) return false;
+        if (!faction.members[characterId]) return false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             // Get the current acting member's rank.
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
-            if (!selfRank.rankPermissions.kickMembers) {
-                return false;
-            }
-
+            if (!selfRank.rankPermissions.kickMembers) return false;
             // Check they are below current rank.
             const memberRank = FactionFuncs.getFactionMemberRank(faction, characterId);
-            if (!FactionFuncs.isRankBelow(faction, selfRank.uid, memberRank.uid)) {
-                return false;
-            }
+            if (!FactionFuncs.isRankBelow(faction, selfRank.uid, memberRank.uid)) return false;
         }
-
         const target = alt.Player.all.find((p) => p && p.valid && p.data._id.toString() === characterId);
-        if (target) {
-            target.data.faction = null;
-        }
-
+        if (target) target.data.faction = null;
         return await FactionFuncs.kickMember(faction, characterId);
     }
 
@@ -600,26 +556,16 @@ export class FactionPlayerFuncs {
     static async purchaseVehicle(player: alt.Player, model: string) {
         let result = true;
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            result = false;
-        }
-
+        if (!faction) result = false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             // Get the current acting member's rank.
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
-            if (!selfRank.rankPermissions.manageVehicles) {
-                result = false;
-            }
+            if (!selfRank.rankPermissions.manageVehicles) result = false;
         }
-
         // If everything passed so far, try the purchase.
-        if (result) {
-            result = await FactionFuncs.purchaseVehicle(faction, model);
-        }
-
+        if (result) result = await FactionFuncs.purchaseVehicle(faction, model);
         // Play sound based on the result.
         triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
-
         return result;
     }
 
@@ -633,18 +579,12 @@ export class FactionPlayerFuncs {
      */
     static async toggleVehicleRankPermission(player: alt.Player, rank: string, vehicleId: string) {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
+        if (!faction) return false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             // Get the current acting member's rank.
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
-            if (!selfRank.rankPermissions.manageVehicles) {
-                return false;
-            }
+            if (!selfRank.rankPermissions.manageVehicles) return false;
         }
-
         return await FactionFuncs.toggleVehicleRankPermission(faction, rank, vehicleId);
     }
 
@@ -657,45 +597,56 @@ export class FactionPlayerFuncs {
      */
     static async spawnVehicle(player: alt.Player, vehicleId: string) {
         const faction = FactionHandler.get(player.data.faction);
-        if (!faction) {
-            return false;
-        }
-
-        if (!faction.vehicles || !Array.isArray(faction.vehicles)) {
-            return false;
-        }
-
+        if (!faction) return false;
+        if (!faction.vehicles || !Array.isArray(faction.vehicles)) return false;
         const vehicleIndex = faction.vehicles.findIndex((x) => x.id === vehicleId);
-        if (vehicleIndex <= -1) {
-            return false;
-        }
-
+        if (vehicleIndex == -1) return false;
         if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
             // Get the current acting member's rank.
             const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
-            if (!selfRank.vehicles) {
-                return false;
-            }
-
-            if (selfRank.vehicles.findIndex((x) => x === vehicleId) <= -1) {
-                return false;
-            }
+            if (!selfRank.vehicles) return false;
+            if (selfRank.vehicles.findIndex((x) => x === vehicleId) <= -1) return false;
         }
-
-        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots)) {
+        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots) || faction.settings.parkingSpots.length <= 0) {
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
             return false;
         }
-
-        if (faction.settings.parkingSpots.length <= 0) {
-            triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
-            return false;
-        }
-
         const sortedSpots = faction.settings.parkingSpots.sort((a, b) => {
             return distance(player.pos, a.pos) - distance(player.pos, b.pos);
         });
         return await FactionFuncs.spawnVehicle(faction, vehicleId, sortedSpots[0]);
+    }
+
+    
+    /**
+     * If the player is the owner or admin, or if the player's rank has the vehicleId in the vehicles
+     * array, then despawn the vehicle
+     * @param player - alt.Player - The player who is spawning the vehicle.
+     * @param {string} vehicleId - The vehicle ID that you want to spawn.
+     * @returns a boolean value.
+     */
+     static async despawnVehicle(player: alt.Player, vehicleId: string) {
+        const faction = FactionHandler.get(player.data.faction);
+        if (!faction) return false;
+        if (!faction.vehicles || !Array.isArray(faction.vehicles)) return false;
+        const vehicleIndex = faction.vehicles.findIndex((x) => x.id === vehicleId);
+        if (vehicleIndex == -1) return false;
+        if (!FactionPlayerFuncs.isOwnerOrAdmin(player)) {
+            // Get the current acting member's rank.
+            const selfRank = FactionFuncs.getFactionMemberRank(faction, player.data._id);
+            if (!selfRank.vehicles) return false;
+            if (selfRank.vehicles.findIndex((x) => x === vehicleId) <= -1) return false;
+        }
+        if (!faction.settings.parkingSpots || !Array.isArray(faction.settings.parkingSpots) || faction.settings.parkingSpots.length <= 0) {
+            triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            triallife.player.emit.notification(player, 'Die Firma hat noch keine Parkplätze');
+            return false;
+        }
+        const sortedSpots = faction.settings.parkingSpots.sort((a, b) => {
+            return distance(player.pos, a.pos) - distance(player.pos, b.pos);
+        });
+        return await FactionFuncs.despawnVehicle(faction, vehicleId, sortedSpots[0]);
     }
 
     /**

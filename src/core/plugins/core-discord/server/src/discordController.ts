@@ -1,10 +1,9 @@
 import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { ActivityType, Client, Embed, GatewayIntentBits, Guild, GuildMember, TextChannel } from 'discord.js';
+import { ActivityType, APIEmbed, Client, Embed, EmbedBuilder, GatewayIntentBits, Guild, GuildMember, TextChannel } from 'discord.js';
 import { triallife } from '../../../../server/api/triallife';
 import { Account } from '../../../../server/interface/iAccount';
 import { Collections } from '../../../../server/interface/iDatabaseCollections';
-import { DiscordUser } from '../../../../server/interface/iDiscordUser';
 import { PERMISSIONS } from '../../../../shared/flags/permissionFlags';
 import { DISCORD_LOGIN_EVENTS } from '../../../core-discord-login/shared/events';
 import { LOCALE_DISCORD_ALLOW_LIST } from '../config/locales';
@@ -51,9 +50,7 @@ export class DiscordController {
             alt.log(`~lr~[Discord] Missing role identification for allow list.`);
             return;
         }
-
         DiscordController.allowListRole = _allowListRole;
-
         const role = await DiscordController.guild.roles.fetch(DiscordController.allowListRole);
         if (!role) {
             alt.log(`~lr~[Discord] Could not find the allow list role specified in config. Plugin disabled.`);
@@ -224,31 +221,27 @@ export class DiscordController {
 
     static async sendToChannel(channel_id: string, message: string): Promise<void> {
         if (!DiscordController.guild) {
-            alt.logError(`~lr~[Discord] You do not currently have a Discord Bot Setup for sending messages.`);
+            alt.log(`~lr~[Discord] Es existiert kein Discord Bot aktuell zum Senden von Nachrichten`);
             return;
         }
-
-        const channel = (await DiscordController.guild.channels.fetch(channel_id)) as TextChannel;
+        const channel = await DiscordController.guild.channels.fetch(channel_id) as TextChannel;
         if (!channel) {
-            alt.logError(`~lr~[Discord] Channel does not exist to sendToChannel`);
+            alt.log(`~lr~[Discord] Textkanal existiert nicht`);
             return;
         }
-
         channel.send(message);
     }
 
-    static async sendEmbed(channel_id: string, msg: Embed): Promise<void> {
+    static async sendEmbed(channel_id: string, msg: EmbedBuilder): Promise<void> {
         if (!DiscordController.guild) {
-            alt.logError(`[Discord] You do not currently have a Discord Bot Setup for sending messages.`);
+            alt.log(`~lr~[Discord] Es existiert kein Discord Bot aktuell zum Senden von Nachrichten`);
             return;
         }
-
-        const channel = (await DiscordController.guild.channels.fetch(channel_id)) as TextChannel;
+        const channel = await DiscordController.guild.channels.fetch(channel_id) as TextChannel;
         if (!channel) {
-            alt.logError(`[Discord] Channel does not exist.`);
+            alt.log(`~lr~[Discord] Textkanal existiert nicht`);
             return;
         }
-
-        channel.send({ embeds: [msg] });
+        await channel.send({ embeds: [msg] });
     }
 }

@@ -3,6 +3,7 @@ export const DISCORD_CONFIG = {
     TOKEN: '',
     // A Discord Server ID. See Image: https://i.imgur.com/rzQ9uRB.png
     SERVER_ID: '',
+    TEXT_CHANNEL_ID: '',
     ALLOW_LIST: {
         // Enable the Allow List
         ENABLED: false,

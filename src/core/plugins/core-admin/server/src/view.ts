@@ -12,6 +12,13 @@ import { Interior } from '../../../core-interior/shared/interfaces';
 import { VehicleInfo } from '../../../../shared/interfaces/vehicleInfo';
 import { FactionHandler } from '../../../core-factions/server/src/handler';
 import { deepCloneObject } from '../../../../shared/utility/deepCopy';
+import { IVehicle } from '../../../../shared/interfaces/iVehicle';
+import VehicleFuncs from '../../../../server/extensions/vehicleFuncs';
+import { FactionFuncs } from '../../../core-factions/server/src/funcs';
+import { FactionPlayerFuncs } from '../../../core-factions/server/src/playerFuncs';
+import { Vehicle_Behavior } from '../../../../shared/enums/vehicle';
+import { InteriorSystem } from '../../../core-interior/server/src/system';
+import { StateManager } from '../../../../server/systems/stateManager';
 
 class InternalFunctions {
     static show(player: alt.Player) {
@@ -20,7 +27,6 @@ class InternalFunctions {
 
     static async load(player: alt.Player) {
         var data = {};
-        const stringKeys: Array<string> = ['accounts', 'banks', 'characters']; 
         data['accounts'] = await Database.fetchAllData<Account>(Collections.Accounts);
         data['banks'] = await Database.fetchAllData<BankInfo>(Collections.Banks);
         data['characters'] = await Database.fetchAllData<Character>(Collections.Characters);
@@ -30,7 +36,7 @@ class InternalFunctions {
         data['items'] = await Database.fetchAllData<Item>(Collections.Items);
         data['interiors'] = await Database.fetchAllData<Interior>(Collections.Interiors);
         data['vehicles'] = await Database.fetchAllData<VehicleInfo>(Collections.Vehicles);
-        for (const key of Object.keys(data).filter(x => stringKeys.findIndex(y => x === y))) {
+        for (const key of Object.keys(data)) {
             for (var i = 0; i < data[key].length; i++) {
                 if (data[key][i] && data[key][i]._id && typeof data[key][i]._id !== 'string') {
                     data[key][i]._id = data[key][i]._id.toString();
@@ -43,7 +49,22 @@ class InternalFunctions {
     static async disconnect(player: alt.Player, reason: string) {}
 
     static async modify(player: alt.Player, collections: string, _id: string, data: string) {
-        if (collections === 'characters') {
+        if (collections === 'banks') {
+            const partialObject = JSON.parse(data) as Partial<BankInfo>;
+            if (partialObject._id) delete partialObject._id;
+            await triallife.database.funcs.updatePartialData(_id, partialObject, triallife.database.collections.Banks);
+            const target = [...alt.Player.all].filter(x => x.data).find(x => x.data._id.toString() === partialObject.owner);
+            if (target) {
+                const banks = triallife.player.currency.getAllBankAccountsPlayer(target);
+                StateManager.set(target, 'banks', banks);
+                triallife.player.emit.meta(target, 'banks', banks);
+                triallife.player.emit.soundFrontend(target, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                triallife.player.emit.notification(player, 'Ihr Bankkonto wurde aktualisiert');
+            }
+            const status = await Database.updatePartialData(_id, partialObject, Collections.Characters);
+            triallife.player.emit.soundFrontend(player, status ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            triallife.player.emit.notification(player, status ? 'Charakter wurde bearbeitet' : 'Charakter wurde nicht bearbeitet');
+        } else if (collections === 'characters') {
             const partialObject = JSON.parse(data) as Partial<Character>;
             if (partialObject._id) delete partialObject._id;
             const allPlayers = [...alt.Player.all].filter(x => x.data);
@@ -103,8 +124,44 @@ class InternalFunctions {
         await InternalFunctions.load(player);
     }
 
-    static async remove(player: alt.Player, collections: string, _id: string) {
-        if (collections === 'factions') {
+    static async remove(player: alt.Player, collections: string, _id: string) {        
+        if (collections === 'banks') {
+            const bank = await triallife.database.funcs.fetchData<BankInfo>('_id', _id, triallife.database.collections.Banks);
+            if (!bank) return;
+            const character = await triallife.database.funcs.fetchData<Character>('_id', bank.owner, triallife.database.collections.Characters);
+            const faction = await triallife.database.funcs.fetchData<Faction>('_id', bank.owner, triallife.database.collections.Factions);
+            if (character) await triallife.database.funcs.updatePartialData(character._id, { cash: character.cash + bank.amount }, triallife.database.collections.Characters);
+            if (faction) await triallife.database.funcs.updatePartialData(faction._id, { bank: faction.bank + bank.amount }, triallife.database.collections.Factions);
+            const deleted = await triallife.database.funcs.deleteById(_id, triallife.database.collections.Banks);
+            triallife.player.emit.notification(player, deleted ? 'Das Bankkonto wurde erfolgreich gelöscht' : 'Das Bankkonto wurde nicht gelöscht');
+            triallife.player.emit.soundFrontend(player, deleted ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+        } else if (collections === 'characters') {
+            const character = await triallife.database.funcs.fetchData<Character>('_id', _id, triallife.database.collections.Characters);
+            const vehicles = await triallife.database.funcs.fetchAllByField<IVehicle>('owner', _id, triallife.database.collections.Vehicles);
+            const banks = await triallife.database.funcs.fetchAllByField<BankInfo>('owner', _id, triallife.database.collections.Banks);
+            const faction = await triallife.database.funcs.fetchData<Faction>('_id', character.faction, triallife.database.collections.Factions);
+            const interiors = await triallife.database.funcs.fetchAllByField<Interior>('owner', _id, triallife.database.collections.Interiors);
+            const spawnedVehicles = [...alt.Vehicle.all]; 
+            for(const vehicle of vehicles) {
+                const spawnedVehicle = spawnedVehicles.find(x => x.data._id.toString() === vehicle._id.toString());
+                if (spawnedVehicle) {
+                    await triallife.vehicle.funcs.save(spawnedVehicle, { owner: null, behavior: Vehicle_Behavior.NO_KEY_TO_START | Vehicle_Behavior.NO_KEY_TO_LOCK });
+                    triallife.vehicle.funcs.despawn(vehicle._id);
+                }
+            }
+            for(const bank of banks) {
+                await triallife.database.funcs.updatePartialData(bank._id, { owner: null }, triallife.database.collections.Banks);
+            }
+            for(const interior of interiors) {
+                InteriorSystem.removeOwnership(interior.uid);
+            }
+            if (faction) FactionFuncs.kickMember(faction, _id);
+            const target = [...alt.Player.all].find(x => x.data && x.data._id.toString() === character._id.toString());
+            if (target) target.kick('Ihr Charakter wurde gelöscht. Bitte bei dem Support meldet.');
+            const deleted = await triallife.database.funcs.deleteById(_id, triallife.database.collections.Characters);
+            triallife.player.emit.notification(player, deleted ? 'Der Charakter wurde erfolgreich gelöscht' : 'Der Charakter wurde nicht gelöscht');
+            triallife.player.emit.soundFrontend(player, deleted ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+        } else if (collections === 'factions') {
             const result = await FactionHandler.remove(_id);
             triallife.player.emit.notification(player, result.response);
             triallife.player.emit.soundFrontend(player, result.status ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');

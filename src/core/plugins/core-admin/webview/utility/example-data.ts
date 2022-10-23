@@ -392,6 +392,16 @@ const defaultCharacter = {
     faction: null,
 };
 
+const defaultBank = {
+    _id: '',
+    amount: 0.0,
+    logs: [],
+    iban: '',
+    name: '',
+    type: '',
+    owner: ''
+};
+
 export default {
     defaultStore,
     defaultInterior,
@@ -400,4 +410,5 @@ export default {
     defaultStorage,
     defaultFaction,
     defaultCharacter,
+    defaultBank
 };

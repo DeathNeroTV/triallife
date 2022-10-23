@@ -1,6 +1,7 @@
 import * as alt from 'alt-server';
 import { BankInfo } from '../../../shared/interfaces/bank';
 import { triallife } from '../../api/triallife';
+import { StateManager } from '../../systems/stateManager';
 import emit from './emit';
 import save from './save';
 
@@ -14,6 +15,7 @@ const Currency = {
                 player.data.cash = originalValue;
                 return false;
             }
+            StateManager.set(player, 'cash', player.data.cash);
             emit.meta(player, 'cash', player.data.cash);
             save.save(player, 'cash', player.data.cash);
             return true;
@@ -33,6 +35,7 @@ const Currency = {
                 player.data.cash = originalValue;
                 return false;
             }
+            StateManager.set(player, 'cash', player.data.cash);
             emit.meta(player, 'cash', player.data.cash);
             save.save(player, 'cash', player.data.cash);
             return true;
@@ -44,6 +47,7 @@ const Currency = {
     set(player: alt.Player, amount: number): boolean {
         try {
             player.data.cash = amount;
+            StateManager.set(player, 'cash', player.data.cash);
             emit.meta(player, 'cash', player.data.cash);
             save.save(player, 'cash', player.data.cash);
             return true;
@@ -58,8 +62,11 @@ const Currency = {
             const bank = await triallife.database.funcs.fetchData<BankInfo>('_id', _id, triallife.database.collections.Banks);
             if (!bank) return false;
             await triallife.database.funcs.updatePartialData(bank._id, { amount: bank.amount + amount }, triallife.database.collections.Banks);
-            const banksNew = await Currency.getAllBankAccountsPlayer(player);
-            if (player) triallife.player.emit.meta(player, 'banks', banksNew);
+            if (player) {
+                const banksNew = await Currency.getAllBankAccountsPlayer(player);
+                triallife.player.emit.meta(player, 'banks', banksNew);            
+                StateManager.set(player, 'banks', banksNew);
+            }
             return true;
         } catch (err) {
             console.log(err);
@@ -73,8 +80,9 @@ const Currency = {
             const bank = await triallife.database.funcs.fetchData<BankInfo>('_id', _id, triallife.database.collections.Banks);
             await triallife.database.funcs.updatePartialData(bank._id, { amount: bank.amount - amount }, triallife.database.collections.Banks);
             if (player) {
-                const banks = await Currency.getAllBankAccountsPlayer(player);
-                triallife.player.emit.meta(player, 'banks', banks);
+                const banksNew = await Currency.getAllBankAccountsPlayer(player);
+                triallife.player.emit.meta(player, 'banks', banksNew);            
+                StateManager.set(player, 'banks', banksNew);
             }
             return true;
         } catch (err) {
@@ -86,8 +94,9 @@ const Currency = {
         try {
             await triallife.database.funcs.updatePartialData(_id, { amount }, triallife.database.collections.Banks);
             if (player) {
-                const banks = await Currency.getAllBankAccountsPlayer(player);
-                triallife.player.emit.meta(player, 'banks', banks);
+                const banksNew = await Currency.getAllBankAccountsPlayer(player);
+                triallife.player.emit.meta(player, 'banks', banksNew);            
+                StateManager.set(player, 'banks', banksNew);
             }
             return true;
         } catch (err) {
@@ -100,28 +109,48 @@ const Currency = {
         let amountLeft = amount;
         let startCash = player.data.cash;
         if (player.data.cash - amountLeft <= -1) {
-            amountLeft = amountLeft - startCash;
+            amountLeft -= startCash;
             startCash = 0;
         } else {
-            startCash = startCash - amountLeft;
+            startCash -= amountLeft;
             amountLeft = 0;
         }
-        triallife.state.set(player, 'cash', startCash);
-        emit.meta(player, 'cash', player.data.cash);
+        StateManager.set(player, 'cash', startCash);
+        emit.meta(player, 'cash', startCash);
+        save.save(player, 'cash', startCash);
+        //Check Private Bank Account for Payment
+        const allBanks = await Currency.getAllBankAccountsPlayer(player);
         if (amountLeft > 0) {
-            const banks = await Currency.getAllBankAccountsPlayer(player);
-            const index = banks.findIndex((x) => x.owner === player.data._id.toString() && x.type === 'private');
-            if (index !== -1) {
-                if (banks[index].amount - amountLeft <= -1) {
-                    amountLeft = amountLeft - banks[index].amount;
-                    banks[index].amount = 0;
+            const indexPriv = allBanks.findIndex((x) => x.owner === player.data._id.toString() && x.type === 'private');
+            if (indexPriv !== -1) {
+                startCash = allBanks[indexPriv].amount;
+                if (allBanks[indexPriv].amount - amountLeft <= -1) {
+                    amountLeft -= allBanks[indexPriv].amount;
+                    startCash = 0;
                 } else {
-                    banks[index].amount = banks[index].amount - amountLeft;
+                    startCash -= amountLeft;
                     amountLeft = 0;
                 }
-                await triallife.database.funcs.updatePartialData(banks[index]._id, { amount: banks[index].amount }, triallife.database.collections.Banks);
+                await triallife.database.funcs.updatePartialData(allBanks[indexPriv]._id, { amount: startCash }, triallife.database.collections.Banks);
             }
-            emit.meta(player, 'banks', banks);
+        }
+        //Check Credit Bank Account for Payment
+        if (amountLeft > 0) {        
+            const indexCred = allBanks.findIndex((x) => x.owner === player.data._id.toString() && x.type === 'credit');
+            if (indexCred !== -1) {
+                startCash = allBanks[indexCred].amount;
+                if (startCash > Number.MAX_VALUE - amountLeft) {
+                    const banned = { state: true, reason: 'Zu hoch verschuldet' };
+                    StateManager.set(player, 'banned', banned);
+                    emit.meta(player, 'banned', banned);
+                    save.save(player, 'banned', banned);
+                    player.kick('Sie sind zu hoch verschuldet. Bitte melden Sie sich beim Support!'); 
+                    return false;
+                } else startCash += amountLeft;
+                await triallife.database.funcs.updatePartialData(allBanks[indexCred]._id, { amount: startCash }, triallife.database.collections.Banks);
+            }
+            StateManager.set(player, 'banks', allBanks);
+            emit.meta(player, 'banks', allBanks);
         }
         return true;
     },
@@ -135,8 +164,10 @@ const Currency = {
         }
         if (player.data.faction) {
             const bank = await triallife.database.funcs.fetchData<BankInfo>('owner', player.data.faction, triallife.database.collections.Banks);
-            bank._id = bank._id.toString();
-            banks.push(bank);
+            if (bank) {
+                bank._id = bank._id.toString();
+                banks.push(bank);
+            }
         }
         return banks;
     },
