@@ -1,9 +1,6 @@
-import Database from '@stuyk/ezmongodb';
 import * as alt from 'alt-server';
-import { Faction } from '../../../plugins/core-factions/shared/interfaces';
 import { BankInfo } from '../../../shared/interfaces/bank';
 import { triallife } from '../../api/triallife';
-import { Collections } from '../../interface/iDatabaseCollections';
 import emit from './emit';
 import save from './save';
 
@@ -58,10 +55,10 @@ const Currency = {
     async addBank(player: alt.Player | null, amount: number, _id: string): Promise<boolean> {
         if (typeof amount === 'string') amount = parseFloat(amount);
         try {
-            const bank = await Database.fetchData<BankInfo>('_id', _id, Collections.Banks);
+            const bank = await triallife.database.funcs.fetchData<BankInfo>('_id', _id, triallife.database.collections.Banks);
             if (!bank) return false;
-            await Database.updatePartialData(bank._id, { amount: bank.amount + amount }, Collections.Banks);
-            const banksNew = await this.getAllBankAccountsPlayer(player);
+            await triallife.database.funcs.updatePartialData(bank._id, { amount: bank.amount + amount }, triallife.database.collections.Banks);
+            const banksNew = await Currency.getAllBankAccountsPlayer(player);
             if (player) triallife.player.emit.meta(player, 'banks', banksNew);
             return true;
         } catch (err) {
@@ -73,10 +70,10 @@ const Currency = {
     async subBank(player: alt.Player | null, amount: number, _id: string): Promise<boolean> {
         if (typeof amount === 'string') amount = parseFloat(amount);
         try {
-            const bank = await Database.fetchData<BankInfo>('_id', _id, Collections.Banks);
-            await Database.updatePartialData(bank._id, { amount: bank.amount - amount }, Collections.Banks);
+            const bank = await triallife.database.funcs.fetchData<BankInfo>('_id', _id, triallife.database.collections.Banks);
+            await triallife.database.funcs.updatePartialData(bank._id, { amount: bank.amount - amount }, triallife.database.collections.Banks);
             if (player) {
-                const banks = await this.getAllBankAccountsPlayer(player);
+                const banks = await Currency.getAllBankAccountsPlayer(player);
                 triallife.player.emit.meta(player, 'banks', banks);
             }
             return true;
@@ -87,9 +84,9 @@ const Currency = {
 
     async setBank(player: alt.Player | null, amount: number, _id: string): Promise<boolean> {
         try {
-            await Database.updatePartialData(_id, { amount }, Collections.Banks);
+            await triallife.database.funcs.updatePartialData(_id, { amount }, triallife.database.collections.Banks);
             if (player) {
-                const banks = await this.getAllBankAccountsPlayer(player);
+                const banks = await Currency.getAllBankAccountsPlayer(player);
                 triallife.player.emit.meta(player, 'banks', banks);
             }
             return true;
@@ -112,8 +109,8 @@ const Currency = {
         triallife.state.set(player, 'cash', startCash);
         emit.meta(player, 'cash', player.data.cash);
         if (amountLeft > 0) {
-            const banks = await this.getAllBankAccountsPlayer(player);
-            const index = banks.findIndex((x) => x.owner === player.data.name && x.type === 'private');
+            const banks = await Currency.getAllBankAccountsPlayer(player);
+            const index = banks.findIndex((x) => x.owner === player.data._id.toString() && x.type === 'private');
             if (index !== -1) {
                 if (banks[index].amount - amountLeft <= -1) {
                     amountLeft = amountLeft - banks[index].amount;
@@ -122,7 +119,7 @@ const Currency = {
                     banks[index].amount = banks[index].amount - amountLeft;
                     amountLeft = 0;
                 }
-                await Database.updatePartialData(banks[index]._id, { amount: banks[index].amount }, Collections.Banks);
+                await triallife.database.funcs.updatePartialData(banks[index]._id, { amount: banks[index].amount }, triallife.database.collections.Banks);
             }
             emit.meta(player, 'banks', banks);
         }
@@ -130,13 +127,18 @@ const Currency = {
     },
 
     async getAllBankAccountsPlayer(player: alt.Player): Promise<Array<BankInfo>> {
-        var banks = await Database.fetchAllByField<BankInfo>('owner', player.data._id, Collections.Banks);
-        if (player.data.faction) {
-            const faction = await Database.fetchData<Faction>('_id', player.data.faction, Collections.Factions);
-            const bank = await Database.fetchData<BankInfo>('owner', faction.name, Collections.Banks);
+        const banks = [];
+        const documents = await triallife.database.funcs.fetchAllByField<BankInfo>('owner', player.data._id.toString(), triallife.database.collections.Banks);
+        for(const bank of documents) {
+            bank._id = bank._id.toString();
             banks.push(bank);
         }
-        return banks ? banks : [];
+        if (player.data.faction) {
+            const bank = await triallife.database.funcs.fetchData<BankInfo>('owner', player.data.faction, triallife.database.collections.Banks);
+            bank._id = bank._id.toString();
+            banks.push(bank);
+        }
+        return banks;
     },
 };
 

@@ -154,8 +154,9 @@ export class FactionHandler {
 
         // Clear all members...
         const members = await triallife.database.funcs.fetchAllByField<Character>('faction', factionClone._id, triallife.database.collections.Characters);
-        const banking = await triallife.database.funcs.fetchData<BankInfo>('owner', factionClone.name, triallife.database.collections.Banks);
+        const banking = await triallife.database.funcs.fetchData<BankInfo>('owner', factionClone._id, triallife.database.collections.Banks);
         let onlinePlayers: Array<alt.Player> = [];
+        var amount = !banking ? faction.bank : faction.bank + banking.amount;
         for (let i = 0; i < members.length; i++) {
             const member = members[i];
             member.faction = null;
@@ -163,43 +164,35 @@ export class FactionHandler {
             if (player && player.valid) {
                 // Add bank balance to owner character
                 if (player.data._id === ownerIdentifier) {
-                    const banks = (await triallife.player.currency.getAllBankAccountsPlayer(player)).filter((x) => x.type === 'private' || x.type === 'credit');
+                    const banks = (await triallife.player.currency.getAllBankAccountsPlayer(player)).filter((x) => x._id !== banking._id);
                     const prive = banks.find((x) => x.type === 'private');
                     const credit = banks.find((x) => x.type === 'credit');
-                    var money = faction.bank + banking.amount;
-                    if (credit && credit.amount - money <= -1) {
-                        money = money - credit.amount;
-                        await triallife.player.currency.setBank(player, 0, credit.iban);
+                    if (credit && credit.amount - amount <= -1) {
+                        amount = amount - credit.amount;
+                        await triallife.player.currency.setBank(player, 0, credit._id);
                     }
-                    if (prive) {
-                        await triallife.player.currency.addBank(player, money, prive.iban);
-                        money = 0;
-                    } else {
-                        triallife.player.currency.add(player, money);
-                        money = 0;
-                    }
+                    if (prive) await triallife.player.currency.addBank(player, amount, prive._id);
+                    else triallife.player.currency.add(player, amount);
+                    amount = 0;
                     triallife.player.sync.currencyData(player);
                 }
                 onlinePlayers.push(player);
             }
             // For non-logged in character owner add bank balance
             if (!player && member._id === ownerIdentifier) {
-                var amount = factionClone.bank;
-                var facAcc = await triallife.database.funcs.fetchData<BankInfo>('owner', factionClone.name, triallife.database.collections.Banks);
-                const banks = await triallife.database.funcs.fetchAllByField<BankInfo>('owner', member.name, triallife.database.collections.Banks);
+                const banks = await triallife.database.funcs.fetchAllByField<BankInfo>('owner', member._id, triallife.database.collections.Banks);
                 const prive = banks.find((x) => x.type === 'private');
                 const credit = banks.find((x) => x.type === 'credit');
-                var money = amount + facAcc.amount;
-                if (credit && credit.amount - money <= -1) {
-                    money = money - credit.amount;
+                if (credit && credit.amount - amount <= -1) {
+                    amount = amount - credit.amount;
                     await triallife.database.funcs.updatePartialData(credit._id, { amount: 0 }, triallife.database.collections.Banks);
                 }
                 if (prive) {
-                    await triallife.database.funcs.updatePartialData(prive._id, { amount: prive.amount + money }, triallife.database.collections.Banks);
-                    money = 0;
+                    await triallife.database.funcs.updatePartialData(prive._id, { amount: prive.amount + amount }, triallife.database.collections.Banks);
+                    amount = 0;
                 } else {
-                    await triallife.database.funcs.updatePartialData(member._id, { cash: member.cash + money }, triallife.database.collections.Characters);
-                    money = 0;
+                    await triallife.database.funcs.updatePartialData(member._id, { cash: member.cash + amount }, triallife.database.collections.Characters);
+                    amount = 0;
                 }
                 continue;
             }
