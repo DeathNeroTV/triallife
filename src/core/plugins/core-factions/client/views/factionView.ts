@@ -104,7 +104,6 @@ class InternalFunctions {
             if (factionRef.vehicles.findIndex((veh) => veh.id === id) <= -1) continue;
             spawnedVehicles.push(id);
         }
-        console.log(`${faction.name} Fahrzeugliste: ${JSON.stringify(spawnedVehicles)}`);
         return spawnedVehicles;
     }
 
