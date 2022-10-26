@@ -5,7 +5,7 @@ import { LocaleController } from '../../../../shared/locale/locale';
 import { LOCALE_KEYS } from '../../../../shared/locale/languages/keys';
 import { SHOP_INTERACTIONS } from '../../shared/events';
 import { triallife } from '../../../../server/api/triallife';
-import { Item } from '../../../../shared/interfaces/item';
+import { Item, ItemData } from '../../../../shared/interfaces/item';
 import { IGeneralStore } from '../../shared/interfaces';
 import { Blip } from '../../../../shared/interfaces/blip';
 import { PolygonShape } from '../../../../server/extensions/extColshape';
@@ -19,6 +19,7 @@ import { ITEM_TYPE } from '../../../../shared/enums/itemTypes';
 import { food } from '../../../core-items/server/src/items/food';
 import { drinks } from '../../../core-items/server/src/items/drinks';
 import { utility } from '../../../core-items/server/src/items/utility';
+import { isFlagEnabled } from '../../../../shared/utility/flags';
 
 const DefaultItemData: IGeneralStore = {
     hiddenComponents: {},
@@ -187,8 +188,17 @@ export class ShopFunctions {
     static async purchaseAll(player: alt.Player, items: Array<Item>, shopUID: string) {
         if (items.length <= 0) return;
         for (const item of items) {
-            const result = await ShopFunctions.purchase(player, shopUID, item, true);
-            triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            if (!isFlagEnabled(item.behavior, ITEM_TYPE.CAN_STACK) && item.quantity >= 2) {
+                for (let i = 0; i < item.quantity; i++) {
+                    const clonedRef = deepCloneObject(item) as Item;
+                    clonedRef.quantity = 1;
+                    const result = await ShopFunctions.purchase(player, shopUID, clonedRef, true);
+                    triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                }
+            } else {
+                const result = await ShopFunctions.purchase(player, shopUID, item, true);
+                triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+            }
         }
         triallife.player.emit.sound2D(player, 'item_purchase');
     }

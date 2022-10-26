@@ -11,7 +11,7 @@ function handleItemEvent(player: alt.Player, item: Item, slot: number, type: INV
     }
 
     triallife.player.safe.addHealth(player, item.data.amount, false);
-    triallife.player.inventory.notify(player, `+${item.data.amount} Health`);
+    triallife.player.inventory.notify(player, `+${item.data.amount} Gesundheit`);
 
     if (item.data.sound) {
         triallife.player.emit.sound3D(player, item.data.sound, player);

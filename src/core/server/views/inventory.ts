@@ -531,7 +531,6 @@ export class InventoryView {
                 playerConst.sync.inventory(player);
                 return;
             }
-
             if (selectedSlot.includes('e-')) {
                 // Unequip
                 const openSlot = playerConst.inventory.getFreeInventorySlot(player);
@@ -553,9 +552,7 @@ export class InventoryView {
                     playerConst.sync.inventory(player);
                     return;
                 }
-
                 let removedItem: Item;
-
                 // Check if the equipment slot is taken
                 const targetSlotIndex = player.data.equipment.findIndex((i) => i && i.equipment === item.equipment);
                 if (targetSlotIndex >= 0) {
@@ -564,14 +561,11 @@ export class InventoryView {
                         playerConst.sync.inventory(player);
                         return;
                     }
-
                     // Add old item to inventory from equipment
                     playerConst.inventory.inventoryAdd(player, removedItem, item.slot);
                 }
-
                 playerConst.inventory.equipmentAdd(player, item, item.equipment);
             }
-
             stateConst.setBulk(player, { equipment: player.data.equipment, inventory: player.data.inventory });
             playerConst.sync.inventory(player);
             return;
@@ -584,13 +578,8 @@ export class InventoryView {
 
         if (!isFlagEnabled(item.behavior, ITEM_TYPE.SKIP_CONSUMABLE)) {
             item.quantity -= 1;
-
-            if (item.quantity <= 0) {
-                playerConst.inventory.inventoryRemove(player, slot);
-            } else {
-                playerConst.inventory.replaceInventoryItem(player, item);
-            }
-
+            if (item.quantity <= 0) playerConst.inventory.inventoryRemove(player, slot);
+            else playerConst.inventory.replaceInventoryItem(player, item);
             stateConst.set(player, INVENTORY_TYPE.INVENTORY, player.data.inventory, true);
             playerConst.sync.inventory(player);
         }

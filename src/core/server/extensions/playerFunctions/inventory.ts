@@ -369,10 +369,7 @@ const Inventory = {
     },
 
     equipmentRemove(playerRef: alt.Player, slot: EQUIPMENT_TYPE): boolean {
-        if (slot >= MAX_EQUIPMENT_SLOTS) {
-            return false;
-        }
-
+        if (slot >= MAX_EQUIPMENT_SLOTS) return false;
         return Inventory.removeFrom(playerRef, slot, 'equipment');
     },
 
@@ -389,14 +386,16 @@ const Inventory = {
             return true;
         }
         const inventoryItem = Inventory.isInInventory(player, { name: itemName });
-        if (!inventoryItem) return false;
-        const item = player.data.inventory[inventoryItem.index];
-        if (!item || typeof item === 'undefined' || typeof item.slot === 'undefined') return false;
-        const removedFromInventory = Inventory.inventoryRemove(player, item.slot);
-        if (!removedFromInventory) return false;
-        triallife.state.set(player, 'inventory', player.data.inventory);
-        triallife.player.sync.inventory(player);
-        return true;
+        if (inventoryItem) {
+            const item = player.data.inventory[inventoryItem.index];
+            if (!item || typeof item === 'undefined' || typeof item.slot === 'undefined') return false;
+            const removedFromInventory = Inventory.inventoryRemove(player, item.slot);
+            if (!removedFromInventory) return false;
+            triallife.state.set(player, 'inventory', player.data.inventory);
+            triallife.player.sync.inventory(player);
+            return true;
+        }
+        return false;
     },
 
     inventoryRemove(playerRef: alt.Player, slot: number): boolean {
@@ -411,7 +410,7 @@ const Inventory = {
         if (index >= 0) return false;
         if (item.slot !== slot) item.slot = slot;
         const safeItemCopy = deepCloneObject<Item>(item);
-        if (typeof player.data.inventory !== 'undefined') player.data.inventory.push(safeItemCopy);
+        if (typeof player.data.inventory !== 'undefined') player.data.inventory.push(safeItemCopy); 
         else player.data.inventory = [safeItemCopy];
         return true;
     },

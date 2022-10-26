@@ -1,4 +1,5 @@
 import * as alt from 'alt-server';
+import EFFECTS from '../../shared/enums/effects';
 import { INVENTORY_TYPE } from '../../shared/enums/inventoryTypes';
 
 import { ANIMATION_FLAGS } from '../../shared/flags/animationFlags';
@@ -15,30 +16,25 @@ alt.onClient('task:Vehicle:Repair:Timeline', handleRepairTimeline);
 
 function handleRepair(player: alt.Player, item: Item, slot: number, type: INVENTORY_TYPE | string) {
     const closestVehicle = triallife.player.utility.getVehicleInFrontOf(player, 2);
-
     if (!closestVehicle) {
-        triallife.player.emit.notification(player, `Could not find a vehicle to use this on.`);
+        triallife.player.emit.notification(player, `Kein Fahrzeug in der Nähe für eine Reperatur.`);
         return;
     }
-
     if (player.vehicle) {
-        triallife.player.emit.notification(player, `Sie müssen erstmal aus dem fahrzeug aussteigen.`);
+        triallife.player.emit.notification(player, `Sie müssen erstmal aus dem Fahrzeug aussteigen.`);
         return;
     }
-
     const removedKit = triallife.player.inventory.findAndRemove(player, 'Werkzeugkasten');
     if (!removedKit) {
         triallife.player.emit.notification(player, `Sie haben kein Werkzeugkasten dabei.`);
         return;
     }
-
     const fwdVector = getForwardVector(closestVehicle.rot);
     const fwdPosition = {
         x: closestVehicle.pos.x + fwdVector.x * 2,
         y: closestVehicle.pos.y + fwdVector.y * 2,
         z: closestVehicle.pos.z,
     };
-
     const timeline: Array<Task | TaskCallback> = [
         {
             // taskGoToCoordAnyMeans(ped: number, x: number, y: number, z: number, speed: number, p5: any, p6: boolean, walkingStyle: number, p8: number
@@ -81,4 +77,4 @@ function handleRepairTimeline(player: alt.Player) {
     }, 12000);
 }
 
-ItemEffects.add('effect:Vehicle:Repair', handleRepair);
+ItemEffects.add(EFFECTS.EFFECT_REPAIR, handleRepair);
