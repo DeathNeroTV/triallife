@@ -180,7 +180,6 @@ export class InteractionController {
 
             if (!alt.Player.local.vehicle && closestTarget.type === 'vehicle') {
                 const vehicle = alt.Vehicle.all.find((v) => v && v.valid && v.scriptID === closestTarget.scriptID);
-
                 if (vehicle) {
                     const model = native.getDisplayNameFromVehicleModel(vehicle.model);
                     wheelOptions.push({

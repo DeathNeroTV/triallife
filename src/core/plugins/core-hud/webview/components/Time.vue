@@ -1,15 +1,19 @@
 <template>
     <div class="stat-wrapper">
+        <Icon :shadow="true" icon="icon-clock-o" class="mr-2" :size="24" />
         <span class="time">{{ value.toLocaleString() }}</span>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, defineAsyncComponent } from 'vue';
 
 const ComponentName = 'Time';
 export default defineComponent({
     name: ComponentName,
+    components: {
+        Icon: defineAsyncComponent(() => import('@components/Icon.vue')),
+    },
     props: {
         value: {
             type: String,

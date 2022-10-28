@@ -144,7 +144,7 @@ class InternalFunctions {
                 const spawnedVehicle = spawnedVehicles.find(x => x.data._id.toString() === vehicle._id.toString());
                 if (spawnedVehicle) {
                     await triallife.vehicle.funcs.save(spawnedVehicle, { owner: null, behavior: Vehicle_Behavior.NO_KEY_TO_START | Vehicle_Behavior.NO_KEY_TO_LOCK });
-                    triallife.vehicle.funcs.despawn(vehicle._id);
+                    triallife.vehicle.funcs.despawn(vehicle.id);
                 }
             }
             for(const bank of banks) {

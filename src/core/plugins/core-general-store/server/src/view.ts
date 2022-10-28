@@ -5,7 +5,7 @@ import { LocaleController } from '../../../../shared/locale/locale';
 import { LOCALE_KEYS } from '../../../../shared/locale/languages/keys';
 import { SHOP_INTERACTIONS } from '../../shared/events';
 import { triallife } from '../../../../server/api/triallife';
-import { Item, ItemData } from '../../../../shared/interfaces/item';
+import { Item } from '../../../../shared/interfaces/item';
 import { IGeneralStore } from '../../shared/interfaces';
 import { Blip } from '../../../../shared/interfaces/blip';
 import { PolygonShape } from '../../../../server/extensions/extColshape';
@@ -140,7 +140,7 @@ export class ShopFunctions {
         let totalCost: number = item.quantity * item.buy;
         if (totalCost >= 1) {
             const banks = await triallife.player.currency.getAllBankAccountsPlayer(player);
-            const index = banks.findIndex((x) => x.owner === player.data.name && x.type === 'private');
+            const index = banks.findIndex((x) => x.type === 'private');
             if (index !== -1) {
                 if (player.data.cash + banks[index].amount < totalCost) {
                     triallife.player.emit.sound2D(player, 'item_error');
@@ -156,6 +156,7 @@ export class ShopFunctions {
         const newItem = deepCloneObject<Item>(itemRef);
         newItem.name = item.name;
         newItem.description = item.description;
+        newItem.icon = item.icon;
         newItem.data = { ...item.data };
         newItem.quantity = item.quantity;
         newItem.sell = item.buy / 2;
@@ -190,10 +191,10 @@ export class ShopFunctions {
         for (const item of items) {
             if (!isFlagEnabled(item.behavior, ITEM_TYPE.CAN_STACK) && item.quantity >= 2) {
                 for (let i = 0; i < item.quantity; i++) {
-                    const clonedRef = deepCloneObject(item) as Item;
+                    const clonedRef = deepCloneObject<Item>(item);
                     clonedRef.quantity = 1;
                     const result = await ShopFunctions.purchase(player, shopUID, clonedRef, true);
-                    triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                    triallife.player.emit.soundFrontend(player, result ? 'Hack_Success' : 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS'); 
                 }
             } else {
                 const result = await ShopFunctions.purchase(player, shopUID, item, true);
@@ -208,11 +209,11 @@ export class ShopFunctions {
         triallife.player.emit.sound2D(player, 'shop_enter', 0.5);
     }
 
-    static leave(_polygon: PolygonShape, _player: alt.Player) {
-        // Not Important. Just a placeholder _Name for placeholder variable.
+    static leave(_polygon: PolygonShape, player: alt.Player) {
+        if (!(player instanceof alt.Player)) return;
+        triallife.player.emit.sound2D(player, 'shop_enter', 0.5);
     }
 }
 
 alt.onClient(SHOP_INTERACTIONS.EXIT, ShopFunctions.exit);
-alt.onClient(SHOP_INTERACTIONS.PURCHASE, ShopFunctions.purchase);
 alt.onClient(SHOP_INTERACTIONS.PURCHASE_ALL, ShopFunctions.purchaseAll);

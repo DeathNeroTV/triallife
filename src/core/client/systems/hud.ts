@@ -45,27 +45,6 @@ let hudElements: Array<IHud> = [
         },
     },
     {
-        identifier: 'hud-bank',
-        position: {
-            x: 0.98,
-            y: 0.07,
-        },
-        padding: 0.04,
-        align: 2,
-        scale: 0.5,
-        color: new alt.RGBA(255, 255, 255, 225),
-        callback: (self: IHud, pos: { x: number; y: number }) => {
-            const value = alt.Player.local.meta.banks ? alt.Player.local.meta.banks.find((x) => x.type === 'private').amount : 0;
-            const fixedValue = parseFloat(value.toFixed(0));
-
-            if (self.callbackReroute) {
-                self.callbackReroute(fixedValue);
-                return null;
-            }
-            return ` ~g~$${fixedValue.toLocaleString()} ~w~BANK`;
-        },
-    },
-    {
         identifier: 'hud-food',
         position: {
             x: 0.98,

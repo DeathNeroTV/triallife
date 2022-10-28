@@ -14,6 +14,8 @@ import { LocaleController } from '../../shared/locale/locale';
 import { LOCALE_KEYS } from '../../shared/locale/languages/keys';
 import { Vector3 } from '../../shared/interfaces/vector';
 import { distance } from '../../shared/utility/vector';
+import VehicleFuncs from '../extensions/vehicleFuncs';
+import { VehicleSystem } from '../systems/vehicle';
 
 const DEFAULT_MAX_STORAGE_DIST = 4;
 
@@ -209,14 +211,9 @@ export class StorageView {
      */
     static removeStorageBinding(playerID: number) {
         const storedStorageID = storageBinding[playerID];
-
         delete storageBinding[playerID];
         delete storageCache[playerID];
-
-        if (!storedStorageID) {
-            return;
-        }
-
+        if (!storedStorageID) return;
         StorageSystem.setRestricted(storedStorageID, false);
     }
 
@@ -594,6 +591,8 @@ export class StorageView {
      * @memberof StorageView
      */
     static close(player: alt.Player) {
+        const entity = storageCache[player.id].entity;
+        if (entity && (entity instanceof alt.Vehicle)) VehicleSystem.toggleDoor(player, 5);
         StorageView.removeStorageBinding(player.id);
     }
 }

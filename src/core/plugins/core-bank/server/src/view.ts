@@ -8,6 +8,8 @@ import { Collections } from '../../../../server/interface/iDatabaseCollections';
 import { BANK_INTERACTIONS } from '../../shared/events';
 import { triallife } from '../../../../server/api/triallife';
 import { BankInfo } from '../../../../shared/interfaces/bank';
+import { FactionHandler } from '../../../core-factions/server/src/handler';
+import { FactionFuncs } from '../../../core-factions/server/src/funcs';
 
 const INTERACTION_RANGE = 1.5;
 class InternalFunctions {
@@ -18,41 +20,114 @@ class InternalFunctions {
         }
         var banks = await triallife.player.currency.getAllBankAccountsPlayer(player);
         if (type === 'concern') {
-            if (!player.data.faction) return;
-            var bank = await Database.fetchData<BankInfo>('owner', player.data.faction, Collections.Banks);
+            if (!player.data.faction) {
+                triallife.player.emit.notification(player, 'Sie sind in keiner Firma');
+                triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                return;
+            }
+            const faction = FactionHandler.get(player.data.faction);
+            if (!faction && !FactionFuncs.getFactionOwner(faction).id === player.data._id.toString()) {
+                triallife.player.emit.notification(player, 'Sie sind nicht der Firmeninhaber');
+                triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                return;
+            }
+            var bank = await Database.fetchData<BankInfo>('owner', faction._id.toString(), Collections.Banks);            
             if (bank) {
+                triallife.player.emit.notification(player, 'Sie haben bereits ein Firmenkonto.');
                 triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
                 return;
             }
             var bankNew: BankInfo = { amount: 0.0, logs: [], iban, name, type, owner: player.data.faction };
             var document = await Database.insertData<BankInfo>(bankNew, Collections.Banks, true);
             banks.push(document);
+            triallife.state.set(player, 'banks', banks);
             triallife.player.emit.meta(player, 'banks', banks);
             triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
         } else {
             var bank = banks.find((x) => x.owner === player.data._id.toString() && x.type === type);
             if (bank) {
+                triallife.player.emit.notification(player, `Sie haben bereits ein Konto dieser Art`);
                 triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
                 return;
             }
             var bank: BankInfo = { amount: 0.0, logs: [], iban, name, type, owner: player.data._id.toString() };
             var document = await Database.insertData<BankInfo>(bank, Collections.Banks, true);
             banks.push(document);
+            triallife.state.set(player, 'banks', banks);
             triallife.player.emit.meta(player, 'banks', banks);
+            triallife.player.emit.notification(player, `Das Konto wurde für Sie eingerichtet.`);
             triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
         }
     }
 
     static async remove(player: alt.Player, id: string): Promise<void> {
-        const bank = await Database.fetchData<BankInfo>('_id', id, Collections.Banks);
+        const bank = (await triallife.player.currency.getAllBankAccountsPlayer(player)).find(x => x._id.toString() === id);
         if (!bank) {
+            triallife.player.emit.notification(player, `Das Konto wurde nicht gefunden.`);
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
             return;
         }
-        triallife.player.currency.add(player, bank.amount);
-        await Database.deleteById(bank._id, Collections.Banks);
+        if (bank.type === 'concern') {
+            const faction = FactionHandler.get(bank.owner);
+            if (!faction || FactionFuncs.getFactionOwner(faction).id === player.data._id.toString()) {
+                triallife.player.emit.notification(player, `Sie sind kein Firmeninhaber.`);
+                triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                return;
+            }
+            faction.bank += bank.amount;
+            await FactionHandler.update(faction._id.toString(), { bank: faction.bank });
+        } else if (bank.type === 'credit') {
+            var amountLeft = bank.amount;
+            const privBank = (await triallife.player.currency.getAllBankAccountsPlayer(player)).find(x => x.type === 'private');
+            const concBank = (await triallife.player.currency.getAllBankAccountsPlayer(player)).find(x => x.type === 'concern');
+            var startCash = privBank.amount;
+            if (privBank) {
+                if (privBank.amount - bank.amount <= -1) {
+                    amountLeft -= startCash;
+                    startCash = 0;
+                } else {
+                    startCash -= amountLeft;
+                    amountLeft = 0;
+                }
+                await triallife.player.currency.setBank(player, startCash, privBank._id.toString());
+            }
+            if (amountLeft > 0) {
+                if (concBank) {
+                    var startCash = concBank.amount;
+                    if (concBank.amount - bank.amount <= -1) {
+                        amountLeft -= startCash;
+                        startCash = 0;
+                    } else {
+                        startCash -= amountLeft;
+                        amountLeft = 0;
+                    }
+                    await triallife.player.currency.setBank(player, startCash, concBank._id.toString());
+                }
+            }
+            if (amountLeft > 0) {
+                startCash = player.data.cash;
+                if (player.data.cash - amountLeft <= -1) {
+                    amountLeft -= startCash;
+                    startCash = 0; 
+                } else {
+                    startCash -= amountLeft;
+                    amountLeft = 0;
+                }
+                triallife.player.currency.set(player, startCash);
+            }
+            if (amountLeft > 0) {
+                bank.amount = amountLeft;
+                await triallife.player.currency.setBank(player, amountLeft, bank._id.toString());
+                triallife.player.emit.notification(player, `Ihr Kredit ist noch nicht abbezahlt worden!`);
+                triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
+                return;
+            }
+        } else triallife.player.currency.add(player, amountLeft);
+        await Database.deleteById(id, Collections.Banks);
         const banks = await triallife.player.currency.getAllBankAccountsPlayer(player);
+        triallife.state.set(player, 'banks', banks);
         triallife.player.emit.meta(player, 'banks', banks);
+        triallife.player.emit.notification(player, `Das Konto wurde aufgelöst.`);
         triallife.player.emit.soundFrontend(player, 'Hack_Success', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');
     }
 

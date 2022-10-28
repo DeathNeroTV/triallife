@@ -92,6 +92,7 @@ export class VehicleSystem {
         alt.onClient(VEHICLE_EVENTS.PUSH, VehicleSystem.startPush);
         alt.onClient(VEHICLE_EVENTS.STOP_PUSH, VehicleSystem.stopPush);
         alt.onClient(VEHICLE_EVENTS.SET_LOCK, VehicleSystem.toggleLock);
+        alt.onClient(VEHICLE_EVENTS.SET_DOOR, VehicleSystem.toggleDoor);
         alt.onClient(VEHICLE_EVENTS.SET_ENGINE, VehicleSystem.toggleEngine);
 
         alt.on('playerEnteringVehicle', VehicleSystem.entering);
@@ -379,7 +380,6 @@ export class VehicleSystem {
         if (newValue && (vehicle.lockState as number) !== VEHICLE_LOCK_STATE.UNLOCKED) {
             return;
         }
-
         vehicle.setStreamSyncedMeta(doorState, newValue);
     }
 
@@ -609,10 +609,7 @@ export class VehicleSystem {
             vehicle.data.storage = storage._id.toString();
             await VehicleFuncs.save(vehicle, { storage: vehicle.data.storage });
             storageID = vehicle.data.storage;
-        } else {
-            storageID = vehicle.data.storage.toString();
-        }
-
+        } else storageID = vehicle.data.storage.toString();
         StorageView.open(player, storageID, LocaleController.get(LOCALE_KEYS.VEHICLE_STORAGE_VIEW_NAME, vehicle.data._id), vehicle);
     }
 

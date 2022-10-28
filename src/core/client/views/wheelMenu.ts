@@ -165,18 +165,15 @@ export class WheelMenu {
     static update(label: string, options: Array<IWheelOptionExt>, setMouseToCenter = false) {
         _label = label;
         _options = options;
-
         for (let i = 0; i < _options.length; i++) {
             if (!_options[i].uid) {
                 _options[i].uid = `option-${i}`;
             }
         }
-
         if (setMouseToCenter) {
             const [_nothing, _x, _y] = native.getActiveScreenResolution(0, 0);
             alt.setCursorPos({ x: _x / 2, y: _y / 2 });
         }
-
         InternalFunctions.ready();
     }
 }

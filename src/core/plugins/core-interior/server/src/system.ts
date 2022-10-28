@@ -474,7 +474,7 @@ class InternalSystem {
             }
         }
         const banks = await Database.fetchAllByField<BankInfo>('type', 'private', Collections.Banks);
-        const index = banks.findIndex((x) => x.owner === player.data.name);
+        const index = banks.findIndex((x) => x.owner === player.data._id.toString());
         if (index !== -1 && banks[index].amount + player.data.cash < interior.price) {
             triallife.player.emit.notification(player, LOCALE_INTERIOR_VIEW.LABEL_NOT_ENOUGH_CURRENCY);
             triallife.player.emit.soundFrontend(player, 'Hack_Failed', 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS');

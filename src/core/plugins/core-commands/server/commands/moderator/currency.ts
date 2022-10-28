@@ -58,7 +58,7 @@ class CurrencyCommands {
     private static async setBankCommand(player: alt.Player, amount: string, id: string | null = null): Promise<void> {
         const banks = await Database.fetchData<BankInfo>('iban', 'id', Collections.Banks);
         if (id === null || id === undefined) {
-            const index = banks.findIndex((x) => x.owner === player.data.name);
+            const index = banks.findIndex((x) => x.owner === player.data._id.toString());
             if (index !== -1) triallife.player.currency.setBank(player, parseFloat(amount), banks[index]._id.toString());
             return;
         }

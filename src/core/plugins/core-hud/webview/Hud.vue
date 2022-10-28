@@ -13,7 +13,6 @@
         <div class="key-info overline">[{{ switchKey }}]</div>
         <div class="info-bars" v-if="hudState === hudStateNames.SHOW_WALLET">
             <Cash class="mb-2" :value="cash" />
-            <Bank class="mb-2" :value="bank" />
             <Identifier class="mb-2" :value="identifier" />
             <Time class="mb-2" :value="time" />
         </div>

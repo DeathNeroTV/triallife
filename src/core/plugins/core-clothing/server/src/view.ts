@@ -337,7 +337,7 @@ export class ClothingFunctions {
 
         if (totalCost >= 1) {
             const banks = await triallife.player.currency.getAllBankAccountsPlayer(player);
-            const index = banks.findIndex((x) => x.owner === player.data.name && x.type === 'private');
+            const index = banks.findIndex((x) => x.type === 'private');
             if (index !== -1) {
                 if (player.data.cash + banks[index].amount < totalCost) {
                     triallife.player.emit.sound2D(player, 'item_error');

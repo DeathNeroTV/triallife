@@ -20,6 +20,15 @@ const BLACKLISTED_VEHICLE_TYPES = [
     21, // Trains
 ];
 
+const DoorNames = {
+    0: 'Fahrertür',
+    1: 'Beifahrertür',
+    2: 'Beifahrertür hinten links',
+    3: 'Beifahrertür hinten rechts',
+    4: 'Motorhaube',
+    5: 'Kofferraum',
+}
+
 const Injections: Array<VehicleMenuInjection> = [];
 
 export class VehicleWheelMenu {
@@ -60,7 +69,6 @@ export class VehicleWheelMenu {
         // Is Driver Function
         if (pedInDriverSeat === alt.Player.local.scriptID) {
             const engineOn = native.getIsVehicleEngineRunning(alt.Player.local.vehicle.scriptID);
-
             options.push({
                 name: engineOn ? 'Einschalten' : 'Abschalten',
                 icon: 'icon-engine-fill',
@@ -86,52 +94,61 @@ export class VehicleWheelMenu {
     }
 
     static openMenu(vehicle: alt.Vehicle) {
-        if (isAnyMenuOpen()) {
-            return;
-        }
-
-        if (!vehicle || !vehicle.valid) {
-            return;
-        }
-
+        if (isAnyMenuOpen()) return;
+        if (!vehicle || !vehicle.valid) return;
         const dist = distance(alt.Player.local.pos, vehicle.pos);
-        if (dist >= 4) {
-            return;
-        }
-
+        if (dist >= 4) return;
         let options: Array<IWheelOptionExt> = [];
-
         const isDestroyed = native.getVehicleEngineHealth(vehicle.scriptID) <= 0;
         const isLocked = native.getVehicleDoorLockStatus(vehicle.scriptID) === 2;
-
         options.push({
             name: isLocked ? 'Aufschließen' : 'Abschließen',
             color: isLocked ? 'green' : 'red',
             icon: isLocked ? 'icon-lock-open' : 'icon-lock',
             emitServer: VEHICLE_EVENTS.SET_LOCK,
         });
-
         const type = native.getVehicleClass(vehicle);
-
         // Not Pushing & Vehicle is Currently Unlocked
         if (!PushVehicle.isPushing() && !isLocked && !isDestroyed) {
             if (!BLACKLISTED_VEHICLE_TYPES.includes(type)) {
                 options.push({
                     name: 'Schieben',
+                    icon: 'icon-push',
+                    color: 'green',
                     callback: PushVehicle.start,
                     data: [vehicle],
                 });
             }
-
             options.push({
                 name: 'Kofferraum öffnen',
+                icon: 'icon-box',
                 callback: () => {
                     alt.emitServer(VEHICLE_EVENTS.OPEN_STORAGE, vehicle);
+                    if (native.getVehicleDoorAngleRatio(vehicle.scriptID, 5) < 0.9) alt.emitServer(VEHICLE_EVENTS.SET_DOOR, 5);
                 },
+            });
+            const numberOfDooors = native.getNumberOfVehicleDoors(vehicle.scriptID);
+            const newOptions: Array<IWheelOptionExt> = [];        
+            for (let i = 0; i < numberOfDooors; i++) {
+                const isOpen = native.getVehicleDoorAngleRatio(vehicle.scriptID, i) >= 0.9;
+                newOptions.push({
+                    name: isOpen ? `${DoorNames[i]} schließen` : `${DoorNames[i]} öffnen`,
+                    color: isOpen ? 'green' : 'red',
+                    icon: 'icon-sensor_door',
+                    emitServer: VEHICLE_EVENTS.SET_DOOR,
+                    data: [i]
+                });
+            }
+            options.push({
+                name: 'Fahrzeugtüren',
+                icon: 'icon-sensor_door',
+                callback: () => alt.setTimeout(() => WheelMenu.update('Fahrzeugtüren', newOptions, true), 500),
             });
         } else if (PushVehicle.isPushing()) {
             options.push({
                 name: 'Aufhören',
+                color: 'red',
+                icon: 'icon-push',
                 callback: PushVehicle.clear,
             });
         }

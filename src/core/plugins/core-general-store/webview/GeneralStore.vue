@@ -39,7 +39,6 @@ import { DEFAULT_GENERAL_STORE } from './utility/defaultData';
 import { LOCALE_GENERAL } from '../shared/locales';
 import { deepCloneObject } from '../../../shared/utility/deepCopy';
 import { Item } from '../../../shared/interfaces/item';
-import ResolvePath from '../../../../../src-webviews/src/utility/pathResolver';
 
 const ComponentName = 'GeneralStore';
 export default defineComponent({
@@ -134,8 +133,9 @@ export default defineComponent({
             if (!('alt' in window)) return;
             const items: Array<Item> = [];
             const uid: string = this.storeData.uid;
-            this.basket.forEach((item: Item) => items.push(item));
+            for (const item of this.basket) items.push(item);
             alt.emit(`${ComponentName}:PurchaseAll`, items, uid);
+            this.basket = [];
         },
         handlePress(e: KeyboardEvent) {
             if (e.key.toLowerCase() !== 'escape') return;

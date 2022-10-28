@@ -90,7 +90,6 @@ export default defineComponent({
         addOptions(label: string, options: Array<IWheelOption>) {
             this.label = label;
             this.options = [];
-
             for (let i = 0; i < options.length; i++) {
                 this.addOption(options[i]);
             }

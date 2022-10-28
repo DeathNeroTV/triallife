@@ -146,13 +146,16 @@ const Currency = {
                     save.save(player, 'banned', banned);
                     player.kick('Sie sind zu hoch verschuldet. Bitte melden Sie sich beim Support!'); 
                     return false;
-                } else startCash += amountLeft;
+                } else {
+                    startCash += amountLeft;
+                    amountLeft = 0;
+                }
                 await triallife.database.funcs.updatePartialData(allBanks[indexCred]._id, { amount: startCash }, triallife.database.collections.Banks);
             }
             StateManager.set(player, 'banks', allBanks);
             emit.meta(player, 'banks', allBanks);
         }
-        return true;
+        return amountLeft === 0;
     },
 
     async getAllBankAccountsPlayer(player: alt.Player): Promise<Array<BankInfo>> {
