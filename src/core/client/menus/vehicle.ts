@@ -142,7 +142,8 @@ export class VehicleWheelMenu {
             options.push({
                 name: 'Fahrzeugtüren',
                 icon: 'icon-sensor_door',
-                callback: () => alt.setTimeout(() => WheelMenu.update('Fahrzeugtüren', newOptions, true), 500),
+                doNotClose: true,
+                callback: () => WheelMenu.update('Fahrzeugtüren', newOptions, true),
             });
         } else if (PushVehicle.isPushing()) {
             options.push({

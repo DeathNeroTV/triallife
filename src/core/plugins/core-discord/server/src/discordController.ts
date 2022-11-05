@@ -144,7 +144,7 @@ export class DiscordController {
         const newUserHasRole = newUser.roles.cache.has(DiscordController.allowListRole);
         const oldTeamHasRole = DiscordController.teamRoles.find((x) => oldUser.roles.cache.has(x.role));
         const newTeamHasRole = DiscordController.teamRoles.find((x) => newUser.roles.cache.has(x.role));
-        const name = `${newUser.user.username}#${newUser.user.discriminator}`;
+        const name = `${newUser.user.username} #${newUser.user.discriminator}`;
 
         // Handle Allow List
         if (oldUserHasRole && !newUserHasRole) {
@@ -156,10 +156,10 @@ export class DiscordController {
         }
         // Handle Allow List
         if (oldTeamHasRole && !newTeamHasRole) {
-            alt.log(`~lc~[Discord] ${name} (${discord}) was removed from the team list.`);
+            alt.log(`~lb~[Discord] ${name} (${discord}) wurde vom Team enrtfernt.`);
             await DiscordController.removeFromTeam(discord, oldTeamHasRole, true);
         } else if (!oldTeamHasRole && newTeamHasRole) {
-            alt.log(`~lc~[Discord] ${name} (${discord}) was added to the team list.`);
+            alt.log(`~lc~[Discord] ${name} (${discord}) wurde zum team hinzugefügt.`);
             await DiscordController.addToTeam(discord, newTeamHasRole, true);
         }
     }
@@ -190,7 +190,7 @@ export class DiscordController {
         if (alreadyAddedRole) return member;
         if (!member) return member;
         const role = await DiscordController.guild.roles.fetch(DiscordController.allowListRole);
-        if (role) return member;
+        if (!role) return member;
         return await member.roles.add(role);
     }
 

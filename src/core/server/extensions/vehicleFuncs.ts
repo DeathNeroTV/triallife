@@ -23,6 +23,7 @@ import { Injections } from '../systems/injections';
 import { VehicleDespawnCallback, VehicleInjectionNames, VehicleOwnershipCallback, VehicleSpawnCallback } from '../systems/injections/vehicles';
 import { sha256Random } from '../utility/encryption';
 import { getMissingNumber } from '../utility/math';
+import { VehicleSystem } from '../systems/vehicle';
 
 const SpawnedVehicles: { [id: string]: alt.Vehicle } = {};
 const OWNED_VEHICLE = Vehicle_Behavior.CONSUMES_FUEL | Vehicle_Behavior.NEED_KEY_TO_START;
@@ -360,7 +361,6 @@ export default class VehicleFuncs {
                 continue;
             }
         }
-
         return await Database.updatePartialData(vehicle.data._id.toString(), { ...injections }, Collections.Vehicles);
     }
 
@@ -371,6 +371,7 @@ export default class VehicleFuncs {
      * @memberof VehicleFuncs
      */
     static repair(vehicle: alt.Vehicle) {
+        if (vehicle.getDoorState(4) !== alt.VehicleDoorState.Closed) vehicle.setDoorState(4, alt.VehicleDoorState.Closed);
         vehicle.repair();
         VehicleEvents.trigger(TRIALLIFE_EVENTS_VEHICLE.REPAIRED, vehicle);
         VehicleFuncs.update(vehicle);

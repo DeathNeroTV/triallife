@@ -1,6 +1,7 @@
 import * as alt from 'alt-server';
 import EFFECTS from '../../shared/enums/effects';
 import { INVENTORY_TYPE } from '../../shared/enums/inventoryTypes';
+import { Vehicle_Door_List } from '../../shared/enums/vehicle';
 
 import { ANIMATION_FLAGS } from '../../shared/flags/animationFlags';
 import { Item } from '../../shared/interfaces/item';
@@ -69,7 +70,7 @@ function handleRepairTimeline(player: alt.Player) {
     if (!closestVehicle || !closestVehicle.valid) {
         return;
     }
-
+    triallife.vehicle.system.toggleDoor(player, 4);
     triallife.player.emit.animation(player, 'mp_car_bomb', 'car_bomb_mechanic', ANIMATION_FLAGS.NORMAL | ANIMATION_FLAGS.REPEAT, 12000);
 
     alt.setTimeout(() => {
